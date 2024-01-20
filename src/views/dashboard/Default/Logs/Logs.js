@@ -60,7 +60,7 @@ export default function Logs() {
 
   return (
     <div>
-      <AppBar position="static" style={{ borderRadius: 15, height: 80, backgroundColor: '#222857' }}>
+      <AppBar position="static" style={{ borderRadius: 15, height: 80, backgroundColor: '#53338a' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <h2 style={{ marginRight: 20 }}>Logs</h2>

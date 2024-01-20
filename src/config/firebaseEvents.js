@@ -2,7 +2,7 @@
 import { db, authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, setDoc, doc, updateDoc, deleteDoc, getDocs, addDoc, where, query } from 'firebase/firestore';
-import { collCourses, collIncomes, collRegUsr, collSubscription, collUsers } from 'store/collections';
+import { collAdminUsers, collCourses, collIncomes, collRegUsr, collSubscription, collUsers } from 'store/collections';
 
 export function isSessionActive(navigate) {
   onAuthStateChanged(authentication, (user) => {
@@ -25,6 +25,16 @@ export function getUserId() {
 export async function getProfileUser(id) {
   let profile = null;
   const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    profile = doc.data().profile;
+  });
+  return profile;
+}
+
+export async function getProfileUserAdmin(id) {
+  let profile = null;
+  const q = query(collection(db, collAdminUsers), where('id', '==', id));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     profile = doc.data().profile;
@@ -75,6 +85,16 @@ export async function getUserChilds(refer) {
 export const getUsersData = async () => {
   const list = [];
   const querySnapshot = await getDocs(collection(db, collUsers));
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+    list.sort((a, b) => a.name.localeCompare(b.name));
+  });
+  return list;
+};
+
+export const getAdminUsersData = async () => {
+  const list = [];
+  const querySnapshot = await getDocs(collection(db, collAdminUsers));
   querySnapshot.forEach((doc) => {
     list.push(doc.data());
     list.sort((a, b) => a.name.localeCompare(b.name));

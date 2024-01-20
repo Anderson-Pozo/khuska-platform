@@ -63,12 +63,7 @@ const Signin = () => {
                     </Typography>
                     <Grid item container direction="column" alignItems="center" xs={12}>
                       <Typography component={Link} to="/auth/signup" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Regístrate como Socio
-                      </Typography>
-                    </Grid>
-                    <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/auth/signup" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Regístrate como Usuario
+                        Regístrate
                       </Typography>
                     </Grid>
                   </Grid>

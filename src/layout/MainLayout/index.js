@@ -17,7 +17,7 @@ import { SET_MENU } from 'store/actions';
 //Firebase
 import { authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getProfileUser } from 'config/firebaseEvents';
+import { getProfileUserAdmin } from 'config/firebaseEvents';
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
@@ -70,7 +70,7 @@ const MainLayout = () => {
       if (!user) {
         navigate('/auth/signin');
       } else {
-        getProfileUser(user.uid)
+        getProfileUserAdmin(user.uid)
           .then((profile) => {
             setUser(profile);
           })

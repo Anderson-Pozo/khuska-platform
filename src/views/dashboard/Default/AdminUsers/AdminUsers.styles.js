@@ -1,9 +1,11 @@
 import { genConst } from 'store/constant';
 
 export const uiStyles = {
-  appbar: { borderRadius: 10, height: 50, backgroundColor: genConst.CONST_APPBAR },
-  box: { width: '100%', height: '100%', backgroundColor: '#FFF', borderRadius: 4, padding: 2 },
-  paper: { width: '100%', overflow: 'hidden' },
+  appbar: { borderRadius: 15, height: 60, backgroundColor: genConst.CONST_APPBAR },
+  container: { marginTop: -12 },
+  box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
+  boxMenuActions: { flexGrow: 1, display: { xs: 'none', md: 'flex' } },
+  paper: { width: '100%', overflow: 'hidden', marginTop: 2 },
   modalStyles: {
     position: 'absolute',
     top: '50%',
@@ -27,7 +29,21 @@ export const uiStyles = {
     boxShadow: 24,
     p: 4
   },
-  styleLoader: {
+  modalStylesDelete: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    '@media (min-width: 718px)': {
+      width: 400
+    },
+    bgcolor: 'background.paper',
+    border: 'none',
+    borderRadius: 6,
+    boxShadow: 24,
+    p: 4
+  },
+  modalStylesLoader: {
     position: 'absolute',
     top: '50%',
     left: '50%',

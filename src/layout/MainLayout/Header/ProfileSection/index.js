@@ -34,7 +34,7 @@ import Transitions from 'components/extended/Transitions';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 
 // assets
-import { IconLogout, IconSettings, IconUser, IconLock, IconCreditCard, IconNote, IconPhone } from '@tabler/icons';
+import { IconLogout, IconSettings, IconUser, IconLock } from '@tabler/icons';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -198,39 +198,6 @@ const ProfileSection = () => {
                             <IconUser stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
                           <ListItemText primary={<Typography variant="body2">Administrar Cuenta</Typography>} />
-                        </ListItemButton>
-                        <ListItemButton
-                          sx={{ borderRadius: `${customization.borderRadius}px` }}
-                          selected={selectedIndex === 1}
-                          onClick={(event) => handleListItemClick(event, 1, '#')}
-                          to="user-contact"
-                        >
-                          <ListItemIcon>
-                            <IconPhone stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Datos de Contacto</Typography>} />
-                        </ListItemButton>
-                        <ListItemButton
-                          sx={{ borderRadius: `${customization.borderRadius}px` }}
-                          selected={selectedIndex === 1}
-                          onClick={(event) => handleListItemClick(event, 1, '#')}
-                          to="user-bill"
-                        >
-                          <ListItemIcon>
-                            <IconNote stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Facturación</Typography>} />
-                        </ListItemButton>
-                        <ListItemButton
-                          sx={{ borderRadius: `${customization.borderRadius}px` }}
-                          selected={selectedIndex === 1}
-                          onClick={(event) => handleListItemClick(event, 1, '#')}
-                          to="user-payment-methods"
-                        >
-                          <ListItemIcon>
-                            <IconCreditCard stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Métodos de Pago</Typography>} />
                         </ListItemButton>
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}

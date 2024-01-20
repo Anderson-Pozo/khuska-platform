@@ -24,9 +24,6 @@ import { authentication } from 'config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { isSessionActive } from 'config/firebaseEvents';
 
-//Logs
-//import { createLogRecordWithId } from 'config/firebaseEvents';
-
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -76,7 +73,6 @@ const AuthLogin = ({ ...others }) => {
           setOpen(true);
           signInWithEmailAndPassword(authentication, values.email, values.password)
             .then(() => {
-              //createLogRecordWithId(ide, { details: LogMsg.logclicre, createAt: fullDate(), object: obj });
               setTimeout(() => {
                 setOpen(false);
                 navigate('/app/dashboard');

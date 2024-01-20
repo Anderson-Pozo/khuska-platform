@@ -20,6 +20,14 @@ const dashboard = {
       breadcrumbs: false
     },
     {
+      id: 'admins',
+      title: 'Administradores',
+      type: 'item',
+      url: '/app/admin-users',
+      icon: icons.IconUsers,
+      breadcrumbs: false
+    },
+    {
       id: 'users',
       title: 'Usuarios',
       type: 'item',

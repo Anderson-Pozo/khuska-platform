@@ -41,15 +41,15 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { genConst } from 'store/constant';
-import { collHistUsr, collUsers } from 'store/collections';
-import { inputLabels, titles } from './Users.texts';
-import { uiStyles } from './Users.styles';
+import { collAdminUsers, collHistUsr } from 'store/collections';
+import { inputLabels, titles } from './AdminUsers.texts';
+import { uiStyles } from './AdminUsers.styles';
 
 //Utils
 import { fullDate } from 'utils/validations';
 import { generateId } from 'utils/idGenerator';
 import { searchingData } from 'utils/search';
-import { useGetUsers } from 'hooks/useGetUsers';
+import { useGetAdminUsers } from 'hooks/useGetAdminUsers';
 
 export default function Users() {
   const [page, setPage] = useState(0);
@@ -75,7 +75,7 @@ export default function Users() {
   const [openLoader, setOpenLoader] = useState(false);
 
   //Hook
-  const usersList = useGetUsers();
+  const usersList = useGetAdminUsers();
 
   const handleOpenCreate = () => {
     setOpenCreate(true);
@@ -159,7 +159,7 @@ export default function Users() {
         updateAt: fullDate()
       };
       setOpenLoader(true);
-      updateDocument(collUsers, id, object);
+      updateDocument(collAdminUsers, id, object);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
@@ -182,7 +182,7 @@ export default function Users() {
       state: genConst.CONST_STA_INACT,
       updateAt: updateAt
     };
-    deleteDocument(collUsers, id);
+    deleteDocument(collAdminUsers, id);
     createDocument(collHistUsr, usrHistId, objectHist);
     setTimeout(() => {
       setOpenLoader(false);

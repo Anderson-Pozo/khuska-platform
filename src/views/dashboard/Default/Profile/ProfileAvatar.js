@@ -21,6 +21,7 @@ import { db, storage, authentication } from 'config/firebase';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
+import { collAdminUsers } from 'store/collections';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.dark,
@@ -65,7 +66,7 @@ const ProfileAvatar = ({ id, name, email }) => {
   useEffect(() => {
     async function fetchData() {
       const list = [];
-      const querySnapshot = await getDocs(collection(db, 'Users'));
+      const querySnapshot = await getDocs(collection(db, collAdminUsers));
       querySnapshot.forEach((doc) => {
         if (id === doc.data().id) {
           list.push(doc.data());
@@ -89,19 +90,19 @@ const ProfileAvatar = ({ id, name, email }) => {
           const obj = {
             avatar: avatar
           };
-          const docRef = updateDoc(doc(db, 'Users', id), obj)
+          const docRef = updateDoc(doc(db, collAdminUsers, id), obj)
             .then(() => {
               updateProfile(authentication.currentUser, {
                 photoURL: avatar
               });
               toast.success('Avatar actualizado correctamente!', {
-                autoClose: 3000,
+                autoClose: 2000,
                 position: toast.POSITION.TOP_RIGHT
               });
               setTimeout(() => {
                 window.location.reload();
                 setOpen(false);
-              }, 4000);
+              }, 2000);
             })
             .catch((error) => {
               console.log(error);

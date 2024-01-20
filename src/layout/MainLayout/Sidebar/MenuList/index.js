@@ -22,7 +22,7 @@ const MenuList = ({ user }) => {
     }
   });
 
-  const navItemsStudent = menuItemsStudent.items.map((item) => {
+  const navItemsNormalUsers = menuItemsStudent.items.map((item) => {
     switch (item.type) {
       case 'group':
         return <NavGroup key={item.id} item={item} />;
@@ -35,7 +35,7 @@ const MenuList = ({ user }) => {
     }
   });
 
-  return <>{user === genConst.CONST_PRO_ADM ? <>{navItems}</> : <>{navItemsStudent}</>}</>;
+  return <>{user === genConst.CONST_PRO_ADM ? <>{navItems}</> : <>{navItemsNormalUsers}</>}</>;
 };
 
 MenuList.propTypes = {

@@ -19,7 +19,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // project imports
 import AnimateButton from 'components/extended/AnimateButton';
-import { collUsers } from 'store/collections';
+import { collAdminUsers } from 'store/collections';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
   backgroundColor: '#414551',
@@ -70,7 +70,7 @@ const ProfileData = () => {
       if (user) {
         setId(user.uid);
         setEmail(user.email);
-        const q = query(collection(db, collUsers), where('id', '==', user.uid));
+        const q = query(collection(db, collAdminUsers), where('id', '==', user.uid));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           setName(doc.data().name);
@@ -88,7 +88,7 @@ const ProfileData = () => {
       updateProfile(authentication.currentUser, {
         displayName: name + ' ' + lastName
       });
-      updateDoc(doc(db, collUsers, id), {
+      updateDoc(doc(db, collAdminUsers, id), {
         name: name,
         lastName: lastName,
         fullName: name + ' ' + lastName,
