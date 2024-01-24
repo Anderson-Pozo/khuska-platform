@@ -6,7 +6,7 @@ import 'react-credit-cards/es/styles-compiled.css';
 import { Button, Grid, Typography } from '@mui/material';
 
 // project imports
-import AuthWrapper1 from '../authentication/AuthWrapper1';
+import AuthWrapper from '../authentication/AuthWrapper';
 import AuthCardWrapper from '../authentication/AuthCardWrapper';
 import AuthFooter from 'components/cards/AuthFooter';
 
@@ -15,7 +15,7 @@ import { authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 //Assets
-import bg01 from 'assets/images/03.webp';
+import bg01 from 'assets/images/bg/03.webp';
 import { genConst } from 'store/constant';
 import notFound from 'assets/images/error/notfound.jpg';
 
@@ -31,7 +31,7 @@ const NotFound = () => {
     });
   };
   return (
-    <AuthWrapper1
+    <AuthWrapper
       style={{
         backgroundImage: `url(${bg01})`,
         width: '100%',
@@ -75,7 +75,7 @@ const NotFound = () => {
           <AuthFooter />
         </Grid>
       </Grid>
-    </AuthWrapper1>
+    </AuthWrapper>
   );
 };
 

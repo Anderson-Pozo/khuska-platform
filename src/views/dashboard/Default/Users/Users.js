@@ -313,6 +313,9 @@ export default function Users() {
                   <TableCell key="id-email" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {titles.tableCell2}
                   </TableCell>
+                  <TableCell key="id-code" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                    {titles.tableCellC}
+                  </TableCell>
                   <TableCell key="id-profile" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {titles.tableCell3}
                   </TableCell>
@@ -337,6 +340,7 @@ export default function Users() {
                         </ButtonGroup>
                       </TableCell>
                       <TableCell align="left">{r.email}</TableCell>
+                      <TableCell align="left">{r.ownReferal}</TableCell>
                       <TableCell align="left">
                         {r.profile === genConst.CONST_PRO_ADM ? genConst.CONST_PRO_ADM_TXT : genConst.CONST_PRO_STU_TXT}
                       </TableCell>

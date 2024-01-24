@@ -1,23 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import {
-  Avatar,
-  Box,
-  Button,
-  ButtonBase,
-  CardActions,
-  ClickAwayListener,
-  Divider,
-  Grid,
-  Paper,
-  Popper,
-  Stack,
-  Typography,
-  useMediaQuery
-} from '@mui/material';
+import { Avatar, Box, ButtonBase, ClickAwayListener, Grid, Paper, Popper, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
 import MainCard from 'components/cards/MainCard';
@@ -35,7 +20,6 @@ import { IconBell } from '@tabler/icons';
 
 const NotificationSection = () => {
   const theme = useTheme();
-  let navigate = useNavigate();
   const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
 
   const [open, setOpen] = useState(false);
@@ -111,7 +95,7 @@ const NotificationSection = () => {
             onClick={handleToggle}
             color="inherit"
           >
-            <IconBell stroke={1.5} size="1.3rem" />
+            <IconBell stroke={1.6} size="1.5rem" />
           </Avatar>
         </ButtonBase>
       </Box>
@@ -140,20 +124,6 @@ const NotificationSection = () => {
                 <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                   <Grid container direction="column" spacing={2}>
                     <Grid item xs={12}>
-                      <Grid container alignItems="center" justifyContent="space-between" sx={{ pt: 2, px: 2 }}>
-                        <Grid item>
-                          <Stack direction="row" spacing={2}>
-                            <Typography variant="subtitle1">Notificaciones</Typography>
-                          </Stack>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Grid container direction="column" spacing={2}>
-                        <Grid item xs={12} p={0}>
-                          <Divider sx={{ my: 0 }} />
-                        </Grid>
-                      </Grid>
                       {dataList.length > 0 ? (
                         dataList.map((n) => (
                           <NotificationList
@@ -166,24 +136,12 @@ const NotificationSection = () => {
                           />
                         ))
                       ) : (
-                        <div style={{ margin: 10 }}>
+                        <div style={{ padding: 20, marginTop: 10 }}>
                           <Typography variant="subtitle1">No hay notificaciones</Typography>
                         </div>
                       )}
                     </Grid>
                   </Grid>
-                  <Divider />
-                  <CardActions sx={{ p: 1.25, justifyContent: 'center' }}>
-                    <Button
-                      size="small"
-                      disableElevation
-                      onClick={() => {
-                        navigate('/app/notifications');
-                      }}
-                    >
-                      Ver Todas
-                    </Button>
-                  </CardActions>
                 </MainCard>
               </ClickAwayListener>
             </Paper>

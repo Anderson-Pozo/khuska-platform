@@ -28,6 +28,7 @@ export const genConst = {
   CONST_SECONDARY_COLOR: '#a8afda',
   CONST_THIRD_COLOR: '#04a604',
   CONST_CREATE_COLOR: '#53338a',
+  CONST_VIEW_COLOR: '#a8afda',
   CONST_UPDATE_COLOR: '#53338a',
   CONST_DELETE_COLOR: '#ff6961',
   CONST_CANCEL_COLOR: '#a8afda',

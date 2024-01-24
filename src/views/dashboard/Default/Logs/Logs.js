@@ -63,7 +63,7 @@ export default function Logs() {
       <AppBar position="static" style={{ borderRadius: 15, height: 80, backgroundColor: '#53338a' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <h2 style={{ marginRight: 20 }}>Logs</h2>
+            <h2 style={{ marginRight: 20, fontSize: 16 }}>Logs Generales</h2>
             <Box sx={{ flexGrow: 0 }}>
               {logList.length > 0 ? (
                 <OutlinedInput

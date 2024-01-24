@@ -31,18 +31,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Clients.styles';
 
-import {
-  IconApps,
-  IconPlus,
-  IconDownload,
-  IconUpload,
-  IconDeviceFloppy,
-  IconTrash,
-  IconEdit,
-  IconCircleX,
-  IconPencil,
-  IconFriends
-} from '@tabler/icons';
+import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconFriends } from '@tabler/icons';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -305,14 +294,6 @@ export default function Clients() {
                   <IconPlus style={{ marginRight: 4 }} />
                   <Typography textAlign="center">{titles.addMenu}</Typography>
                 </MenuItem>
-                <MenuItem key="id-2" onClick={handleCloseNavMenu}>
-                  <IconDownload style={{ marginRight: 10 }} />
-                  <Typography textAlign="center">{titles.exportMenu}</Typography>
-                </MenuItem>
-                <MenuItem key="id-3" onClick={handleCloseNavMenu}>
-                  <IconUpload style={{ marginRight: 10 }} />
-                  <Typography textAlign="center">{titles.importMenu}</Typography>
-                </MenuItem>
               </Menu>
             </Box>
             <Box sx={uiStyles.box2}>
@@ -345,14 +326,6 @@ export default function Clients() {
                 >
                   <IconPlus style={{ marginRight: 10 }} />
                   {titles.addMenu}
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <IconDownload style={{ marginRight: 10 }} />
-                  {titles.exportMenu}
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <IconUpload style={{ marginRight: 10 }} />
-                  {titles.importMenu}
                 </MenuItem>
               </Menu>
             </Box>

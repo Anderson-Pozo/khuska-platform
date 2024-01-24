@@ -2,7 +2,7 @@ import { genConst } from 'store/constant';
 
 export const uiStyles = {
   appbar: { borderRadius: 15, height: 60, backgroundColor: genConst.CONST_APPBAR },
-  container: { marginTop: -4 },
+  container: { marginTop: -12 },
   box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
   box2: { flexGrow: 1, display: { xs: 'none', md: 'flex' } },
   menu: { display: { xs: 'block', md: 'none' } },

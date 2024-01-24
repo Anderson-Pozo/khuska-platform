@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import {
   Paper,
   Table,
@@ -21,104 +21,54 @@ import {
   Container,
   Modal,
   Grid,
-  InputLabel,
   OutlinedInput,
-  FormControl,
-  TextField,
   ButtonGroup
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Business.styles';
-
-import {
-  IconApps,
-  IconPlus,
-  IconDownload,
-  IconUpload,
-  IconDeviceFloppy,
-  IconTrash,
-  IconEdit,
-  IconCircleX,
-  IconPencil,
-  IconFriends
-} from '@tabler/icons';
-
+import { IconApps, IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 //Collections
-import { collBusiness } from 'store/collections';
 import * as Msg from 'store/message';
-import * as LogMsg from 'store/logsMessages';
-import { generateId } from 'utils/idGenerator';
 import { titles, inputLabels } from './Business.texts';
-
 //Utils
-import { fullDate } from 'utils/validations';
-import { createDocument, deleteDocument, updateDocument, getDocuments, createLogRecordWithId } from 'config/firebaseEvents';
-
+import { deleteDocument, getBusinessList } from 'config/firebaseEvents';
 //types array
-import { types } from 'store/typesClients';
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
 
 function searchingData(search) {
   return function (x) {
-    return x.name.toLowerCase().includes(search) || x.name.toUpperCase().includes(search) || x.ci.includes(search) || !search;
+    return x.name.toLowerCase().includes(search) || x.name.toUpperCase().includes(search) || !search;
   };
 }
 
 export default function Business() {
+  let navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [openCreate, setOpenCreate] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [isEdit, setIsEdit] = React.useState(false);
-  const [title, setTitle] = React.useState(null);
-
   const [id, setId] = React.useState(null);
-  const [type, setType] = React.useState(null);
-  const [ci, setCi] = React.useState(null);
   const [name, setName] = React.useState(null);
-  const [phone, setPhone] = React.useState(null);
-  const [address, setAddress] = React.useState(null);
-  const [city, setCity] = React.useState(null);
-  const [mail, setMail] = React.useState(null);
-  const [observations, setObservations] = React.useState(null);
-  const [birth, setBirth] = React.useState(null);
-  const [createAt, setCreateAt] = React.useState(null);
-  const [updateAt, setUpdateAt] = React.useState(null);
-
   const [search, setSearch] = React.useState('');
   const [openLoader, setOpenLoader] = React.useState(false);
   const [dataList, setDataList] = React.useState([]);
 
-  const getData = async () => {
-    const list = [];
-    const querySnapshot = await getDocuments(collBusiness);
-    querySnapshot.forEach((doc) => {
-      list.push(doc.data());
-      list.sort((a, b) => a.name.localeCompare(b.name));
+  const getData = () => {
+    getBusinessList().then((data) => {
+      setDataList(data);
     });
-    setDataList(list);
   };
 
   React.useEffect(() => {
     getData();
   }, []);
-
-  const handleOpenCreate = () => {
-    setOpenCreate(true);
-  };
-  const handleCloseCreate = () => {
-    setOpenCreate(false);
-  };
 
   const handleOpenDelete = () => {
     setOpenDelete(true);
@@ -151,112 +101,16 @@ export default function Business() {
     setPage(0);
   };
 
-  const reloadData = () => {
-    getData();
-  };
-
-  const handleCreate = () => {
-    if (!type || !ci || !name || !phone || !address || !city || !mail) {
-      toast.info(Msg.clivalreq, { position: toast.POSITION.TOP_RIGHT });
-    } else {
-      const ide = generateId(10);
-      setOpenLoader(true);
-      const obj = {
-        address: address,
-        birth: birth,
-        ci: ci,
-        city: city,
-        createAt: fullDate(),
-        id: ide,
-        mail: mail,
-        name: name,
-        observations: observations,
-        phone: phone,
-        state: 1,
-        type: type,
-        updateAt: null
-      };
-      createDocument(collBusiness, ide, obj);
-      createLogRecordWithId(ide, { details: LogMsg.logclicre, createAt: fullDate(), object: obj });
-      setTimeout(() => {
-        setOpenLoader(false);
-        setOpenCreate(false);
-        reloadData();
-        toast.success(Msg.clicresucc, { position: toast.POSITION.TOP_RIGHT });
-      }, 2000);
-    }
-  };
-
-  const handleEdit = () => {
-    if (!type || !ci || !name || !phone || !address || !city || !mail) {
-      toast.info(Msg.clivalreq, { position: toast.POSITION.TOP_RIGHT });
-    } else {
-      setOpenLoader(true);
-      const obj = {
-        address: address,
-        birth: birth,
-        ci: ci,
-        city: city,
-        mail: mail,
-        name: name,
-        observations: observations,
-        phone: phone,
-        type: type,
-        updateAt: fullDate()
-      };
-      updateDocument(collBusiness, id, obj);
-      createLogRecordWithId(id, { details: LogMsg.logcliupd, createAt: fullDate(), object: obj });
-      setTimeout(() => {
-        setOpenLoader(false);
-        setOpenCreate(false);
-        reloadData();
-        toast.success(Msg.cliupdsucc, { position: toast.POSITION.TOP_RIGHT });
-      }, 2000);
-    }
-  };
-
   const handleDelete = () => {
     setOpenLoader(true);
-    const histId = generateId(10);
-    const obj = {
-      action: LogMsg.logclidel,
-      address: address,
-      birth: birth,
-      ci: ci,
-      city: city,
-      createAt: createAt,
-      deleteAt: fullDate(),
-      id: histId,
-      mail: mail,
-      name: name,
-      observations: observations,
-      phone: phone,
-      state: 0,
-      type: type,
-      updateAt: updateAt
-    };
-    createDocument(collHistBusiness, histId, obj);
-    deleteDocument(collBusiness, id);
-    createLogRecordWithId(histId, { details: LogMsg.logclidel, createAt: fullDate(), object: obj });
+    deleteDocument(collCourses, id);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);
-      reloadData();
-      toast.success(Msg.clidelsucc, { position: toast.POSITION.TOP_RIGHT });
-      cleanData();
+      reloadCoursesData();
+      getData();
+      toast.success(Msg.coudelsucc, { position: toast.POSITION.TOP_RIGHT });
     }, 2000);
-  };
-
-  const cleanData = () => {
-    setType('');
-    setCi('');
-    setName('');
-    setPhone('');
-    setAddress('');
-    setCity('');
-    setMail('');
-    setObservations('');
-    setBirth('');
   };
 
   return (
@@ -265,7 +119,7 @@ export default function Business() {
       <AppBar position="static" style={uiStyles.appbar}>
         <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconFriends />
+            <IconBuilding />
             <Box sx={uiStyles.box}>
               <IconButton
                 size="medium"
@@ -296,22 +150,11 @@ export default function Business() {
                 <MenuItem
                   key="id-1"
                   onClick={() => {
-                    setTitle(titles.modalCreate);
-                    cleanData();
-                    setIsEdit(false);
-                    handleOpenCreate();
+                    navigate('/app/add-business');
                   }}
                 >
                   <IconPlus style={{ marginRight: 4 }} />
                   <Typography textAlign="center">{titles.addMenu}</Typography>
-                </MenuItem>
-                <MenuItem key="id-2" onClick={handleCloseNavMenu}>
-                  <IconDownload style={{ marginRight: 10 }} />
-                  <Typography textAlign="center">{titles.exportMenu}</Typography>
-                </MenuItem>
-                <MenuItem key="id-3" onClick={handleCloseNavMenu}>
-                  <IconUpload style={{ marginRight: 10 }} />
-                  <Typography textAlign="center">{titles.importMenu}</Typography>
                 </MenuItem>
               </Menu>
             </Box>
@@ -337,22 +180,11 @@ export default function Business() {
               >
                 <MenuItem
                   onClick={() => {
-                    setTitle(titles.modalCreate);
-                    cleanData();
-                    setIsEdit(false);
-                    handleOpenCreate();
+                    navigate('/app/add-business');
                   }}
                 >
                   <IconPlus style={{ marginRight: 10 }} />
                   {titles.addMenu}
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <IconDownload style={{ marginRight: 10 }} />
-                  {titles.exportMenu}
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <IconUpload style={{ marginRight: 10 }} />
-                  {titles.importMenu}
                 </MenuItem>
               </Menu>
             </Box>
@@ -381,16 +213,19 @@ export default function Business() {
               <TableHead>
                 <TableRow>
                   <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
-                    {inputLabels.labelName}
+                    {inputLabels.name}
                   </TableCell>
-                  <TableCell key="id-ci" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                    {inputLabels.labelCi}
+                  <TableCell key="id-owner" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                    {inputLabels.owner}
                   </TableCell>
                   <TableCell key="id-phone" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                    {inputLabels.labelContact}
+                    {inputLabels.phone}
+                  </TableCell>
+                  <TableCell key="id-city" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                    {inputLabels.city}
                   </TableCell>
                   <TableCell key="id-address" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
-                    {inputLabels.labelAddress}
+                    {inputLabels.address}
                   </TableCell>
                   <TableCell key="id-actions" align="center" style={{ minWidth: 75, fontWeight: 'bold' }}>
                     {titles.actions}
@@ -404,29 +239,30 @@ export default function Business() {
                   .map((r) => (
                     <TableRow hover key={r.id}>
                       <TableCell align="left">{r.name}</TableCell>
-                      <TableCell align="left">{r.ci}</TableCell>
+                      <TableCell align="left">{r.owner}</TableCell>
                       <TableCell align="left">{r.phone}</TableCell>
+                      <TableCell align="left">{r.city}</TableCell>
                       <TableCell align="left">{r.address}</TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
                           <Button
+                            style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
+                            onClick={() => {
+                              navigate({
+                                pathname: '/app/info-business',
+                                search: `?id=${r.id}`
+                              });
+                            }}
+                          >
+                            <IconEye />
+                          </Button>
+                          <Button
                             style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                             onClick={() => {
-                              setId(r.id);
-                              setTitle(titles.modalEdit);
-                              setType(r.type);
-                              setCi(r.ci);
-                              setName(r.name);
-                              setPhone(r.phone);
-                              setAddress(r.address);
-                              setCity(r.city);
-                              setMail(r.mail);
-                              setObservations(r.observations);
-                              setBirth(r.birth);
-                              setCreateAt(r.createAt);
-                              setUpdateAt(r.updateAt);
-                              handleOpenCreate();
-                              setIsEdit(true);
+                              navigate({
+                                pathname: '/app/edit-business',
+                                search: `?id=${r.id}`
+                              });
                             }}
                           >
                             <IconEdit />
@@ -435,15 +271,7 @@ export default function Business() {
                             style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                             onClick={() => {
                               setId(r.id);
-                              setType(r.type);
-                              setCi(r.ci);
                               setName(r.name);
-                              setPhone(r.phone);
-                              setAddress(r.address);
-                              setCity(r.city);
-                              setMail(r.mail);
-                              setObservations(r.observations);
-                              setBirth(r.birth);
                               handleOpenDelete();
                             }}
                           >
@@ -476,179 +304,6 @@ export default function Business() {
           </Grid>
         </Grid>
       )}
-
-      <Modal open={openCreate} onClose={handleCloseCreate} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
-        <Box sx={uiStyles.modalStyles}>
-          <Typography id="modal-modal-title" variant="h2" component="h2">
-            {title}
-          </Typography>
-          <Grid container style={{ marginTop: 10 }}>
-            <Grid item xs={12}>
-              <Grid container spacing={1}>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <TextField
-                      id={inputLabels.type}
-                      select
-                      defaultValue=""
-                      helperText={inputLabels.labelType + '*'}
-                      onChange={(ev) => setType(ev.target.value)}
-                      value={type || '0'}
-                    >
-                      {types.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.ci}>{inputLabels.labelCi}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.ci}
-                      type="number"
-                      name={inputLabels.ci}
-                      value={ci || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setCi(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.name}>{inputLabels.labelName}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.name}
-                      type="text"
-                      name={inputLabels.name}
-                      value={name || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setName(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.phone}>{inputLabels.labelPhone}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.phone}
-                      type="number"
-                      name={inputLabels.phone}
-                      value={phone || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setPhone(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.address}>{inputLabels.labelAddress}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.address}
-                      type="text"
-                      name={inputLabels.address}
-                      value={address || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setAddress(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.city}>{inputLabels.labelCity}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.city}
-                      type="text"
-                      name={inputLabels.city}
-                      value={city || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setCity(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.email}>{inputLabels.labelEmail}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.email}
-                      type="email"
-                      name={inputLabels.email}
-                      value={mail || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setMail(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.observations}>{inputLabels.labelObservations}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.observations}
-                      type="text"
-                      name={inputLabels.observations}
-                      value={observations || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setObservations(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor={inputLabels.birth}>{inputLabels.labelBirth}</InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.birth}
-                      type="date"
-                      name={inputLabels.birth}
-                      value={birth || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setBirth(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <center>
-                    <ButtonGroup>
-                      {!isEdit ? (
-                        <Button
-                          variant="contained"
-                          startIcon={<IconDeviceFloppy />}
-                          size="large"
-                          style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CREATE_COLOR }}
-                          onClick={handleCreate}
-                        >
-                          {titles.buttonCreate}
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          startIcon={<IconPencil />}
-                          size="large"
-                          style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                          onClick={handleEdit}
-                        >
-                          {titles.buttonEdit}
-                        </Button>
-                      )}
-                      <Button
-                        variant="contained"
-                        startIcon={<IconCircleX />}
-                        size="large"
-                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CANCEL_COLOR }}
-                        onClick={handleCloseCreate}
-                      >
-                        {titles.buttonCancel}
-                      </Button>
-                    </ButtonGroup>
-                  </center>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
-
       <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.styleDelete}>
           <Typography id="modal-modal-title" variant="h2" component="h2">

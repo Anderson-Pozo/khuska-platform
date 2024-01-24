@@ -1,38 +1,34 @@
 import { useEffect, useState } from 'react';
-
 // material-ui
 import { Grid } from '@mui/material';
-
-// project imports
-import EarningCard from './Main/EarningCard';
-import PopularCard from './Main/PopularCard';
-import TotalUsersDarkCard from './Main/TotalUsersDarkCard';
+// data
 import { gridSpacing } from 'store/constant';
-
 //Firebase
-import { countUser, countCourses, countTotalIncomes } from 'config/firebaseEvents';
-import TotalSubscriptions from './Main/TotalSubscriptions';
-import TotalBusiness from './Main/TotalBusiness';
-import TotalClients from './Main/TotalClients';
+import { countActiveSubscriptions, countAdminUser, countBusiness, countUser } from 'config/firebaseEvents';
+//Components
+import TotalCard from 'components/cards/TotalCard';
+import TotalYellowCard from 'components/cards/TotalYellowCard';
+import EarningCard from 'components/cards/EarningCard';
+import EarningBlueCard from 'components/cards/EarningBlueCard';
 
 const Dashboard = () => {
-  const [isLoading, setLoading] = useState(true);
   const [totalUsers, setTotalUsers] = useState(null);
-  const [totalCourses, setTotalCourses] = useState(null);
-  const [totalIncomes, setTotalIncomes] = useState(null);
+  const [totalAdminUsers, setTotalAdminUsers] = useState(null);
+  const [totalSubs, setTotalSubs] = useState(null);
+  const [totalBusiness, setTotalBusiness] = useState(null);
 
   useEffect(() => {
-    setLoading(false);
     countUser().then((count) => {
       setTotalUsers(count);
     });
-
-    countCourses().then((count) => {
-      setTotalCourses(count);
+    countAdminUser().then((count) => {
+      setTotalAdminUsers(count);
     });
-
-    countTotalIncomes().then((count) => {
-      setTotalIncomes(count);
+    countActiveSubscriptions().then((count) => {
+      setTotalSubs(count);
+    });
+    countBusiness().then((count) => {
+      setTotalBusiness(count);
     });
   }, []);
 
@@ -40,45 +36,39 @@ const Dashboard = () => {
     <Grid container spacing={gridSpacing}>
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
-          <Grid item lg={4} md={12} sm={12} xs={6}>
-            <EarningCard isLoading={isLoading} totalIncomes={totalIncomes} />
-          </Grid>
-          <Grid item lg={2} md={12} sm={12} xs={6}>
+          <Grid item lg={3} md={12} sm={12} xs={12}>
             <Grid container spacing={gridSpacing}>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                <TotalUsersDarkCard isLoading={isLoading} totalUsers={totalUsers} />
+              <Grid item sm={6} xs={6} md={6} lg={12}>
+                <TotalCard total={totalUsers} detail="Usuarios Registrados" />
               </Grid>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                <TotalSubscriptions isLoading={isLoading} totalCourses={totalCourses} />
+              <Grid item sm={6} xs={6} md={6} lg={12}>
+                <TotalCard total={totalAdminUsers} detail="Administradores Registrados" />
               </Grid>
             </Grid>
           </Grid>
-          <Grid item lg={4} md={12} sm={12} xs={6}>
-            <TotalBusiness isLoading={isLoading} count={totalUsers} />
-          </Grid>
-          <Grid item lg={2} md={12} sm={12} xs={6}>
+          <Grid item lg={3} md={12} sm={12} xs={12}>
             <Grid container spacing={gridSpacing}>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                <TotalClients isLoading={isLoading} count={totalUsers} />
+              <Grid item sm={6} xs={6} md={6} lg={12}>
+                <TotalYellowCard total={totalSubs} detail="Subscripciones Activas" />
               </Grid>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                <TotalSubscriptions isLoading={isLoading} totalCourses={totalCourses} />
+              <Grid item sm={6} xs={6} md={6} lg={12}>
+                <TotalYellowCard total={totalBusiness} detail="Negocios Registrados" />
               </Grid>
             </Grid>
+          </Grid>
+          <Grid item lg={3} md={6} sm={6} xs={6}>
+            <EarningCard total={0} detail="Total de ingresos" />
+          </Grid>
+          <Grid item lg={3} md={6} sm={6} xs={6}>
+            <EarningBlueCard total={0} detail="Total de beneficio" />
           </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12} hidden>
         <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} md={4}>
-            <TotalBusiness isLoading={isLoading} />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TotalBusiness isLoading={isLoading} />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <PopularCard isLoading={isLoading} />
-          </Grid>
+          <Grid item xs={12} md={4}></Grid>
+          <Grid item xs={12} md={4}></Grid>
+          <Grid item xs={12} md={4}></Grid>
         </Grid>
       </Grid>
     </Grid>

@@ -15,6 +15,7 @@ export const titles = {
   menuCreate: 'Agregar Usuario',
   tableCell1: 'Nombre',
   tableCell2: 'Email',
+  tableCellC: 'Código',
   tableCell3: 'Perfil',
   tableCell4: 'Estado',
   tableCellActions: 'Acciones',

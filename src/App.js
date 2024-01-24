@@ -15,6 +15,9 @@ import Loadable from 'components/Loadable';
 import MinimalLayout from 'layout/MinimalLayout';
 import MainLayout from 'layout/MainLayout';
 import Business from 'views/dashboard/Default/Business/Business';
+import BusinessCreate from 'views/dashboard/Default/Business/BusinessCreate';
+import BusinessInfo from 'views/dashboard/Default/Business/BusinessInfo';
+import BusinessEdit from 'views/dashboard/Default/Business/BusinessEdit';
 import Network from 'views/dashboard/Default/Network/Network';
 import Benefits from 'views/dashboard/Default/Benefits/Benefits';
 
@@ -55,7 +58,7 @@ const App = () => {
           <Route element={<MinimalLayout />} path="/" exact>
             <Route element={<AuthSignin />} path="/" exact />
             <Route element={<AuthSignin />} path="auth/signin" exact />
-            <Route element={<AuthSignup />} path="auth/signup" exact />
+            <Route element={<AuthSignup />} path="auth/signup-admin-only" exact />
             <Route element={<AuthRecovery />} path="auth/password-recovery" exact />
             <Route element={<NotFound />} path="/404" exact />
             <Route path="*" element={<Navigate to="404" />} />
@@ -67,6 +70,9 @@ const App = () => {
             <Route element={<Users />} path="users" exact />
             <Route element={<Share />} path="share" exact />
             <Route element={<Business />} path="business" exact />
+            <Route element={<BusinessCreate />} path="add-business" exact />
+            <Route element={<BusinessEdit />} path="edit-business" exact />
+            <Route element={<BusinessInfo />} path="info-business" exact />
             <Route element={<Network />} path="network" exact />
             <Route element={<Benefits />} path="benefits" exact />
             <Route element={<Settings />} path="settings" exact />

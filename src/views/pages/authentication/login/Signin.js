@@ -1,25 +1,23 @@
-import { Link } from 'react-router-dom';
-
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
-import AuthWrapper1 from '../AuthWrapper1';
+import AuthWrapper from '../AuthWrapper';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthLogin from '../auth-forms/AuthLogin';
 import Logo from 'components/Logo-md';
 import AuthFooter from 'components/cards/AuthFooter';
 
 //Assets
-import bg01 from 'assets/images/06.webp';
+import bg01 from 'assets/images/bg/01.webp';
 
 const Signin = () => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <AuthWrapper1
+    <AuthWrapper
       style={{
         backgroundImage: `url(${bg01})`,
         backgroundPosition: 'center',
@@ -36,9 +34,7 @@ const Signin = () => {
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                   <Grid item>
-                    <Link to="#">
-                      <Logo />
-                    </Link>
+                    <Logo />
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
@@ -57,16 +53,6 @@ const Signin = () => {
                   <Grid item xs={12}>
                     <Divider />
                   </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h4" style={{ textAlign: 'center', marginBottom: 10 }}>
-                      Aún no tienes una cuenta?
-                    </Typography>
-                    <Grid item container direction="column" alignItems="center" xs={12}>
-                      <Typography component={Link} to="/auth/signup" variant="subtitle1" sx={{ textDecoration: 'none' }}>
-                        Regístrate
-                      </Typography>
-                    </Grid>
-                  </Grid>
                 </Grid>
               </AuthCardWrapper>
             </Grid>
@@ -76,7 +62,7 @@ const Signin = () => {
           <AuthFooter />
         </Grid>
       </Grid>
-    </AuthWrapper1>
+    </AuthWrapper>
   );
 };
 

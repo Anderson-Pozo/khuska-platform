@@ -8,7 +8,7 @@ import { IconCircleX, IconDeviceFloppy, IconEdit, IconMenu2, IconNotification, I
 import { uiStyles } from './Notifications.styles';
 import MessageDark from 'components/message/MessageDark';
 import { collGenNoti } from 'store/collections';
-import { createDocument, deleteDocument, getDocuments, updateDocument } from 'config/firebaseEvents';
+import { createGlobalNotification, deleteDocument, getGeneralNotifications, updateDocument } from 'config/firebaseEvents';
 import { genConst } from 'store/constant';
 import { titles, inputLabels } from './Notifications.texts';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -19,7 +19,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import * as Msg from 'store/message';
-import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
 
 const GeneralNotifications = () => {
@@ -36,12 +35,9 @@ const GeneralNotifications = () => {
   const [notId, setNotId] = React.useState(null);
 
   const getData = async () => {
-    const list = [];
-    const querySnapshot = await getDocuments(collGenNoti);
-    querySnapshot.forEach((doc) => {
-      list.push(doc.data());
+    getGeneralNotifications().then((list) => {
+      setDataList(list);
     });
-    setDataList(list);
   };
 
   useEffect(() => {
@@ -92,16 +88,7 @@ const GeneralNotifications = () => {
       toast.info(Msg.notcreinf, { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpenLoader(true);
-      const notificationId = generateId(10);
-      const object = {
-        id: notificationId,
-        avatar: null,
-        message: message,
-        by: genConst.CONST_ADM_NOT,
-        createAt: fullDate(),
-        state: genConst.CONST_STA_ACT
-      };
-      createDocument(collGenNoti, notificationId, object);
+      createGlobalNotification(message, titles.subjectNotif);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);

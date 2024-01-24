@@ -22,7 +22,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 //Firebase
 import { authentication } from 'config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { isSessionActive } from 'config/firebaseEvents';
+import { getAdmin, isSessionActive } from 'config/firebaseEvents';
 
 // third party
 import * as Yup from 'yup';
@@ -71,33 +71,42 @@ const AuthLogin = ({ ...others }) => {
         })}
         onSubmit={async (values) => {
           setOpen(true);
-          signInWithEmailAndPassword(authentication, values.email, values.password)
-            .then(() => {
+          await getAdmin(values.email).then((res) => {
+            if (!res) {
               setTimeout(() => {
                 setOpen(false);
-                navigate('/app/dashboard');
+                toast.error('Upsss! No tienes acceso a esta plataforma.', { position: toast.POSITION.TOP_RIGHT });
               }, 2000);
-            })
-            .catch((error) => {
-              setOpen(false);
-              if (error.code === 'auth/user-not-found') {
-                toast.error('Upsss! Usuario no encontrado. Por favor regístrate.', { position: toast.POSITION.TOP_RIGHT });
-              } else if (error.code === 'auth/wrong-password') {
-                toast.error('Upsss! Contraseña incorrecta.', { position: toast.POSITION.TOP_RIGHT });
-              } else if (error.code === 'auth/user-disabled') {
-                toast.error('Upsss! Tu cuenta se encuentra inhabilitada!.', { position: toast.POSITION.TOP_RIGHT });
-              } else if (error.code === 'auth/invalid-login-credentials') {
-                toast.error('Upsss! Datos de inicio de sesión no válidos!.', { position: toast.POSITION.TOP_RIGHT });
-              } else if (error.code === 'auth/internal-error') {
-                toast.error('Error interno, por favor comuniquese con el administrador del sistema!.', {
-                  position: toast.POSITION.TOP_RIGHT
+            } else {
+              signInWithEmailAndPassword(authentication, values.email, values.password)
+                .then(() => {
+                  setTimeout(() => {
+                    setOpen(false);
+                    navigate('/app/dashboard');
+                  }, 2000);
+                })
+                .catch((error) => {
+                  setOpen(false);
+                  if (error.code === 'auth/user-not-found') {
+                    toast.error('Upsss! Usuario no encontrado. Por favor regístrate.', { position: toast.POSITION.TOP_RIGHT });
+                  } else if (error.code === 'auth/wrong-password') {
+                    toast.error('Upsss! Contraseña incorrecta.', { position: toast.POSITION.TOP_RIGHT });
+                  } else if (error.code === 'auth/user-disabled') {
+                    toast.error('Upsss! Tu cuenta se encuentra inhabilitada!.', { position: toast.POSITION.TOP_RIGHT });
+                  } else if (error.code === 'auth/invalid-login-credentials') {
+                    toast.error('Upsss! Datos de inicio de sesión no válidos!.', { position: toast.POSITION.TOP_RIGHT });
+                  } else if (error.code === 'auth/internal-error') {
+                    toast.error('Error interno, por favor comuniquese con el administrador del sistema!.', {
+                      position: toast.POSITION.TOP_RIGHT
+                    });
+                  } else if (error.code === 'auth/network-request-failed') {
+                    toast.error('Error en la red, por favor intente más tarde!.', { position: toast.POSITION.TOP_RIGHT });
+                  } else {
+                    console.log(error);
+                  }
                 });
-              } else if (error.code === 'auth/network-request-failed') {
-                toast.error('Error en la red, por favor intente más tarde!.', { position: toast.POSITION.TOP_RIGHT });
-              } else {
-                console.log(error);
-              }
-            });
+            }
+          });
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (

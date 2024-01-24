@@ -21,7 +21,10 @@ export const moddelsucc = 'Modulo eliminado correctamente!.';
 
 export const usrcresucc = 'Usuario matriculado correctamente!.';
 
+export const notifadmin = 'KHUSKA ADMIN';
 export const notcresucc = 'Notificación generada correctamente!.';
 export const notupdsucc = 'Notificación actualizada correctamente!.';
 export const notdelsucc = 'Notificación eliminada correctamente!.';
 export const notcreinf = 'Debe ingresar el mensaje de la notificación!.';
+
+export const msgSubState = 'Debes tener una subscripción activa para difrutar de los beneficios de KHUSKA!';

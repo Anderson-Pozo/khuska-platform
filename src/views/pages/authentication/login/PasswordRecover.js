@@ -5,21 +5,21 @@ import { useTheme } from '@mui/material/styles';
 import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
-import AuthWrapper1 from '../AuthWrapper1';
+import AuthWrapper from '../AuthWrapper';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthRecover from '../auth-forms/AuthRecover';
 import Logo from 'components/Logo-md';
 import AuthFooter from 'components/cards/AuthFooter';
 
 //Assets
-import bg01 from 'assets/images/03.webp';
+import bg01 from 'assets/images/bg/03.webp';
 
 const PasswordRecover = () => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <AuthWrapper1
+    <AuthWrapper
       style={{
         backgroundImage: `url(${bg01})`,
         backgroundPosition: 'center',
@@ -36,9 +36,7 @@ const PasswordRecover = () => {
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                   <Grid item sx={{ mb: 3 }}>
-                    <Link to="#">
-                      <Logo />
-                    </Link>
+                    <Logo />
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
@@ -76,7 +74,7 @@ const PasswordRecover = () => {
           <AuthFooter />
         </Grid>
       </Grid>
-    </AuthWrapper1>
+    </AuthWrapper>
   );
 };
 

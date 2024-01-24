@@ -333,8 +333,8 @@ const UserNotifications = () => {
                   <FormControl fullWidth>
                     <TextField id="users" name="users" select label="* Selecciona el Usuario" defaultValue="" onChange={handleChange}>
                       {userList.map((option) => (
-                        <MenuItem key={option.id} value={option.id} name={option.name}>
-                          {option.name}
+                        <MenuItem key={option.id} value={option.id} name={option.name + ' ' + option.lastName}>
+                          {option.name + ' ' + option.lastName}
                         </MenuItem>
                       ))}
                     </TextField>
