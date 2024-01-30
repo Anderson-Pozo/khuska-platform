@@ -69,6 +69,18 @@ export default function BusinessCreate() {
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
   const [picture4, setPicture4] = useState({ preview: '', raw: '' });
 
+  /*const [url0, setUrl0] = useState(null);
+  const [url1, setUrl1] = useState(null);
+  const [url2, setUrl2] = useState(null);
+  const [url3, setUrl3] = useState(null);
+  const [url4, setUrl4] = useState(null);
+
+  const [isChange0, setIsChange0] = useState(false);
+  const [isChange1, setIsChange1] = useState(false);
+  const [isChange2, setIsChange2] = useState(false);
+  const [isChange3, setIsChange3] = useState(false);
+  const [isChange4, setIsChange4] = useState(false);*/
+
   React.useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {

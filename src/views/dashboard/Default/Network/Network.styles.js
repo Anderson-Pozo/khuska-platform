@@ -16,9 +16,9 @@ export const uiStyles = {
     p: 4
   },
   imagePic: { width: 50, height: 50, borderRadius: '50%' },
-  stateActive: { marginTop: -10, color: '#5ABD7C', fontSize: 12 },
-  stateNoActive: { marginTop: -10, color: '#EB635D', fontSize: 12 },
-  name: { marginTop: 2, fontSize: 11 },
-  email: { marginTop: -10, fontSize: 11 },
-  btn: { width: 140 }
+  stateActive: { marginTop: -10, color: '#5ABD7C' },
+  stateNoActive: { marginTop: -10, color: '#EB635D' },
+  name: { marginTop: 2 },
+  email: { marginTop: -10 },
+  btn: { width: 250 }
 };

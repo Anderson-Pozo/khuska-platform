@@ -60,7 +60,7 @@ const ProfileSection = () => {
   const handleLogout = async () => {
     signOut(auth)
       .then(() => {
-        navigate('/auth/signin');
+        navigate('/auth/signin-admin');
       })
       .catch((error) => {
         console.log(error);

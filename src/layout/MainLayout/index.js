@@ -68,7 +68,7 @@ const MainLayout = () => {
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (!user) {
-        navigate('/auth/signin');
+        navigate('/admin/signin');
       } else {
         getProfileUserAdmin(user.uid)
           .then((profile) => {

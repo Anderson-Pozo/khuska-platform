@@ -1,7 +1,7 @@
 const config = {
   version: '1.0.0',
   basename: '/',
-  defaultPath: '/auth/signin',
+  defaultPath: '/',
   fontFamily: `'Montserrat', sans-serif`,
   borderRadius: 15,
   outlinedFilled: true,

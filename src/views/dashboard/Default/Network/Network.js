@@ -28,7 +28,6 @@ import Title from 'components/message/Title';
 import NetworkChild from './NetworkChild';
 import { titles } from './Network.texts';
 import { uiStyles } from './Network.styles';
-import logo from 'assets/images/khuska/LogoKhuskaWhite.png';
 
 const Network = () => {
   //Lists
@@ -41,6 +40,9 @@ const Network = () => {
   const [showL3, setShowL3] = React.useState(false);
   const [showL4, setShowL4] = React.useState(false);
   //Variables
+  const [userRefer, setUserRefer] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const [utlAvatar, setUrlAvatar] = useState(null);
   const [open, setOpen] = React.useState(false);
   const stateSub = useGetSubscriptionState();
 
@@ -48,28 +50,35 @@ const Network = () => {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
         setOpen(true);
-        const childs = [];
-        const q = query(collection(db, collUsers), where('refer', '==', null));
+        const q = query(collection(db, collUsers), where('id', '==', user.uid));
         const querySnapshot = await getDocs(q);
-        if (querySnapshot.size > 0) {
-          querySnapshot.forEach((doc) => {
-            childs.push(doc.data());
-          });
-          setChildsList(childs);
-          setChildsListL2([]);
-          setChildsListL3([]);
-          setChildsListL4([]);
-          setShowL2(false);
-          setShowL3(false);
-          setShowL4(false);
-        } else {
-          setChildsListL2([]);
-          setChildsListL3([]);
-          setChildsListL4([]);
-          setShowL2(false);
-          setShowL3(false);
-          setShowL4(false);
-        }
+        querySnapshot.forEach(async (doc) => {
+          setUserState(doc.data().state);
+          setUserRefer(doc.data().ownReferal);
+          setUrlAvatar(doc.data().avatar);
+          const childs = [];
+          const q = query(collection(db, collUsers), where('refer', '==', doc.data().ownReferal));
+          const querySnapshot = await getDocs(q);
+          if (querySnapshot.size > 0) {
+            querySnapshot.forEach((doc) => {
+              childs.push(doc.data());
+            });
+            setChildsList(childs);
+            setChildsListL2([]);
+            setChildsListL3([]);
+            setChildsListL4([]);
+            setShowL2(false);
+            setShowL3(false);
+            setShowL4(false);
+          } else {
+            setChildsListL2([]);
+            setChildsListL3([]);
+            setChildsListL4([]);
+            setShowL2(false);
+            setShowL3(false);
+            setShowL4(false);
+          }
+        });
       }
       setTimeout(() => {
         setOpen(false);
@@ -136,7 +145,8 @@ const Network = () => {
     <div>
       {stateSub == genConst.CONST_SUB_STATE_ACTIVE ? (
         <>
-          <Title message={titles.title} submessage={''} avatar={logo} />
+          <Title message={titles.title} submessage={titles.ref + userRefer} avatar={utlAvatar} />
+          <div hidden>{userState}</div>
           <Box>
             <Grid container spacing={gridSpacing}>
               <Grid item xs={12}>

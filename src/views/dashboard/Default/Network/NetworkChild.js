@@ -10,9 +10,7 @@ const NetworkChild = ({ avatar, name, lastName, email, state }) => {
     <center>
       <img style={uiStyles.imagePic} src={avatar || defaultImg} alt={titles.altImage} />
       <p style={uiStyles.name}>{name + ' ' + lastName}</p>
-      <p style={uiStyles.email} hidden>
-        {email}
-      </p>
+      <p style={uiStyles.email}>{email}</p>
       {state == genConst.CONST_STATE_IN ? (
         <p style={uiStyles.stateNoActive}>{titles.noActive}</p>
       ) : (

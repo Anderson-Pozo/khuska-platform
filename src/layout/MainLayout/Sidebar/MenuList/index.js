@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
 // project imports
 import NavGroup from './NavGroup';
-import menuItem from 'layout/menu-items';
+import menuItem from 'layout/menu-admin-items';
 
 const MenuList = () => {
   const navItems = menuItem.items.map((item) => {

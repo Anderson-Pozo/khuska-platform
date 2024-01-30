@@ -5,7 +5,7 @@ export const appDrawerWidth = 320;
 
 export const genConst = {
   CONST_PRO_ADM: 1001,
-  CONST_PRO_STU: 2002,
+  CONST_PRO_DEF: 2002,
   CONST_PRO_VIS: 3003,
   CONST_ADM_NOT: 'Administrador del Sistema',
   CONST_PRO_ADM_TXT: 'Administrador',
@@ -18,6 +18,10 @@ export const genConst = {
   CONST_STATE_PN: 2,
   CONST_NOTIF_NL: 0,
   CONST_NOTIF_LE: 1,
+  CONST_SUB_STATE_INACTIVE: 0,
+  CONST_SUB_STATE_ACTIVE: 1,
+  CONST_SUB_STATE_ACT_TEXT: 'ACTIVA',
+  CONST_SUB_STATE_INA_TEXT: 'INACTIVA',
   CONST_STA_ACT_TXT: 'Activo',
   CONST_STA_INACT_TXT: 'Inactivo',
   CONST_EXT_IMAGE: '.jpg',

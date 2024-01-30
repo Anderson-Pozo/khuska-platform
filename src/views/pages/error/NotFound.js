@@ -6,8 +6,8 @@ import 'react-credit-cards/es/styles-compiled.css';
 import { Button, Grid, Typography } from '@mui/material';
 
 // project imports
-import AuthWrapper from '../authentication/AuthWrapper';
-import AuthCardWrapper from '../authentication/AuthCardWrapper';
+import AuthWrapper from '../login/AuthWrapper';
+import AuthCardWrapper from '../login/AuthCardWrapper';
 import AuthFooter from 'components/cards/AuthFooter';
 
 // Firebase

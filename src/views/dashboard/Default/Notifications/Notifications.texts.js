@@ -13,8 +13,7 @@ export const titles = {
   buttonCancel: 'Cancelar',
   buttonClose: 'Cerrar',
   buttonExport: 'Exportar',
-  buttonImport: 'Importar',
-  subjectNotif: 'Notificación Admin'
+  buttonImport: 'Importar'
 };
 
 export const inputLabels = {

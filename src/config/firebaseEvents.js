@@ -7,6 +7,7 @@ import {
   collBusiness,
   collCourses,
   collGenNoti,
+  collIncomes,
   collLog,
   collSubscription,
   collUsers,
@@ -140,13 +141,32 @@ export const getGeneralNotifications = async () => {
   });
   return list;
 };
+export async function getUserNotifications(id) {
+  const list = [];
+  const q = query(collection(db, collUsrNoti), where('idUser', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+}
 //Obtenemos la lista de Usuarios Administradores
 export const getAdminUsersData = async () => {
   const list = [];
-  const querySnapshot = await getDocs(collection(db, collAdminUsers));
+  const q = query(collection(db, collUsers), where('profile', '==', genConst.CONST_PRO_ADM));
+  const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     list.push(doc.data());
-    list.sort((a, b) => a.name.localeCompare(b.name));
+  });
+  return list;
+};
+//Obtenemos la lista de Usuarios Administradores
+export const getUsersList = async () => {
+  const list = [];
+  const q = query(collection(db, collUsers), where('profile', '==', genConst.CONST_PRO_DEF));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
   });
   return list;
 };
@@ -190,6 +210,15 @@ export async function getUserName(id) {
   });
   return name;
 }
+export async function getBusinessListByUser(id) {
+  let data = [];
+  const q = query(collection(db, collBusiness), where('userId', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
 
 //STADISTICS COUNT ITEMS
 //Obtenemos cantidad de Usuarios Registrados
@@ -220,6 +249,11 @@ export async function countBusinessById(id) {
   const count = querySnapshot.size;
   return count;
 }
+export async function countBusinessByUserId(id) {
+  const q = query(collection(db, collBusiness), where('userId', '==', id));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.size;
+}
 //Obtenemos cantidad de Cursos Registrados
 export const countCourses = async () => {
   const coursesCollection = collection(db, collCourses);
@@ -234,6 +268,12 @@ export const countSubscriptions = async () => {
   const subsCount = querySnapshot.size;
   return subsCount;
 };
+export const countTotalIncomes = async () => {
+  const totalCollection = collection(db, collIncomes);
+  const querySnapshot = await getDocs(totalCollection);
+  const incomesCount = querySnapshot.size;
+  return incomesCount;
+};
 //Obtenemos cantidad de Subscripciones Activas Registradas
 export async function countActiveSubscriptions() {
   const q = query(collection(db, collSubscription), where('state', '==', 1));
@@ -245,7 +285,7 @@ export async function countActiveSubscriptions() {
 //Buscamos si correo corresponde a Administrador
 export const getAdmin = async (mail) => {
   let isFind = false;
-  const q = query(collection(db, collAdminUsers), where('email', '==', mail));
+  const q = query(collection(db, collUsers), where('email', '==', mail), where('profile', '==', genConst.CONST_PRO_ADM));
   const querySnapshot = await getDocs(q);
   if (querySnapshot.size > 0) {
     isFind = true;
@@ -253,4 +293,60 @@ export const getAdmin = async (mail) => {
     isFind = false;
   }
   return isFind;
+};
+
+export async function getUserState(id) {
+  let state = null;
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    state = doc.data().state;
+  });
+  return state;
+}
+
+export async function getUserData(id) {
+  let data = [];
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
+
+export async function getUserChilds(refer) {
+  let data = [];
+  const q = query(collection(db, collUsers), where('refer', '==', refer));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
+
+export async function getUserCourses(id) {
+  let courses = [];
+  const q = query(collection(db, collRegUsr), where('idIUser', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    courses.push(doc.data());
+  });
+  return courses;
+}
+
+export const getUserDataObject = () => {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(
+      authentication,
+      (user) => {
+        if (user) {
+          resolve(user);
+        } else {
+          resolve(null);
+        }
+      },
+      reject
+    );
+  });
 };

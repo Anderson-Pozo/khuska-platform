@@ -184,119 +184,118 @@ export default function BusinessInfo() {
           </Toolbar>
         </Container>
       </AppBar>
-      <Box>
-        <Grid container spacing={1} style={{ marginTop: 5 }}>
-          <Grid item lg={6} xs={12}>
-            <Grid container spacing={0}>
-              <Grid item xs={12}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <h2>{name}</h2>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Responsable:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{owner}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Descripción:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{description}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Teléfono:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{phone}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Email:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{email}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Provincia / Ciudad:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{province + ' / ' + city}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Dirección:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{address}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Página Web:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item xs={8}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <span>{webPage}</span>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                  <strong>Redes Sociales:</strong>
-                </FormControl>
-              </Grid>
-              <Grid item alignItems="center" xs={10}>
-                <center>
-                  <a href={facebook} target="blank" style={{ padding: 10 }}>
-                    <IconBrandFacebook size={40} />
-                  </a>
-                  <a href={instagram} target="blank" style={{ padding: 10 }}>
-                    <IconBrandInstagram size={40} />
-                  </a>
-                  <a href={youtube} target="blank" style={{ padding: 10 }}>
-                    <IconBrandYoutube size={40} />
-                  </a>
-                </center>
-              </Grid>
+
+      <Grid container spacing={1} style={{ marginTop: 5 }}>
+        <Grid item lg={6} xs={12}>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <h2>{name}</h2>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Responsable:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{owner}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Descripción:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{description}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Teléfono:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{phone}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Email:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{email}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Provincia / Ciudad:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{province + ' / ' + city}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Dirección:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{address}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Página Web:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <span>{webPage}</span>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <strong>Redes Sociales:</strong>
+              </FormControl>
+            </Grid>
+            <Grid item alignItems="center" xs={10}>
+              <center>
+                <a href={facebook} target="blank" style={{ padding: 10 }}>
+                  <IconBrandFacebook size={40} />
+                </a>
+                <a href={instagram} target="blank" style={{ padding: 10 }}>
+                  <IconBrandInstagram size={40} />
+                </a>
+                <a href={youtube} target="blank" style={{ padding: 10 }}>
+                  <IconBrandYoutube size={40} />
+                </a>
+              </center>
             </Grid>
           </Grid>
-          <Grid item lg={6} xs={12}>
-            <center>
-              <ImageGallery
-                items={images}
-                autoPlay
-                showPlayButton={false}
-                showNav={false}
-                showFullscreenButton={false}
-                slideInterval={5000}
-              />
-            </center>
-          </Grid>
         </Grid>
-      </Box>
+        <Grid item lg={6} xs={12}>
+          <center>
+            <ImageGallery
+              items={images}
+              autoPlay
+              showPlayButton={false}
+              showNav={false}
+              showFullscreenButton={false}
+              slideInterval={5000}
+            />
+          </center>
+        </Grid>
+      </Grid>
     </div>
   );
 }

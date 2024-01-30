@@ -48,6 +48,7 @@ export const titles = {
   logoImg: 'Click en la imagen para agregar logotipo',
   addUserCourseTitle: 'Usuarios Matriculados en ',
   searchLabel: 'Buscar Usuario: ',
+  placeholderSearch: 'Buscar por Nombre o Correo',
   tableCell1: 'Nombre',
   tableCell2: 'Email',
   tableActions: 'Acciones',
@@ -73,6 +74,5 @@ export const inputLabels = {
   youtube: 'Link de Youtube',
   telegram: 'Link de Telegram',
   search: 'Buscar por nombre de negocio',
-  validation: 'Puedes registrar hasta 3 negocios!',
-  placeHolderSearch: 'Buscar por nombre de Negocio'
+  validation: 'Puedes registrar hasta 3 negocios!'
 };

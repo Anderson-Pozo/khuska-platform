@@ -1,5 +1,5 @@
 export const titles = {
-  title: 'Red de Negocios',
+  title: 'Mi Red de Negocios',
   ref: 'Código de Referido: ',
   level1: 'Nivel 1',
   level2: 'Nivel 2',
