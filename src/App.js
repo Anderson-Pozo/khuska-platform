@@ -24,9 +24,9 @@ const Search = Loadable(lazy(() => import('views/home/Search')));
 // Error
 const NotFound = Loadable(lazy(() => import('views/pages/error/NotFound')));
 // admin Login
-const AdminSignin = Loadable(lazy(() => import('views/pages/login/login/SigninAdmin')));
-const AdminSignup = Loadable(lazy(() => import('views/pages/login/login/SignupAdmin')));
-const AdminRecovery = Loadable(lazy(() => import('views/pages/login/login/PasswordRecoverAdmin')));
+//const AdminSignin = Loadable(lazy(() => import('views/pages/login/login/SigninAdmin')));
+//const AdminSignup = Loadable(lazy(() => import('views/pages/login/login/SignupAdmin')));
+//const AdminRecovery = Loadable(lazy(() => import('views/pages/login/login/PasswordRecoverAdmin')));
 // dashboard Admin
 const DashboardAdmin = Loadable(lazy(() => import('views/dashboard/Admin')));
 // dashboard Profile
@@ -114,9 +114,6 @@ const App = () => {
             <Route element={<AuthInscription />} path="inscription" exact />
             <Route element={<AuthPayment />} path="payment" exact />
             <Route element={<AuthPaymentMethods />} path="payment-methods" exact />
-            <Route element={<AdminSignin />} path="signin-admin" exact />
-            <Route element={<AdminSignup />} path="signup-admin" exact />
-            <Route element={<AdminRecovery />} path="password-recovery-admin" exact />
             <Route element={<NotFound />} path="404" exact />
             <Route path="*" element={<Navigate to="404" />} />
           </Route>

@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -18,29 +17,22 @@ import {
   Modal
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-
 //Firebase
 import { authentication } from 'config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { isSessionActive } from 'config/firebaseEvents';
-
-//Logs
-//import { createLogRecordWithId } from 'config/firebaseEvents';
-
+import { getProfileUser, isSessionActive } from 'config/firebaseEvents';
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
 // project imports
 import AnimateButton from 'components/extended/AnimateButton';
-
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { genConst } from 'store/constant';
 
 const AuthLogin = ({ ...others }) => {
   let navigate = useNavigate();
@@ -75,11 +67,18 @@ const AuthLogin = ({ ...others }) => {
         onSubmit={async (values) => {
           setOpen(true);
           signInWithEmailAndPassword(authentication, values.email, values.password)
-            .then(() => {
+            .then((userCredencials) => {
+              const user = userCredencials.user;
               //createLogRecordWithId(ide, { details: LogMsg.logclicre, createAt: fullDate(), object: obj });
               setTimeout(() => {
                 setOpen(false);
-                navigate('/app/dashboard');
+                getProfileUser(user.uid).then((pro) => {
+                  if (pro == genConst.CONST_PRO_ADM) {
+                    navigate('/main/dashboard');
+                  } else {
+                    navigate('/app/dashboard');
+                  }
+                });
               }, 2000);
             })
             .catch((error) => {
