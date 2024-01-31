@@ -17,6 +17,7 @@ import { genConst } from 'store/constant';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { getProfileUser } from 'config/firebaseEvents';
+import SearchLayout from 'layout/SearchLayout';
 
 // Main Portal
 const Home = Loadable(lazy(() => import('views/home/Home')));
@@ -105,6 +106,8 @@ const App = () => {
         <Routes>
           <Route element={<HomeLayout />} path="/" exact>
             <Route element={<Home />} path="/" exact />
+          </Route>
+          <Route element={<SearchLayout />} path="/net" exact>
             <Route element={<Search />} path="search" exact />
           </Route>
           <Route element={<MinimalLayout />} path="/auth" exact>
