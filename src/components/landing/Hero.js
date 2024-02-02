@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function Hero({ checked }) {
   return (
-    <Collapse in={checked} {...(checked ? { timeout: 1000 } : {})} collapsedHeight={50}>
+    <Collapse in={checked} {...(checked ? { timeout: 1000 } : {})} collapsedSize={50}>
       <div style={uiStyles.container}>
         <h3 style={uiStyles.title}>
           JUNTOS HACIA LA CONSTRUCCIÓN

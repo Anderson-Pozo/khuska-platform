@@ -1,28 +1,26 @@
-// project imports
-import Header from 'components/search/Header';
-import hero from 'assets/images/search/bg1.jpg';
-import { CssBaseline } from '@mui/material';
-import Footer from 'components/search/Footer';
+import { Outlet } from 'react-router-dom';
+import Header from './Header';
+import bg from 'assets/images/search/bg.jpg';
 
-const SearchLayout = () => (
-  <div>
-    <CssBaseline />
-    <div style={{ background: 'rgba(0,0,0,0.9)' }}>
-      <div
-        style={{
-          backgroundImage: `url(${hero})`,
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          margin: 0,
-          padding: 0
-        }}
-      >
-        <Header />
+const SearchLayout = () => {
+  return (
+    <div
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        margin: 0,
+        padding: 0,
+        height: '100vh'
+      }}
+    >
+      <Header />
+      <div style={{ marginTop: 75 }}>
+        <Outlet />
       </div>
     </div>
-    <Footer />
-  </div>
-);
+  );
+};
 
 export default SearchLayout;

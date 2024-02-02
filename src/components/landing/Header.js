@@ -13,7 +13,8 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  IconButton
+  IconButton,
+  Avatar
 } from '@mui/material';
 import { uiStyles } from './styles';
 import { Link as Scroll } from 'react-scroll';
@@ -23,11 +24,13 @@ import { Box } from '@mui/system';
 import Hero from './Hero';
 import logo from 'assets/images/khuska/logo.png';
 import { IconSearch } from '@tabler/icons';
+import defaultAvatar from 'assets/images/profile/profile-picture-6.jpg';
 
 const drawerWidth = 240;
 
 function Header(props) {
   let navigate = useNavigate();
+  let isLoggin = false;
   const { window } = props;
   const [checked, setChecked] = useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -104,33 +107,50 @@ function Header(props) {
       <CssBaseline />
       <AppBar style={uiStyles.appbar} elevation={0} component="nav">
         <Toolbar style={uiStyles.appbarWrapper}>
-          <h1 style={uiStyles.appbarTitle}>
-            <img src={logo} alt="logobrand" width={160} />
-          </h1>
+          <div style={uiStyles.appbarTitle}>
+            <Link to="/">
+              <img src={logo} alt="logobrand" width={160} />
+            </Link>
+          </div>
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
             <Scroll to="header" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 0, fontSize: 17 }}>Inicio</Button>
+              <Button sx={{ color: '#fff', marginLeft: 0, fontSize: 15 }}>Inicio</Button>
             </Scroll>
             <Scroll to="about" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 17 }}>Somos</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 15 }}>Somos</Button>
             </Scroll>
             <Scroll to="benefits" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 17 }}>Beneficios</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 15 }}>Beneficios</Button>
             </Scroll>
             <Scroll to="contacts" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 17 }}>Contáctanos</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 15 }}>Contáctanos</Button>
             </Scroll>
           </Box>
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, marginRight: 3, cursor: 'pointer' }}>
             <Typography component={Link} to="/net/search" sx={{ textDecoration: 'none' }}>
-              <IconSearch color="#FFF" />
+              <IconSearch color="#FFF" size={20} />
             </Typography>
           </Box>
-          <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
-            <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} style={{ width: 120, fontSize: 17 }}>
-              Login
-            </Button>
-          </Box>
+          {isLoggin ? (
+            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }} onClick={handleGoTo}>
+              <List>
+                <ListItem disablePadding>
+                  <ListItemButton>
+                    <Avatar alt="avatar user" src={defaultAvatar} sx={{ width: 45, height: 45, marginRight: 1 }} />
+                    <p style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }} hidden>
+                      Usuario
+                    </p>
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </Box>
+          ) : (
+            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+              <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} style={{ width: 120, fontSize: 15 }}>
+                Login
+              </Button>
+            </Box>
+          )}
           <IconButton
             color="inherit"
             aria-label="open drawer"

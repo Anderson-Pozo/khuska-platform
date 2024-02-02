@@ -12,22 +12,19 @@ import MinimalLayout from 'layout/MinimalLayout';
 import MainLayout from 'layout/MainLayout';
 import HomeLayout from 'layout/HomeLayout';
 import DefaultLayout from 'layout/DefaultLayout';
+import SearchLayout from 'layout/SearchLayout';
 import { genConst } from 'store/constant';
 //Firebase
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { getProfileUser } from 'config/firebaseEvents';
-import SearchLayout from 'layout/SearchLayout';
 
 // Main Portal
 const Home = Loadable(lazy(() => import('views/home/Home')));
 const Search = Loadable(lazy(() => import('views/home/Search')));
+const BusinessSearch = Loadable(lazy(() => import('views/home/Search')));
 // Error
 const NotFound = Loadable(lazy(() => import('views/pages/error/NotFound')));
-// admin Login
-//const AdminSignin = Loadable(lazy(() => import('views/pages/login/login/SigninAdmin')));
-//const AdminSignup = Loadable(lazy(() => import('views/pages/login/login/SignupAdmin')));
-//const AdminRecovery = Loadable(lazy(() => import('views/pages/login/login/PasswordRecoverAdmin')));
 // dashboard Admin
 const DashboardAdmin = Loadable(lazy(() => import('views/dashboard/Admin')));
 // dashboard Profile
@@ -109,6 +106,7 @@ const App = () => {
           </Route>
           <Route element={<SearchLayout />} path="/net" exact>
             <Route element={<Search />} path="search" exact />
+            <Route element={<BusinessSearch />} path="business-info" exact />
           </Route>
           <Route element={<MinimalLayout />} path="/auth" exact>
             <Route element={<AuthSignin />} path="signin" exact />

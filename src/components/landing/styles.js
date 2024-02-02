@@ -19,10 +19,11 @@ export const uiStyles = {
     padding: 40
   },
   appbar: {
-    background: 'none'
+    background: 'rgba(255,255,255,0.4)',
+    height: 75
   },
   appbarWrapper: {
-    width: '80%',
+    width: '92%',
     margin: '0 auto'
   },
   appbarTitle: {

@@ -1,9 +1,6 @@
 export const uiStyles = {
   root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh'
+    display: 'flex'
   },
   rootImage: {
     minHeight: '100vh',
@@ -11,18 +8,12 @@ export const uiStyles = {
     justifyContent: 'center',
     alignItems: 'center'
   },
-  rootContact: {
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40
-  },
   appbar: {
-    background: 'none'
+    background: 'rgba(255,255,255,0.4)',
+    height: 75
   },
   appbarWrapper: {
-    width: '80%',
+    width: '92%',
     margin: '0 auto'
   },
   appbarTitle: {
@@ -41,19 +32,21 @@ export const uiStyles = {
   },
   title: {
     color: '#fff',
-    fontSize: '2.5rem'
+    fontSize: '1.2rem'
   },
   goDown: {
     color: '#9f98c2',
     fontSize: '4rem'
   },
   rootPlace: {
-    maxWidth: 645,
-    background: 'rgba(0,0,0,0.7)',
-    margin: '20px'
+    maxWidth: 400,
+    background: 'rgba(0,0,0,0.5)',
+    margin: 0
   },
   media: {
-    height: 300
+    width: 120,
+    height: 100,
+    marginTop: 10
   },
   mediaBenefit: {
     height: 200
@@ -62,15 +55,15 @@ export const uiStyles = {
     height: 200
   },
   contentAbout: {
-    height: 200
+    height: '100%'
   },
   titlePlace: {
     fontWeight: 'bold',
-    fontSize: '1.5rem',
+    fontSize: '.8rem',
     color: '#fff'
   },
   descPlace: {
-    fontSize: '1rem',
+    fontSize: '.7rem',
     color: '#ddd'
   },
   titlePlaceBenefit: {
