@@ -22,7 +22,7 @@ import { getProfileUser } from 'config/firebaseEvents';
 // Main Portal
 const Home = Loadable(lazy(() => import('views/home/Home')));
 const Search = Loadable(lazy(() => import('views/home/Search')));
-const BusinessSearch = Loadable(lazy(() => import('views/home/Search')));
+const BusinessInfoSearch = Loadable(lazy(() => import('views/home/BusinessInfo')));
 // Error
 const NotFound = Loadable(lazy(() => import('views/pages/error/NotFound')));
 // dashboard Admin
@@ -40,6 +40,8 @@ const BusinessInfo = Loadable(lazy(() => import('views/dashboard/Admin/Business/
 const BusinessEdit = Loadable(lazy(() => import('views/dashboard/Admin/Business/BusinessEdit')));
 // dashboard Network
 const Network = Loadable(lazy(() => import('views/dashboard/Admin/Network/Network')));
+// dashboard Mail
+const Mail = Loadable(lazy(() => import('views/dashboard/Admin/Mail/Mail')));
 // dashboard Benefits
 const Benefits = Loadable(lazy(() => import('views/dashboard/Admin/Benefits/Benefits')));
 // dashboard Clients
@@ -106,7 +108,7 @@ const App = () => {
           </Route>
           <Route element={<SearchLayout />} path="/net" exact>
             <Route element={<Search />} path="search" exact />
-            <Route element={<BusinessSearch />} path="business-info" exact />
+            <Route element={<BusinessInfoSearch />} path="business-info" exact />
           </Route>
           <Route element={<MinimalLayout />} path="/auth" exact>
             <Route element={<AuthSignin />} path="signin" exact />
@@ -132,6 +134,7 @@ const App = () => {
               <Route element={<Network />} path="network" exact />
               <Route element={<Benefits />} path="benefits" exact />
               <Route element={<Settings />} path="settings" exact />
+              <Route element={<Mail />} path="mail" exact />
               <Route element={<Notifications />} path="notifications" exact />
               <Route element={<UserProfile />} path="user-profile" exact />
               <Route element={<UserContact />} path="user-contact" exact />

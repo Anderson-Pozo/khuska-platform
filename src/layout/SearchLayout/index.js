@@ -1,15 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
-import bg from 'assets/images/search/bg.jpg';
 
 const SearchLayout = () => {
   return (
     <div
       style={{
-        backgroundImage: `url(${bg})`,
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
+        background: 'rgba(0,0,0,0.2)',
         margin: 0,
         padding: 0,
         height: '100vh'

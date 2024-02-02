@@ -9,6 +9,7 @@ import {
   collGenNoti,
   collIncomes,
   collLog,
+  collMail,
   collSubscription,
   collUsers,
   collUsrNoti
@@ -145,6 +146,14 @@ export async function getUserNotifications(id) {
   const list = [];
   const q = query(collection(db, collUsrNoti), where('idUser', '==', id));
   const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+}
+export async function getMail() {
+  const list = [];
+  const querySnapshot = await getDocuments(collMail);
   querySnapshot.forEach((doc) => {
     list.push(doc.data());
   });

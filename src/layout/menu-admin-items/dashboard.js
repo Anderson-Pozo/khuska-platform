@@ -63,20 +63,6 @@ const dashboard = {
       type: 'item',
       url: '/main/business',
       icon: icons.IconBuilding
-    },
-    {
-      id: 'share',
-      title: 'Compartir',
-      type: 'item',
-      url: '/main/share',
-      icon: icons.IconShare
-    },
-    {
-      id: 'notifications',
-      title: 'Notificaciones',
-      type: 'item',
-      url: '/main/notifications',
-      icon: icons.IconBell
     }
   ]
 };

@@ -1,13 +1,12 @@
 // assets
-import { IconKey, IconBell, IconMail, IconSettings, IconSettings2 } from '@tabler/icons';
+import { IconBell, IconSettings, IconMailbox, IconMail } from '@tabler/icons';
 
 // constant
 const icons = {
-  IconKey,
-  IconBell,
-  IconMail,
+  IconMailbox,
   IconSettings,
-  IconSettings2
+  IconMail,
+  IconBell
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -23,6 +22,20 @@ const pages = {
       type: 'item',
       url: '/main/settings',
       icon: icons.IconSettings
+    },
+    {
+      id: 'mail',
+      title: 'Mail',
+      type: 'item',
+      url: '/main/mail',
+      icon: icons.IconMail
+    },
+    {
+      id: 'notifications',
+      title: 'Notificaciones',
+      type: 'item',
+      url: '/main/notifications',
+      icon: icons.IconBell
     }
   ]
 };

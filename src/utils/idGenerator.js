@@ -27,3 +27,18 @@ export function generateOwnReferalNumber(n) {
 
   return ('' + number).substring(add);
 }
+
+export function generatePaymentNumber(n) {
+  var add = 1,
+    max = 8 - add;
+
+  if (n > max) {
+    return generatePaymentNumber(max) + generatePaymentNumber(n - max);
+  }
+
+  max = Math.pow(10, n + add);
+  var min = max / 10;
+  var number = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return ('' + number).substring(add);
+}

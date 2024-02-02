@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
-
 //Firebase
 import { authentication, db } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { collUsers } from 'store/collections';
 import { genConst, gridSpacing } from 'store/constant';
-import SubscriptionState from 'components/message/SubscriptionState';
-//Custom Hook
-import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
-import { msgSubState } from 'store/message';
 import {
   Box,
   Button,
@@ -42,14 +37,14 @@ const Network = () => {
   const [showL4, setShowL4] = React.useState(false);
   //Variables
   const [open, setOpen] = React.useState(false);
-  const stateSub = useGetSubscriptionState();
+  //const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
         setOpen(true);
         const childs = [];
-        const q = query(collection(db, collUsers), where('refer', '==', null));
+        const q = query(collection(db, collUsers), where('refer', '==', null), where('profile', '==', genConst.CONST_PRO_DEF));
         const querySnapshot = await getDocs(q);
         if (querySnapshot.size > 0) {
           querySnapshot.forEach((doc) => {
@@ -134,27 +129,57 @@ const Network = () => {
 
   return (
     <div>
-      {stateSub == genConst.CONST_SUB_STATE_ACTIVE ? (
-        <>
-          <Title message={titles.title} submessage={''} avatar={logo} />
-          <Box>
-            <Grid container spacing={gridSpacing}>
-              <Grid item xs={12}>
+      <>
+        <Title message={titles.title} submessage={''} avatar={logo} />
+        <Box>
+          <Grid container spacing={gridSpacing}>
+            <Grid item xs={12}>
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>
+                          <Typography variant="h4">{titles.level1}</Typography>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      <TableRow>
+                        {childsList.map((child, key) => (
+                          <TableCell key={key}>
+                            <Button variant="outlined" onClick={() => childsLevel2(child.ownReferal)} style={uiStyles.btn}>
+                              <NetworkChild
+                                avatar={child.avatar}
+                                name={child.name}
+                                lastName={child.lastName}
+                                email={child.email}
+                                state={child.state}
+                              />
+                            </Button>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+              {showL2 ? (
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <TableContainer>
                     <Table>
                       <TableHead>
                         <TableRow>
                           <TableCell>
-                            <Typography variant="h4">{titles.level1}</Typography>
+                            <Typography variant="h4">{titles.level2}</Typography>
                           </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         <TableRow>
-                          {childsList.map((child, key) => (
+                          {childsListL2.map((child, key) => (
                             <TableCell key={key}>
-                              <Button variant="outlined" onClick={() => childsLevel2(child.ownReferal)} style={uiStyles.btn}>
+                              <Button variant="outlined" onClick={() => childsLevel3(child.ownReferal)} style={uiStyles.btn}>
                                 <NetworkChild
                                   avatar={child.avatar}
                                   name={child.name}
@@ -170,121 +195,81 @@ const Network = () => {
                     </Table>
                   </TableContainer>
                 </Grid>
-                {showL2 ? (
-                  <Grid item lg={12} md={12} sm={12} xs={12}>
-                    <TableContainer>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>
-                              <Typography variant="h4">{titles.level2}</Typography>
+              ) : (
+                <></>
+              )}
+              {showL3 ? (
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <TableContainer>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <Typography variant="h4">{titles.level3}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          {childsListL3.map((child, key) => (
+                            <TableCell key={key}>
+                              <Button variant="outlined" onClick={() => childsLevel4(child.ownReferal)} style={uiStyles.btn}>
+                                <NetworkChild
+                                  avatar={child.avatar}
+                                  name={child.name}
+                                  lastName={child.lastName}
+                                  email={child.email}
+                                  state={child.state}
+                                />
+                              </Button>
                             </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow>
-                            {childsListL2.map((child, key) => (
-                              <TableCell key={key}>
-                                <Button variant="outlined" onClick={() => childsLevel3(child.ownReferal)} style={uiStyles.btn}>
-                                  <NetworkChild
-                                    avatar={child.avatar}
-                                    name={child.name}
-                                    lastName={child.lastName}
-                                    email={child.email}
-                                    state={child.state}
-                                  />
-                                </Button>
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                ) : (
-                  <></>
-                )}
-                {showL3 ? (
-                  <Grid item lg={12} md={12} sm={12} xs={12}>
-                    <TableContainer>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>
-                              <Typography variant="h4">{titles.level3}</Typography>
+                          ))}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              ) : (
+                <></>
+              )}
+              {showL4 ? (
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <TableContainer>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <Typography variant="h4">{titles.level4}</Typography>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          {childsListL4.map((child, key) => (
+                            <TableCell key={key}>
+                              <Button variant="outlined" style={uiStyles.btn}>
+                                <NetworkChild
+                                  avatar={child.avatar}
+                                  name={child.name}
+                                  lastName={child.lastName}
+                                  email={child.email}
+                                  state={child.state}
+                                />
+                              </Button>
                             </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow>
-                            {childsListL3.map((child, key) => (
-                              <TableCell key={key}>
-                                <Button variant="outlined" onClick={() => childsLevel4(child.ownReferal)} style={uiStyles.btn}>
-                                  <NetworkChild
-                                    avatar={child.avatar}
-                                    name={child.name}
-                                    lastName={child.lastName}
-                                    email={child.email}
-                                    state={child.state}
-                                  />
-                                </Button>
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                ) : (
-                  <></>
-                )}
-                {showL4 ? (
-                  <Grid item lg={12} md={12} sm={12} xs={12}>
-                    <TableContainer>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>
-                              <Typography variant="h4">{titles.level4}</Typography>
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow>
-                            {childsListL4.map((child, key) => (
-                              <TableCell key={key}>
-                                <Button variant="outlined" style={uiStyles.btn}>
-                                  <NetworkChild
-                                    avatar={child.avatar}
-                                    name={child.name}
-                                    lastName={child.lastName}
-                                    email={child.email}
-                                    state={child.state}
-                                  />
-                                </Button>
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                ) : (
-                  <></>
-                )}
-              </Grid>
-            </Grid>
-          </Box>
-        </>
-      ) : (
-        <Grid container spacing={gridSpacing}>
-          <Grid item xs={12}>
-            <Grid item lg={12} md={12} sm={12} xs={12}>
-              <SubscriptionState message={msgSubState} submessage={''} />
+                          ))}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              ) : (
+                <></>
+              )}
             </Grid>
           </Grid>
-        </Grid>
-      )}
+        </Box>
+      </>
       <Modal open={open} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <center>
           <Box sx={uiStyles.modalLoader}>

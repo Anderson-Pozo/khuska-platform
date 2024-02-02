@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import {
@@ -46,7 +46,7 @@ export default function BusinessCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
-  const [userId, setUserId] = React.useState(null);
+  const [userId, setUserId] = useState(null);
   const [openLoader, setOpenLoader] = useState(false);
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
@@ -69,7 +69,7 @@ export default function BusinessCreate() {
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
   const [picture4, setPicture4] = useState({ preview: '', raw: '' });
 
-  React.useEffect(() => {
+  useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         setUserId(user.uid);

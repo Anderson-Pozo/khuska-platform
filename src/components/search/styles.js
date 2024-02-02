@@ -28,7 +28,8 @@ export const uiStyles = {
     color: '#53338a'
   },
   container: {
-    textAlign: 'center'
+    textAlign: 'center',
+    paddingTop: 10
   },
   title: {
     color: '#fff',
@@ -39,7 +40,7 @@ export const uiStyles = {
     fontSize: '4rem'
   },
   rootPlace: {
-    maxWidth: 400,
+    maxWidth: 200,
     background: 'rgba(0,0,0,0.5)',
     margin: 0
   },

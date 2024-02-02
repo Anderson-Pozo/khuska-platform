@@ -32,19 +32,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
 import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUsers } from '@tabler/icons';
-
 //Firebase Events
 import { createDocument, deleteDocument, updateDocument } from 'config/firebaseEvents';
-
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { genConst } from 'store/constant';
 import { collHistUsr, collUsers } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
-
 //Utils
 import { fullDate } from 'utils/validations';
 import { generateId } from 'utils/idGenerator';
@@ -65,7 +61,9 @@ export default function Users() {
 
   const [id, setId] = useState(null);
   const [name, setName] = useState(null);
+  const [lastName, setLastName] = useState(null);
   const [email, setEMail] = useState(null);
+  const [code, setCode] = useState(null);
   const [profile, setProfile] = useState(null);
   const [state, setState] = useState(null);
   const [createAt, setCreateAt] = useState(null);
@@ -132,6 +130,8 @@ export default function Users() {
         email: email,
         id: idUsr,
         name: name,
+        lastName: lastName,
+        fullName: name + ' ' + lastName,
         phone: null,
         profile: genConst.CONST_PRO_DEF,
         state: genConst.CONST_STA_ACT,
@@ -154,6 +154,8 @@ export default function Users() {
       const object = {
         email: email,
         name: name,
+        lastName: lastName,
+        fullName: name + ' ' + lastName,
         state: state,
         profile: profile,
         updateAt: fullDate()
@@ -179,6 +181,8 @@ export default function Users() {
       email: email,
       id: usrHistId,
       name: name,
+      lastName: lastName,
+      fullName: name + ' ' + lastName,
       state: genConst.CONST_STA_INACT,
       updateAt: updateAt
     };
@@ -193,8 +197,287 @@ export default function Users() {
     }, 2000);
   };
 
+  /*const generatePaymentDistribution = (value1, value2, value3, value4, userEmail) => {
+    //SE ENCARGA DE DISTRIBUIR LOS BENEFICIOS A LOS 4 MIEMBROS DE KHUSKA
+    console.log('FLUJO DISTRIBUCION BENEFICIO RED PERSONAL');
+    let total = 0;
+    if (value2 === 0) {
+      //LEVEL 1
+      total = value1 * 0.26;
+      globalTotal = globalTotal - total;
+      saveUserBenefit(total, value2, value3, value4, userEmail);
+    } else if (value2 === 1) {
+      //LEVEL 2
+      total = value1 * 0.18;
+      globalTotal = globalTotal - total;
+      saveUserBenefit(total, value2, value3, value4, userEmail);
+    } else if (value2 === 2) {
+      //LEVEL 3
+      total = value1 * 0.1;
+      globalTotal = globalTotal - total;
+      saveUserBenefit(total, value2, value3, value4, userEmail);
+    } else if (value2 === 3) {
+      //LEVEL 4
+      total = value1 * 0.06;
+      globalTotal = globalTotal - total;
+      saveUserBenefit(total, value2, value3, value4, userEmail);
+    }
+  };
+
+  //SAVE USER BENFIT
+  const saveUserBenefit = (value1, value2, value3, value4, userEmail) => {
+    console.log('FLUJO GENERAR BENEFICIO USUARIO');
+    const userBenefit = {
+      idUser: userId,
+      idRefer: value3,
+      emailRefer: value4,
+      email: userEmail,
+      level: value2 + 1,
+      total: value1,
+      date: generateDate(),
+      state: 1 //1 PENDIENTE
+    };
+    firebase.firestore().collection('UserBenefit').doc().set(userBenefit);
+    sendBenefitEmail(value4, nameReferal, userEmail, value1);
+  };
+
+  //SAVE KHUSKA BENEFIT
+  const saveKhuskaBenefit = (value1, value2, value3) => {
+    console.log('FLUJO GUARDAR BENEFICIO KHUSKA');
+    const khuskaBenefit = {
+      idUser: userId,
+      total: value1,
+      idRefer: value2,
+      emailRefer: value3,
+      date: fullDate()
+    };
+    firebase.firestore().collection('KhuskaBenefit').doc().set(khuskaBenefit);
+  };
+
+  //SET KHUSKA BILL
+  const generateKhuskaBill = (userId, subtotal, iva, total, userName, userEmail) => {
+    console.log('FLUJO GENERAR FACTURA KHUSKA');
+    const khuskaBill = {
+      idUser: userId,
+      ruc: 1714821897001,
+      name: 'KHUSKA',
+      address: 'Julio Arellano 2827 y Selva Alegre',
+      phone: '0984741026',
+      email: 'khuska-bills@khuska.com.ec',
+      subtotal: subtotal,
+      iva: iva,
+      total: total,
+      state: 1, //PENDIENTE
+      userName: userName,
+      userEmail: userEmail,
+      date: fullDate()
+    };
+    firebase.firestore().collection('KhuskaBill').doc().set(khuskaBill);
+  };
+
+  //SET PAYMENTS
+  const generatePaymentData = (userId, amount, option, type, startDate) => {
+    console.log('FLUJO GENERAR PAGO');
+    let paymentNumber = generatePaymentNumber(8);
+    const payment = {
+      idUser: userId,
+      idPayment: paymentNumber,
+      amount: amount,
+      option: option,
+      type: type,
+      paymentDate: startDate,
+      date: generateDate()
+    };
+    firebase.firestore().collection('PaymentData').doc(paymentNumber).set(payment);
+  };
+
+  const activeMonthUser = () => {
+    setOpen(!open);
+    const user = {
+      state: 1
+    };
+
+    const userSubscription = {
+      startDate: initDate(),
+      endDate: endDateMonth(),
+      cancelDate: null,
+      state: 1
+    };
+
+    setTimeout(function () {
+      setOpen(false);
+      firebase.firestore().collection('User').doc(id).update(user);
+      firebase.firestore().collection('Subscription').doc(id).update(userSubscription);
+      sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
+      history.push('/dashboard');
+      toast.success('Suscripción ha sido activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+    }, 5000);
+  };
+
+  const activeYearUser = () => {
+    setOpen(!open);
+    const user = {
+      state: 1
+    };
+
+    const userSubscription = {
+      startDate: initDate(),
+      endDate: endDateYear(),
+      cancelDate: null,
+      state: 1
+    };
+
+    setTimeout(function () {
+      setOpen(false);
+      firebase.firestore().collection('User').doc(id).update(user);
+      firebase.firestore().collection('Subscription').doc(id).update(userSubscription);
+      sendActiveSubscriptionEmail(userEmail, userName, initDate(), 365, endDateYear(), 'Manual', 300);
+      history.push('/dashboard');
+      toast.success('Suscripción ha sido activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+    }, 2000);
+  };
+
+  const activeUserMonth = async () => {
+    setOpen(!open);
+    var date1 = initDate();
+    var total = 30;
+
+    var SUB = 0;
+    var IVA = 0;
+    IVA = total * 0.12;
+    SUB = total - IVA;
+
+    let responseService = 200;
+    let referCode;
+    globalTotal = total;
+    try {
+      if (responseService === 200) {
+        referCode = userRefer;
+        for (let i = 0; i < 4; i++) {
+          //PAGAR
+          await firebase
+            .firestore()
+            .collection('User')
+            .where('ownReferal', '==', referCode)
+            .get()
+            // eslint-disable-next-line no-loop-func
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                referCode = doc.data().refer;
+                //TO DO - EXEC BENEFITS
+                setNameReferal(doc.data().name + ' ' + doc.data().lastName);
+                generatePaymentDistribution(total, i, doc.data().idUser, doc.data().email, userEmail);
+                if (doc.data().refer === 0) {
+                  i = 4;
+                }
+              });
+            })
+            .catch((error) => {
+              console.log('Error getting documents: ', error);
+              setOpen(false);
+            });
+        }
+        //SAVE KHUSKA BENEFIT
+        saveKhuskaBenefit(globalTotal, userRefer, userEmail);
+        //GENERATE KHUSKA BILL
+        generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
+        //GENERATE PAYMENT
+        generatePaymentData(userId, total, 'M', 1, date1); //1 = TCR
+
+        setTimeout(function () {
+          setOpen(false);
+          history.push('/dashboard');
+          toast.success('Suscripción ha sido activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+        }, 6000);
+      } else {
+        if (responseService === 400) {
+          //SERVICIO FUERA DE LINEA
+          setOpen(false);
+        } else if (responseService === 500) {
+          //TARJETA NO VALIDA
+          setOpen(false);
+        } else {
+          //INTENTE MAS TARDE
+          setOpen(false);
+        }
+      }
+    } catch (error) {
+      setOpen(false);
+    }
+  };
+
+  const activeUserYear = async () => {
+    setOpen(!open);
+    var date1 = initDate();
+
+    var total = 300;
+    var SUB = 0;
+    var IVA = 0;
+    IVA = total * 0.12;
+    SUB = total - IVA;
+
+    let responseService = 200;
+    let referCode;
+    globalTotal = total;
+    try {
+      if (responseService === 200) {
+        referCode = userRefer;
+        for (let i = 0; i < 4; i++) {
+          //PAGAR
+          await firebase
+            .firestore()
+            .collection('User')
+            .where('ownReferal', '==', referCode)
+            .get()
+            // eslint-disable-next-line no-loop-func
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                referCode = doc.data().refer;
+                //TO DO - EXEC BENEFITS
+                generatePaymentDistribution(total, i, doc.data().idUser, doc.data().email, userEmail);
+                if (doc.data().refer === 0) {
+                  i = 4;
+                }
+              });
+            })
+            .catch((error) => {
+              console.log('Error getting documents: ', error);
+              setOpen(false);
+            });
+        }
+        //SAVE KHUSKA BENEFIT
+        saveKhuskaBenefit(globalTotal, userRefer, userEmail);
+        //GENERATE KHUSKA BILL
+        generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
+        //GENERATE PAYMENT
+        generatePaymentData(userId, total, 'Y', 1, date1); //1 = TCR
+
+        setTimeout(function () {
+          setOpen(false);
+          history.push('/dashboard');
+          toast.success('Suscripción ha sido activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+        }, 6000);
+      } else {
+        if (responseService === 400) {
+          //SERVICIO FUERA DE LINEA
+          setOpen(false);
+        } else if (responseService === 500) {
+          //TARJETA NO VALIDA
+          setOpen(false);
+        } else {
+          //INTENTE MAS TARDE
+          setOpen(false);
+        }
+      }
+    } catch (error) {
+      setOpen(false);
+    }
+  };*/
+
   const cleanData = () => {
     setName('');
+    setLastName('');
+    setCode('');
     setEMail('');
     setProfile('');
     setState('');
@@ -355,7 +638,9 @@ export default function Users() {
                               setId(r.id);
                               setTitle(titles.titleUpdate);
                               setName(r.name);
+                              setLastName(r.lastName);
                               setEMail(r.email);
+                              setCode(r.ownReferal);
                               setProfile(r.profile);
                               setState(r.state);
                               setCreateAt(r.createAt);
@@ -431,6 +716,21 @@ export default function Users() {
                 </Grid>
                 <Grid item lg={6} md={6} sm={6} xs={6}>
                   <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                    <InputLabel htmlFor="lastName">
+                      <span>*</span> {inputLabels.labelLastName}
+                    </InputLabel>
+                    <OutlinedInput
+                      id={inputLabels.lastName}
+                      type="text"
+                      name={inputLabels.lastName}
+                      value={lastName || ''}
+                      inputProps={{}}
+                      onChange={(ev) => setLastName(ev.target.value)}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                     <InputLabel htmlFor="email">
                       <span>*</span> {inputLabels.labelEmail}
                     </InputLabel>
@@ -482,10 +782,19 @@ export default function Users() {
                         {createAt}
                       </InputLabel>
                     </FormControl>
+                    <FormControl fullWidth>
+                      <InputLabel>
+                        <strong>Código: </strong>
+                        {code}
+                      </InputLabel>
+                    </FormControl>
                   </Grid>
                 ) : (
                   <></>
                 )}
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  Hola
+                </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <center>
                     <ButtonGroup>

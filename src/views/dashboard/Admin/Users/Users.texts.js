@@ -32,6 +32,8 @@ export const inputLabels = {
   search: 'searchField',
   name: 'name',
   labelName: 'Nombre',
+  lastName: 'lastName',
+  labelLastName: 'Apellido',
   email: 'email',
   labelEmail: 'E-mail',
   profile: 'profile',

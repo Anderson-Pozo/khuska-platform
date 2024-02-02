@@ -27,4 +27,5 @@ export const collUserPhone = 'UserPhone';
 export const collUserBillData = 'UserBillData';
 export const collUserPaymentMethod = 'UserPaymentMethod';
 export const collInbox = 'Inbox';
+export const collMail = 'Mail';
 export const collNotifications = 'Notifications';
