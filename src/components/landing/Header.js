@@ -25,12 +25,14 @@ import Hero from './Hero';
 import logo from 'assets/images/khuska/logo.png';
 import { IconSearch } from '@tabler/icons';
 import defaultAvatar from 'assets/images/profile/profile-picture-6.jpg';
+import { useAuth } from 'hooks/useAuth';
+import { isSessionActive } from 'config/firebaseEvents';
 
 const drawerWidth = 240;
 
-function Header(props) {
+const Header = (props) => {
   let navigate = useNavigate();
-  let isLoggin = false;
+  const { isLoggin, name } = useAuth();
   const { window } = props;
   const [checked, setChecked] = useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -44,7 +46,11 @@ function Header(props) {
   }, []);
 
   const handleGoTo = () => {
-    navigate('/auth/signin');
+    isSessionActive(navigate);
+  };
+
+  const handleGoDash = () => {
+    isSessionActive(navigate);
   };
 
   const drawer = (
@@ -135,11 +141,9 @@ function Header(props) {
             <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }} onClick={handleGoTo}>
               <List>
                 <ListItem disablePadding>
-                  <ListItemButton>
-                    <Avatar alt="avatar user" src={defaultAvatar} sx={{ width: 45, height: 45, marginRight: 1 }} />
-                    <p style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }} hidden>
-                      Usuario
-                    </p>
+                  <ListItemButton onClick={handleGoDash}>
+                    <Avatar alt="avatar user" src={defaultAvatar} sx={{ width: 35, height: 35, marginRight: 1 }} />
+                    <p style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>{name}</p>
                   </ListItemButton>
                 </ListItem>
               </List>
@@ -183,7 +187,7 @@ function Header(props) {
       <Hero checked={checked} />
     </Box>
   );
-}
+};
 
 Header.propTypes = {
   window: PropTypes.func

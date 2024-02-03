@@ -8,7 +8,7 @@ import { Avatar, Box, Grid, Typography } from '@mui/material';
 import MainCard from 'components/cards/MainCard';
 
 // assets
-import EarningIcon from 'assets/images/icons/earning.svg';
+import { IconCash } from '@tabler/icons';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
   backgroundColor: '#9f98c2',
@@ -61,11 +61,11 @@ const EarningCard = ({ total, detail }) => {
                   sx={{
                     ...theme.typography.commonAvatar,
                     ...theme.typography.largeAvatar,
-                    backgroundColor: theme.palette.secondary[800],
+                    backgroundColor: '#FFF',
                     mt: 1
                   }}
                 >
-                  <img src={EarningIcon} alt="Notification" />
+                  <IconCash />
                 </Avatar>
               </Grid>
             </Grid>

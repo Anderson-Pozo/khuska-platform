@@ -3,16 +3,18 @@ import { authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 export const useAuth = () => {
-  const [user, setUser] = useState();
+  const [isLoggin, setIsLoggin] = useState(false);
+  const [name, setName] = useState(null);
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
-        setUser(user);
+        setIsLoggin(true);
+        setName(user.displayName);
       } else {
-        setUser(null);
+        setIsLoggin(false);
       }
     });
   }, []);
 
-  return user;
+  return { isLoggin, name };
 };

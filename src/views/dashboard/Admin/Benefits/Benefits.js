@@ -23,17 +23,19 @@ import 'react-toastify/dist/ReactToastify.css';
 //Collections
 import { titles } from './Benefits.texts';
 //Utils
-import { getBenefits, getTotalBenefit } from 'config/firebaseEvents';
+import { getAllUserBenefits, getBenefits, getTotalBenefit } from 'config/firebaseEvents';
 //types array
 import MessageDark from 'components/message/MessageDark';
 import EarningCard from 'components/cards/EarningCard';
 import EarningBlueCard from 'components/cards/EarningBlueCard';
+import { genConst } from 'store/constant';
 
 export default function Benefits() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [total, setTotal] = useState(0);
   const [dataList, setDataList] = useState([]);
+  const [dataListUsr, setDataListUsr] = useState([]);
 
   const [value, setValue] = React.useState(0);
 
@@ -44,6 +46,9 @@ export default function Benefits() {
   const getData = async () => {
     getBenefits().then((res) => {
       setDataList(res);
+    });
+    getAllUserBenefits().then((res) => {
+      setDataListUsr(res);
     });
     getTotalBenefit().then((res) => {
       setTotal(res);
@@ -84,7 +89,7 @@ export default function Benefits() {
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                 <Tab label="Beneficio Khuska" />
-                <Tab label="Total Beneficio" />
+                <Tab label="Beneficios Usuarios" />
               </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
@@ -95,14 +100,14 @@ export default function Benefits() {
                       <TableCell key="id-createAt" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
                         {'Fecha'}
                       </TableCell>
+                      <TableCell key="id-name" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'De'}
+                      </TableCell>
                       <TableCell key="id-email" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Email'}
                       </TableCell>
                       <TableCell key="id-idUser" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Usuario'}
-                      </TableCell>
-                      <TableCell key="id-name" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Nombre'}
                       </TableCell>
                       <TableCell key="id-total" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
                         {'Total'}
@@ -116,10 +121,10 @@ export default function Benefits() {
                     {dataList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((r) => (
                       <TableRow hover key={r.id}>
                         <TableCell align="left">{r.createAt}</TableCell>
+                        <TableCell align="left">{r.name + ' ' + r.lastName}</TableCell>
                         <TableCell align="left">{r.email}</TableCell>
                         <TableCell align="left">{r.idUser}</TableCell>
-                        <TableCell align="left">{r.name + ' ' + r.lastName}</TableCell>
-                        <TableCell align="left">{r.total}</TableCell>
+                        <TableCell align="left">{r.total.toFixed(2)}</TableCell>
                         <TableCell align="center"></TableCell>
                       </TableRow>
                     ))}
@@ -137,7 +142,62 @@ export default function Benefits() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
             </CustomTabPanel>
-            <CustomTabPanel value={value} index={1}></CustomTabPanel>
+            <CustomTabPanel value={value} index={1}>
+              <TableContainer sx={{ maxHeight: 400 }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell key="id-createAt" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                        {'Fecha'}
+                      </TableCell>
+                      <TableCell key="id-name" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                        {'Nombre'}
+                      </TableCell>
+                      <TableCell key="id-email" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                        {'Email'}
+                      </TableCell>
+                      <TableCell key="id-idUser" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                        {'Para'}
+                      </TableCell>
+                      <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'Total'}
+                      </TableCell>
+                      <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'Estado'}
+                      </TableCell>
+                      <TableCell key="id-actions" align="center" style={{ minWidth: 75, fontWeight: 'bold' }}>
+                        {titles.actions}
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataListUsr.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((r) => (
+                      <TableRow hover key={r.id}>
+                        <TableCell align="left">{r.date}</TableCell>
+                        <TableCell align="left">{r.name + ' ' + r.lastName}</TableCell>
+                        <TableCell align="left">{r.email}</TableCell>
+                        <TableCell align="left">{r.emailRefer}</TableCell>
+                        <TableCell align="left">{r.total.toFixed(2)}</TableCell>
+                        <TableCell align="left">
+                          {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
+                        </TableCell>
+                        <TableCell align="center"></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50, 100]}
+                labelRowsPerPage={titles.rowsPerPage}
+                component="div"
+                count={dataList.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </CustomTabPanel>
           </Box>
         </Paper>
       ) : (

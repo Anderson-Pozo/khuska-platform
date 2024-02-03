@@ -62,6 +62,7 @@ const Logs = Loadable(lazy(() => import('views/dashboard/Admin/Logs/Logs')));
 const AuthSignin = Loadable(lazy(() => import('views/pages/login/login/Signin')));
 const AuthSignup = Loadable(lazy(() => import('views/pages/login/login/Signup')));
 const AuthRecovery = Loadable(lazy(() => import('views/pages/login/login/PasswordRecover')));
+const JoinSignup = Loadable(lazy(() => import('views/pages/login/login/JoinSignup')));
 const AuthInscription = Loadable(lazy(() => import('views/pages/login/inscription/Inscription')));
 const AuthPayment = Loadable(lazy(() => import('views/pages/login/inscription/Payment')));
 const AuthPaymentMethods = Loadable(lazy(() => import('views/pages/login/inscription/PaymentMethods')));
@@ -112,6 +113,7 @@ const App = () => {
           <Route element={<MinimalLayout />} path="/auth" exact>
             <Route element={<AuthSignin />} path="signin" exact />
             <Route element={<AuthSignup />} path="signup" exact />
+            <Route element={<JoinSignup />} path="join" exact />
             <Route element={<AuthRecovery />} path="password-recovery" exact />
             <Route element={<AuthInscription />} path="inscription" exact />
             <Route element={<AuthPayment />} path="payment" exact />

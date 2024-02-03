@@ -11,7 +11,7 @@ import MainCard from 'components/cards/MainCard';
 import { IconCash } from '@tabler/icons';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
-  backgroundColor: '#1565c0',
+  backgroundColor: '#ECD163',
   color: '#fff',
   overflow: 'hidden',
   position: 'relative',
@@ -46,7 +46,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   }
 }));
 
-const EarningBlueCard = ({ total, detail }) => {
+const EarningYellowCard = ({ total, detail }) => {
   const theme = useTheme();
 
   return (
@@ -94,9 +94,9 @@ const EarningBlueCard = ({ total, detail }) => {
   );
 };
 
-EarningBlueCard.propTypes = {
+EarningYellowCard.propTypes = {
   total: PropTypes.number,
   detail: PropTypes.string
 };
 
-export default EarningBlueCard;
+export default EarningYellowCard;

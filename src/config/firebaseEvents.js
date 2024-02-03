@@ -12,6 +12,7 @@ import {
   collLog,
   collMail,
   collSubscription,
+  collUserBenefit,
   collUsers,
   collUsrNoti
 } from 'store/collections';
@@ -22,9 +23,19 @@ import { generateDate } from 'utils/validations';
 
 //Encontrar Sesión activa
 export function isSessionActive(navigate) {
-  onAuthStateChanged(authentication, (user) => {
+  onAuthStateChanged(authentication, async (user) => {
     if (user) {
-      navigate('/app/dashboard');
+      const q = query(collection(db, collUsers), where('id', '==', user.uid));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        if (doc.data().profile == genConst.CONST_PRO_DEF) {
+          navigate('/app/dashboard');
+        } else {
+          navigate('/main/dashboard');
+        }
+      });
+    } else {
+      navigate('/auth/signin');
     }
   });
 }
@@ -182,6 +193,23 @@ export const getBenefits = async () => {
   });
   return list;
 };
+export const getAllUserBenefits = async () => {
+  const list = [];
+  const querySnapshot = await getDocuments(collUserBenefit);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
+export const getUserBenefits = async (id) => {
+  const list = [];
+  const q = query(collection(db, collUserBenefit), where('idRefer', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
 export async function getMail() {
   const list = [];
   const querySnapshot = await getDocuments(collMail);
@@ -249,6 +277,42 @@ export async function getUserName(id) {
     name = doc.data().name + ' ' + doc.data().lastName;
   });
   return name;
+}
+//Total beneficio por usuario Cancelado
+export async function getTotalCancelBenefitByUserId(id) {
+  let total = 0;
+  const q = query(collection(db, collUserBenefit), where('idRefer', '==', id), where('state', '==', genConst.CONST_BEN_CAN));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
+  return total;
+}
+//Total beneficio por usuario Pagado
+export async function getTotalPaidBenefitByUserId(id) {
+  let total = 0;
+  const q = query(collection(db, collUserBenefit), where('idRefer', '==', id), where('state', '==', genConst.CONST_BEN_PAI));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
+  return total;
+}
+//Total beneficio por Pendiente
+export async function getTotalPendinBenefitByUserId(id) {
+  let total = 0;
+  const q = query(collection(db, collUserBenefit), where('idRefer', '==', id), where('state', '==', genConst.CONST_BEN_PEN));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
+  return total;
 }
 //Total Beneficio
 export async function getTotalBenefit() {
@@ -352,6 +416,16 @@ export async function getUserState(id) {
     state = doc.data().state;
   });
   return state;
+}
+
+export async function getUserReferalCode(id) {
+  let code = null;
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    code = doc.data().ownReferal;
+  });
+  return code;
 }
 
 export async function getUserData(id) {

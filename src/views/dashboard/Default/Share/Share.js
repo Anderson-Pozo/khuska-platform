@@ -18,7 +18,7 @@ const Share = () => {
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
-        setPath(`${window.location.origin}/auth/join/${user.uid}`);
+        setPath(`${window.location.origin}/auth/join/?id=${user.uid}`);
         //TO DO State client
       }
     });

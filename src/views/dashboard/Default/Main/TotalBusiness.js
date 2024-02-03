@@ -21,7 +21,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
     position: 'absolute',
     width: 210,
     height: 210,
-    background: theme.palette.secondary[800],
+    background: 'rgba(255,255,255,0.7)',
     borderRadius: '50%',
     top: -85,
     right: -95,
@@ -35,7 +35,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
     position: 'absolute',
     width: 210,
     height: 210,
-    background: theme.palette.secondary[800],
+    background: 'rgba(0,0,0,0.5)',
     borderRadius: '50%',
     top: -125,
     right: -15,
@@ -66,11 +66,11 @@ const TotalBusiness = ({ isLoading, count }) => {
                       sx={{
                         ...theme.typography.commonAvatar,
                         ...theme.typography.largeAvatar,
-                        backgroundColor: theme.palette.secondary[800],
+                        backgroundColor: '#FFF',
                         mt: 1
                       }}
                     >
-                      <IconBuilding color="#FFF" />
+                      <IconBuilding />
                     </Avatar>
                   </Grid>
                 </Grid>
@@ -78,19 +78,21 @@ const TotalBusiness = ({ isLoading, count }) => {
               <Grid item>
                 <Grid container alignItems="center">
                   <Grid item>
-                    <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>{count}</Typography>
+                    <Typography sx={{ fontSize: '1rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75, color: '#FFF' }}>
+                      Negocios Registrados
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item sx={{ mb: 1 }}>
+              <Grid item sx={{ mb: 3 }}>
                 <Typography
                   sx={{
-                    fontSize: '1.2rem',
-                    fontWeight: 500,
-                    color: theme.palette.primary[200]
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                    color: '#FFF'
                   }}
                 >
-                  Negocios Registrados
+                  {count}
                 </Typography>
               </Grid>
             </Grid>

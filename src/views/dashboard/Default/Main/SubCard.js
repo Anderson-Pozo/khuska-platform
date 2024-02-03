@@ -22,13 +22,28 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
     position: 'absolute',
     width: 210,
     height: 210,
-    background: '#53338a',
+    background: 'rgba(255,255,255,0.7)',
     borderRadius: '50%',
     top: -85,
     right: -95,
     [theme.breakpoints.down('sm')]: {
       top: -105,
       right: -140
+    }
+  },
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    width: 210,
+    height: 210,
+    background: 'rgba(0,0,0,0.5)',
+    borderRadius: '50%',
+    top: -125,
+    right: -15,
+    opacity: 0.5,
+    [theme.breakpoints.down('sm')]: {
+      top: -155,
+      right: -70
     }
   }
 }));
@@ -52,10 +67,11 @@ const SubCard = ({ isLoading, state }) => {
                       sx={{
                         ...theme.typography.commonAvatar,
                         ...theme.typography.largeAvatar,
+                        backgroundColor: '#FFF',
                         mt: 1
                       }}
                     >
-                      <IconTicket color="#FFF" />
+                      <IconTicket />
                     </Avatar>
                   </Grid>
                 </Grid>

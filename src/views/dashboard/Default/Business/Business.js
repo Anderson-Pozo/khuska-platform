@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -18,10 +18,10 @@ import {
   TableRow,
   TableCell,
   Toolbar,
-  Typography
+  Typography,
+  CircularProgress
 } from '@mui/material';
 import { uiStyles } from './Business.styles';
-import CircularProgress from '@mui/material/CircularProgress';
 import { IconEdit, IconTrash, IconPlus, IconSearch, IconEye, IconCircleX } from '@tabler/icons';
 import SubscriptionState from 'components/message/SubscriptionState';
 //Notifications
@@ -33,7 +33,7 @@ import { titles, inputLabels } from './Business.texts';
 import { countBusinessByUserId, getBusinessListByUser } from 'config/firebaseEvents';
 import MessageDark from 'components/message/MessageDark';
 import { genConst, gridSpacing } from 'store/constant';
-import { searchingCourseData } from 'utils/search';
+import { searchingBusinessData } from 'utils/search';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 //Custom Hook
@@ -42,18 +42,19 @@ import { msgSubState } from 'store/message';
 
 export default function Business() {
   let navigate = useNavigate();
-  const [search, setSearch] = React.useState('');
-  const [dataList, setDataList] = React.useState([]);
-  const [id, setId] = React.useState(null);
-  const [name, setName] = React.useState(null);
-  const [countBusiness, setCountBusiness] = React.useState(null);
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [openLoader, setOpenLoader] = React.useState(false);
+  const [search, setSearch] = useState('');
+  const [dataList, setDataList] = useState([]);
+  const [id, setId] = useState(null);
+  const [name, setName] = useState(null);
+  const [countBusiness, setCountBusiness] = useState(null);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [openLoader, setOpenLoader] = useState(false);
   const stateSub = useGetSubscriptionState();
 
-  React.useEffect(() => {
+  useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
+        setOpenLoader(true);
         getBusinessListByUser(user.uid).then((data) => {
           setDataList(data);
         });
@@ -61,6 +62,9 @@ export default function Business() {
           setCountBusiness(ct);
         });
       }
+      setTimeout(() => {
+        setOpenLoader(false);
+      }, 1000);
     });
   }, []);
 
@@ -156,7 +160,7 @@ export default function Business() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataList.filter(searchingCourseData(search)).map((item) => (
+                    {dataList.filter(searchingBusinessData(search)).map((item) => (
                       <TableRow hover key={item.id}>
                         <TableCell align="left">
                           <strong>{item.name}</strong>
