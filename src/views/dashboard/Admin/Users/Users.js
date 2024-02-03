@@ -33,19 +33,21 @@ import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
 import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUsers } from '@tabler/icons';
 //Firebase Events
-import { createDocument, deleteDocument, updateDocument } from 'config/firebaseEvents';
+import { createDocument, deleteDocument, getDad, getUserDataSubscription, updateDocument } from 'config/firebaseEvents';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { genConst } from 'store/constant';
-import { collHistUsr, collUsers } from 'store/collections';
+import { collHistUsr, collKhuskaBenefit, collSubscription, collUserBenefit, collUsers } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
 //Utils
-import { fullDate } from 'utils/validations';
+import { endDateWithParam, fullDate, initDate } from 'utils/validations';
 import { generateId } from 'utils/idGenerator';
 import { searchingData } from 'utils/search';
 import { useGetUsers } from 'hooks/useGetUsers';
+
+let globalTotal = 0;
 
 export default function Users() {
   const [page, setPage] = useState(0);
@@ -64,10 +66,21 @@ export default function Users() {
   const [lastName, setLastName] = useState(null);
   const [email, setEMail] = useState(null);
   const [code, setCode] = useState(null);
+  const [refer, setRefer] = useState(null);
   const [profile, setProfile] = useState(null);
   const [state, setState] = useState(null);
   const [createAt, setCreateAt] = useState(null);
   const [updateAt, setUpdateAt] = useState(null);
+  const [subData, setSubData] = useState({
+    cancelData: null,
+    description: null,
+    endDate: null,
+    isUser: null,
+    price: null,
+    startDate: null,
+    state: null,
+    totalDays: null
+  });
 
   const [search, setSearch] = useState('');
   const [openLoader, setOpenLoader] = useState(false);
@@ -197,282 +210,228 @@ export default function Users() {
     }, 2000);
   };
 
-  /*const generatePaymentDistribution = (value1, value2, value3, value4, userEmail) => {
-    //SE ENCARGA DE DISTRIBUIR LOS BENEFICIOS A LOS 4 MIEMBROS DE KHUSKA
-    console.log('FLUJO DISTRIBUCION BENEFICIO RED PERSONAL');
-    let total = 0;
-    if (value2 === 0) {
-      //LEVEL 1
-      total = value1 * 0.26;
-      globalTotal = globalTotal - total;
-      saveUserBenefit(total, value2, value3, value4, userEmail);
-    } else if (value2 === 1) {
-      //LEVEL 2
-      total = value1 * 0.18;
-      globalTotal = globalTotal - total;
-      saveUserBenefit(total, value2, value3, value4, userEmail);
-    } else if (value2 === 2) {
-      //LEVEL 3
-      total = value1 * 0.1;
-      globalTotal = globalTotal - total;
-      saveUserBenefit(total, value2, value3, value4, userEmail);
-    } else if (value2 === 3) {
-      //LEVEL 4
-      total = value1 * 0.06;
-      globalTotal = globalTotal - total;
-      saveUserBenefit(total, value2, value3, value4, userEmail);
-    }
-  };
-
-  //SAVE USER BENFIT
-  const saveUserBenefit = (value1, value2, value3, value4, userEmail) => {
-    console.log('FLUJO GENERAR BENEFICIO USUARIO');
-    const userBenefit = {
-      idUser: userId,
-      idRefer: value3,
-      emailRefer: value4,
-      email: userEmail,
-      level: value2 + 1,
-      total: value1,
-      date: generateDate(),
-      state: 1 //1 PENDIENTE
+  const handleMonthSub = () => {
+    setOpenLoader(true);
+    const subObj = {
+      state: genConst.CONST_STATE_AC,
+      startDate: fullDate(),
+      endDate: endDateWithParam(genConst.CONST_MONTH_DAYS),
+      price: genConst.CONST_MONTH_VALUE,
+      description: 'Estandar (30 días)',
+      totalDays: genConst.CONST_MONTH_DAYS
     };
-    firebase.firestore().collection('UserBenefit').doc().set(userBenefit);
-    sendBenefitEmail(value4, nameReferal, userEmail, value1);
-  };
-
-  //SAVE KHUSKA BENEFIT
-  const saveKhuskaBenefit = (value1, value2, value3) => {
-    console.log('FLUJO GUARDAR BENEFICIO KHUSKA');
-    const khuskaBenefit = {
-      idUser: userId,
-      total: value1,
-      idRefer: value2,
-      emailRefer: value3,
-      date: fullDate()
-    };
-    firebase.firestore().collection('KhuskaBenefit').doc().set(khuskaBenefit);
-  };
-
-  //SET KHUSKA BILL
-  const generateKhuskaBill = (userId, subtotal, iva, total, userName, userEmail) => {
-    console.log('FLUJO GENERAR FACTURA KHUSKA');
-    const khuskaBill = {
-      idUser: userId,
-      ruc: 1714821897001,
-      name: 'KHUSKA',
-      address: 'Julio Arellano 2827 y Selva Alegre',
-      phone: '0984741026',
-      email: 'khuska-bills@khuska.com.ec',
-      subtotal: subtotal,
-      iva: iva,
-      total: total,
-      state: 1, //PENDIENTE
-      userName: userName,
-      userEmail: userEmail,
-      date: fullDate()
-    };
-    firebase.firestore().collection('KhuskaBill').doc().set(khuskaBill);
-  };
-
-  //SET PAYMENTS
-  const generatePaymentData = (userId, amount, option, type, startDate) => {
-    console.log('FLUJO GENERAR PAGO');
-    let paymentNumber = generatePaymentNumber(8);
-    const payment = {
-      idUser: userId,
-      idPayment: paymentNumber,
-      amount: amount,
-      option: option,
-      type: type,
-      paymentDate: startDate,
-      date: generateDate()
-    };
-    firebase.firestore().collection('PaymentData').doc(paymentNumber).set(payment);
-  };
-
-  const activeMonthUser = () => {
-    setOpen(!open);
-    const user = {
-      state: 1
-    };
-
-    const userSubscription = {
-      startDate: initDate(),
-      endDate: endDateMonth(),
-      cancelDate: null,
-      state: 1
+    const usrObj = {
+      subState: genConst.CONST_STATE_AC,
+      state: genConst.CONST_STATE_AC
     };
 
     setTimeout(function () {
-      setOpen(false);
-      firebase.firestore().collection('User').doc(id).update(user);
-      firebase.firestore().collection('Subscription').doc(id).update(userSubscription);
-      sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
-      history.push('/dashboard');
-      toast.success('Suscripción ha sido activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-    }, 5000);
-  };
-
-  const activeYearUser = () => {
-    setOpen(!open);
-    const user = {
-      state: 1
-    };
-
-    const userSubscription = {
-      startDate: initDate(),
-      endDate: endDateYear(),
-      cancelDate: null,
-      state: 1
-    };
-
-    setTimeout(function () {
-      setOpen(false);
-      firebase.firestore().collection('User').doc(id).update(user);
-      firebase.firestore().collection('Subscription').doc(id).update(userSubscription);
-      sendActiveSubscriptionEmail(userEmail, userName, initDate(), 365, endDateYear(), 'Manual', 300);
-      history.push('/dashboard');
-      toast.success('Suscripción ha sido activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+      setOpenLoader(false);
+      updateDocument(collSubscription, id, subObj);
+      updateDocument(collUsers, id, usrObj);
+      //sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
+      //history.push('/dashboard');
+      toast.success('Suscripción activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
     }, 2000);
   };
 
-  const activeUserMonth = async () => {
-    setOpen(!open);
-    var date1 = initDate();
-    var total = 30;
+  const handleYearSub = () => {
+    setOpenLoader(true);
+    const subObj = {
+      state: genConst.CONST_STATE_AC,
+      startDate: fullDate(),
+      endDate: endDateWithParam(genConst.CONST_YEAR_DAYS),
+      price: genConst.CONST_YEAR_VALUE,
+      description: 'Estandar (365 días)',
+      totalDays: genConst.CONST_YEAR_DAYS
+    };
+    const usrObj = {
+      subState: genConst.CONST_STATE_AC
+    };
 
-    var SUB = 0;
-    var IVA = 0;
-    IVA = total * 0.12;
-    SUB = total - IVA;
+    setTimeout(function () {
+      setOpenLoader(false);
+      updateDocument(collSubscription, id, subObj);
+      updateDocument(collUsers, id, usrObj);
+      //sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
+      toast.success('Suscripción activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+    }, 2000);
+  };
 
-    let responseService = 200;
+  const handleActiveMonth = async () => {
+    setOpenLoader(true);
+    globalTotal = genConst.CONST_MONTH_VALUE;
+    let total = genConst.CONST_MONTH_VALUE;
+    let IVA = total * genConst.CONST_IVA;
+    let SUB = total - IVA;
+    console.log(total, SUB, IVA);
+    let responseService = genConst.CONST_200;
     let referCode;
-    globalTotal = total;
     try {
       if (responseService === 200) {
-        referCode = userRefer;
-        for (let i = 0; i < 4; i++) {
-          //PAGAR
-          await firebase
-            .firestore()
-            .collection('User')
-            .where('ownReferal', '==', referCode)
-            .get()
-            // eslint-disable-next-line no-loop-func
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                referCode = doc.data().refer;
-                //TO DO - EXEC BENEFITS
-                setNameReferal(doc.data().name + ' ' + doc.data().lastName);
-                generatePaymentDistribution(total, i, doc.data().idUser, doc.data().email, userEmail);
-                if (doc.data().refer === 0) {
-                  i = 4;
-                }
-              });
-            })
-            .catch((error) => {
-              console.log('Error getting documents: ', error);
-              setOpen(false);
+        referCode = refer;
+        if (refer == null) {
+          //saveKhuskaBenefit(total id, email, initDate());
+        } else {
+          for (let i = 0; i < 4; i++) {
+            //PAGAR
+            await getDad(referCode).then((res) => {
+              referCode = res.refer;
+              generatePaymentDistribution(total, i, res.id, res.email);
+              if (res.refer == null) {
+                i = 4;
+              }
             });
+          }
         }
+        console.log('GG ' + globalTotal);
         //SAVE KHUSKA BENEFIT
-        saveKhuskaBenefit(globalTotal, userRefer, userEmail);
+        saveKhuskaBenefit(globalTotal, id, email, initDate());
         //GENERATE KHUSKA BILL
-        generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
+        //generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
         //GENERATE PAYMENT
-        generatePaymentData(userId, total, 'M', 1, date1); //1 = TCR
+        //generatePaymentData(userId, total, 'M', 1, date1); //1 = TCR
 
         setTimeout(function () {
-          setOpen(false);
-          history.push('/dashboard');
+          setOpenLoader(false);
+          //history.push('/dashboard');
           toast.success('Suscripción ha sido activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
         }, 6000);
       } else {
         if (responseService === 400) {
           //SERVICIO FUERA DE LINEA
-          setOpen(false);
+          setOpenLoader(false);
         } else if (responseService === 500) {
           //TARJETA NO VALIDA
-          setOpen(false);
+          setOpenLoader(false);
         } else {
           //INTENTE MAS TARDE
-          setOpen(false);
+          setOpenLoader(false);
         }
       }
     } catch (error) {
-      setOpen(false);
+      setOpenLoader(false);
     }
   };
 
-  const activeUserYear = async () => {
-    setOpen(!open);
-    var date1 = initDate();
-
-    var total = 300;
-    var SUB = 0;
-    var IVA = 0;
-    IVA = total * 0.12;
-    SUB = total - IVA;
-
-    let responseService = 200;
+  const handleActiveYear = async () => {
+    setOpenLoader(true);
+    globalTotal = genConst.CONST_YEAR_VALUE;
+    let total = genConst.CONST_YEAR_VALUE;
+    let IVA = total * genConst.CONST_IVA;
+    let SUB = total - IVA;
+    console.log(total, SUB, IVA);
+    let responseService = genConst.CONST_200;
     let referCode;
-    globalTotal = total;
     try {
       if (responseService === 200) {
-        referCode = userRefer;
-        for (let i = 0; i < 4; i++) {
-          //PAGAR
-          await firebase
-            .firestore()
-            .collection('User')
-            .where('ownReferal', '==', referCode)
-            .get()
-            // eslint-disable-next-line no-loop-func
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                referCode = doc.data().refer;
-                //TO DO - EXEC BENEFITS
-                generatePaymentDistribution(total, i, doc.data().idUser, doc.data().email, userEmail);
-                if (doc.data().refer === 0) {
-                  i = 4;
-                }
-              });
-            })
-            .catch((error) => {
-              console.log('Error getting documents: ', error);
-              setOpen(false);
+        referCode = refer;
+        if (refer == null) {
+          saveKhuskaBenefit(total, id, email, initDate());
+        } else {
+          for (let i = 0; i < 4; i++) {
+            //PAGAR
+            await getDad(referCode).then((res) => {
+              referCode = res.refer;
+              generatePaymentDistribution(total, i, res.id, res.email);
+              if (res.refer == null) {
+                i = 4;
+              }
             });
+          }
         }
+        console.log('GG ' + globalTotal);
         //SAVE KHUSKA BENEFIT
-        saveKhuskaBenefit(globalTotal, userRefer, userEmail);
+        saveKhuskaBenefit(globalTotal, id, email, initDate());
         //GENERATE KHUSKA BILL
-        generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
+        //generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
         //GENERATE PAYMENT
-        generatePaymentData(userId, total, 'Y', 1, date1); //1 = TCR
+        //generatePaymentData(userId, total, 'M', 1, date1); //1 = TCR
 
         setTimeout(function () {
-          setOpen(false);
-          history.push('/dashboard');
+          setOpenLoader(false);
+          //history.push('/dashboard');
           toast.success('Suscripción ha sido activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-        }, 6000);
+        }, 5000);
       } else {
         if (responseService === 400) {
           //SERVICIO FUERA DE LINEA
-          setOpen(false);
+          setOpenLoader(false);
         } else if (responseService === 500) {
           //TARJETA NO VALIDA
-          setOpen(false);
+          setOpenLoader(false);
         } else {
           //INTENTE MAS TARDE
-          setOpen(false);
+          setOpenLoader(false);
         }
       }
     } catch (error) {
-      setOpen(false);
+      setOpenLoader(false);
     }
-  };*/
+  };
+
+  //SAVE KHUSKA BENEFIT
+  const saveKhuskaBenefit = (value1, value2, value3, value4) => {
+    const idBenefit = generateId(10);
+    const obj = {
+      id: idBenefit,
+      total: value1,
+      idUser: value2,
+      email: value3,
+      createAt: value4,
+      name: name,
+      lastName: lastName
+    };
+    createDocument(collKhuskaBenefit, idBenefit, obj);
+  };
+
+  const generatePaymentDistribution = (value1, value2, value3, value4) => {
+    //SE ENCARGA DE DISTRIBUIR LOS BENEFICIOS A LOS 4 MIEMBROS DE KHUSKA
+    var t = 0;
+    console.log('FLUJO DISTRIBUCION BENEFICIO RED PERSONAL: ' + globalTotal);
+    if (value2 === 0) {
+      //LEVEL 1
+      t = value1 * genConst.CONST_LVL1;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(t, value2, value3, value4);
+    } else if (value2 === 1) {
+      //LEVEL 2
+      t = value1 * genConst.CONST_LVL2;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(t, value2, value3, value4);
+    } else if (value2 === 2) {
+      //LEVEL 3
+      t = value1 * genConst.CONST_LVL3;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(t, value2, value3, value4);
+    } else if (value2 === 3) {
+      //LEVEL 4
+      t = value1 * genConst.CONST_LVL4;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(t, value2, value3, value4);
+    }
+  };
+
+  //SAVE USER BENFIT
+  const saveUserBenefit = (value1, value2, value3, value4) => {
+    console.log('FLUJO GENERAR BENEFICIO USUARIO');
+    const idTran = generateId(8);
+    const obj = {
+      total: value1,
+      level: value2 + 1,
+      idRefer: value3,
+      emailRefer: value4,
+      name: name,
+      lastName: lastName,
+      email: email,
+      idUser: id,
+      id: idTran,
+      date: fullDate(),
+      state: genConst.CONST_BEN_PEN
+    };
+    createDocument(collUserBenefit, idTran, obj);
+    //sendBenefitEmail(value4, nameReferal, userEmail, value1);
+  };
 
   const cleanData = () => {
     setName('');
@@ -566,13 +525,13 @@ export default function Users() {
                 </MenuItem>
               </Menu>
             </Box>
-
             <Box sx={{ flexGrow: 0 }}>
               {usersList.length > 0 ? (
                 <OutlinedInput
                   id={inputLabels.search}
                   type="text"
                   name={inputLabels.search}
+                  fullWidth
                   onChange={(ev) => setSearch(ev.target.value)}
                   placeholder={inputLabels.placeHolderSearch}
                   style={{ width: 300 }}
@@ -641,11 +600,15 @@ export default function Users() {
                               setLastName(r.lastName);
                               setEMail(r.email);
                               setCode(r.ownReferal);
+                              setRefer(r.refer);
                               setProfile(r.profile);
                               setState(r.state);
                               setCreateAt(r.createAt);
                               setUpdateAt(r.updateAt);
                               handleOpenCreate();
+                              getUserDataSubscription(r.id).then((datos) => {
+                                setSubData(datos);
+                              });
                               setIsEdit(true);
                             }}
                           >
@@ -775,25 +738,85 @@ export default function Users() {
                   </FormControl>
                 </Grid>
                 {isEdit ? (
-                  <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
-                    <FormControl fullWidth>
-                      <InputLabel>
-                        <strong>Usuario desde: </strong>
-                        {createAt}
-                      </InputLabel>
-                    </FormControl>
-                    <FormControl fullWidth>
-                      <InputLabel>
-                        <strong>Código: </strong>
-                        {code}
-                      </InputLabel>
-                    </FormControl>
-                  </Grid>
+                  <>
+                    <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <strong style={{ fontSize: 16 }}>Usuario</strong>
+                        </InputLabel>
+                      </FormControl>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <strong>Usuario desde: </strong>
+                          {createAt}
+                        </InputLabel>
+                      </FormControl>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <strong>Código: </strong>
+                          {code}
+                        </InputLabel>
+                      </FormControl>
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <strong style={{ fontSize: 16 }}>Suscripción</strong>
+                        </InputLabel>
+                      </FormControl>
+                      {subData.state == genConst.CONST_STATE_AC ? (
+                        <>
+                          <FormControl fullWidth>
+                            <InputLabel>
+                              <strong>Plan Actual: </strong>
+                              {subData.description}
+                            </InputLabel>
+                          </FormControl>
+                          <FormControl fullWidth>
+                            <InputLabel>
+                              <strong>Precio: </strong>
+                              {'$ ' + subData.price}
+                            </InputLabel>
+                          </FormControl>
+                          <FormControl fullWidth>
+                            <InputLabel>
+                              <strong>Fecha hasta: </strong>
+                              {subData.endDate}
+                            </InputLabel>
+                          </FormControl>
+                        </>
+                      ) : (
+                        <FormControl fullWidth>
+                          <InputLabel>
+                            <strong>ESTADO: </strong>
+                            {subData.state == genConst.CONST_STATE_AC
+                              ? genConst.CONST_SUB_STATE_ACT_TEXT
+                              : genConst.CONST_SUB_STATE_INA_TEXT}
+                          </InputLabel>
+                        </FormControl>
+                      )}
+                    </Grid>
+                  </>
                 ) : (
                   <></>
                 )}
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  Hola
+                <Grid item lg={6} md={6} sm={6} xs={6}>
+                  <center>
+                    <h5>Distribución Beneficios en Red personal</h5>
+                    <ButtonGroup variant="outlined" aria-label="outlined button group">
+                      <Button onClick={handleActiveMonth}>Mensual</Button>
+                      <Button onClick={handleActiveYear}>Anual</Button>
+                    </ButtonGroup>
+                  </center>
+                </Grid>
+                <Grid item lg={6} md={6} sm={6} xs={6}>
+                  <center>
+                    <h5>Acciones estado de suscripción</h5>
+                    <ButtonGroup variant="outlined" aria-label="outlined button group">
+                      <Button onClick={handleMonthSub}>Mensual</Button>
+                      <Button onClick={handleYearSub}>Anual</Button>
+                    </ButtonGroup>
+                  </center>
                 </Grid>
                 <Grid item lg={12} md={12} sm={12} xs={12}>
                   <center>

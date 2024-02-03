@@ -43,7 +43,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 //Utils
 import { fullDate } from 'utils/validations';
 import { genConst } from 'store/constant';
-import { collCourses } from 'store/collections';
+import { collCourses, collUsers } from 'store/collections';
 import { generateId } from 'utils/idGenerator';
 
 const AuthInscription = () => {
@@ -108,7 +108,7 @@ const AuthInscription = () => {
           updateProfile(authentication.currentUser, {
             displayName: firstName + ' ' + lastName
           });
-          setDoc(doc(db, 'Users', user.uid), {
+          setDoc(doc(db, collUsers, user.uid), {
             id: user.uid,
             name: firstName + ' ' + lastName,
             email: email,

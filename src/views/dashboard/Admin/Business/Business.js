@@ -150,7 +150,7 @@ export default function Business() {
                 <MenuItem
                   key="id-1"
                   onClick={() => {
-                    navigate('/app/add-business');
+                    navigate('/main/add-business');
                   }}
                 >
                   <IconPlus style={{ marginRight: 4 }} />
@@ -180,7 +180,7 @@ export default function Business() {
               >
                 <MenuItem
                   onClick={() => {
-                    navigate('/app/add-business');
+                    navigate('/main/add-business');
                   }}
                 >
                   <IconPlus style={{ marginRight: 10 }} />
@@ -249,7 +249,7 @@ export default function Business() {
                             style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
                             onClick={() => {
                               navigate({
-                                pathname: '/app/info-business',
+                                pathname: '/main/info-business',
                                 search: `?id=${r.id}`
                               });
                             }}
@@ -260,7 +260,7 @@ export default function Business() {
                             style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                             onClick={() => {
                               navigate({
-                                pathname: '/app/edit-business',
+                                pathname: '/main/edit-business',
                                 search: `?id=${r.id}`
                               });
                             }}

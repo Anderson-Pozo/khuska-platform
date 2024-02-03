@@ -29,3 +29,5 @@ export const collUserPaymentMethod = 'UserPaymentMethod';
 export const collInbox = 'Inbox';
 export const collMail = 'Mail';
 export const collNotifications = 'Notifications';
+export const collKhuskaBenefit = 'KhuskaBenefit';
+export const collUserBenefit = 'UserBenefit';

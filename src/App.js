@@ -92,7 +92,6 @@ const App = () => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         getProfileUser(user.uid).then((pro) => {
-          console.log(pro);
           setProfile(pro);
         });
       }

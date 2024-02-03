@@ -8,6 +8,7 @@ import {
   collCourses,
   collGenNoti,
   collIncomes,
+  collKhuskaBenefit,
   collLog,
   collMail,
   collSubscription,
@@ -82,6 +83,18 @@ export async function getProfileUser(id) {
   });
   return profile;
 }
+//Obtener Padre de Hijo
+export async function getDad(code) {
+  let data = null;
+  const q = query(collection(db, collUsers), where('ownReferal', '==', code));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      data = doc.data();
+    });
+  }
+  return data;
+}
 //Obtener Datos Perfil de Usuario Administrador por ID
 export async function getProfileUserAdmin(id) {
   let profile = null;
@@ -111,6 +124,16 @@ export async function getUserSubscription(id) {
     state = doc.data().state;
   });
   return state;
+}
+//Obtener datos de la Subscripción de un Usuario por ID
+export async function getUserDataSubscription(id) {
+  let data = null;
+  const q = query(collection(db, collSubscription), where('idUser', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data = doc.data();
+  });
+  return data;
 }
 //Obtner el Negocio por Id
 export async function getBusinessById(id) {
@@ -151,6 +174,14 @@ export async function getUserNotifications(id) {
   });
   return list;
 }
+export const getBenefits = async () => {
+  const list = [];
+  const querySnapshot = await getDocuments(collKhuskaBenefit);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
 export async function getMail() {
   const list = [];
   const querySnapshot = await getDocuments(collMail);
@@ -219,6 +250,15 @@ export async function getUserName(id) {
   });
   return name;
 }
+//Total Beneficio
+export async function getTotalBenefit() {
+  let total = 0;
+  const querySnapshot = await getDocuments(collKhuskaBenefit);
+  querySnapshot.forEach((doc) => {
+    total = total + doc.data().total;
+  });
+  return total;
+}
 export async function getBusinessListByUser(id) {
   let data = [];
   const q = query(collection(db, collBusiness), where('userId', '==', id));
@@ -239,10 +279,10 @@ export const countUser = async () => {
 };
 //Obtenemos cantidad de Usuarios Administradores Registrados
 export const countAdminUser = async () => {
-  const usersCollection = collection(db, collAdminUsers);
-  const querySnapshot = await getDocs(usersCollection);
-  const userCount = querySnapshot.size;
-  return userCount;
+  const q = query(collection(db, collUsers), where('profile', '==', genConst.CONST_PRO_ADM));
+  const querySnapshot = await getDocs(q);
+  const count = querySnapshot.size;
+  return count;
 };
 //Obtenemos cantidad de Negocios Registrados
 export const countBusiness = async () => {

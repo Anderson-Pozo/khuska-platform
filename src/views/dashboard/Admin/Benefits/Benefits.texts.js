@@ -39,6 +39,6 @@ export const inputLabels = {
   observations: 'observationes',
   labelBirth: 'Fecha de Nacimiento',
   birth: 'birth',
-  placeHolderSearch: 'Buscar por Razón Social o C.I. / R.U.C.',
+  placeHolderSearch: 'Buscar por email o apellido',
   search: 'search'
 };

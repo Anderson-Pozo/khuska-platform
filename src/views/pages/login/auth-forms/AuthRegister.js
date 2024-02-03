@@ -228,6 +228,7 @@ const AuthRegister = ({ ...others }) => {
                   birthday: '',
                   avatar: null,
                   state: genConst.CONST_STATE_IN,
+                  subState: genConst.CONST_STATE_IN,
                   profile: genConst.CONST_PRO_DEF,
                   createAt: fullDate(),
                   registerDate: fullDate(),
