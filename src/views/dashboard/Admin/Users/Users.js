@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Paper,
@@ -31,7 +32,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
-import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUsers } from '@tabler/icons';
+import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUsers, IconNetwork } from '@tabler/icons';
 //Firebase Events
 import { createDocument, deleteDocument, getDad, getUserDataSubscription, updateDocument } from 'config/firebaseEvents';
 //Notifications
@@ -50,6 +51,7 @@ import { useGetUsers } from 'hooks/useGetUsers';
 let globalTotal = 0;
 
 export default function Users() {
+  let navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -587,10 +589,30 @@ export default function Users() {
                         {r.profile === genConst.CONST_PRO_ADM ? genConst.CONST_PRO_ADM_TXT : genConst.CONST_PRO_STU_TXT}
                       </TableCell>
                       <TableCell align="left">
-                        {r.state === genConst.CONST_STA_ACT ? genConst.CONST_STA_ACT_TXT : genConst.CONST_STA_INACT_TXT}
+                        {r.state === genConst.CONST_STA_ACT ? (
+                          <h4 style={{ color: '#36b836' }}>{genConst.CONST_STA_ACT_TXT}</h4>
+                        ) : (
+                          <h4 style={{ color: '#d84315' }}>{genConst.CONST_STA_INACT_TXT}</h4>
+                        )}
                       </TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
+                          <Button
+                            style={{ backgroundColor: genConst.CONST_INFO_COLOR }}
+                            onClick={() => {
+                              setTitle(titles.titleNetwork);
+                              setId(r.id);
+                              setCode(r.ownReferal);
+                              setName(r.name);
+                              setEMail(r.email);
+                              navigate({
+                                pathname: '/main/network-users',
+                                search: `?code=${r.ownReferal}`
+                              });
+                            }}
+                          >
+                            <IconNetwork />
+                          </Button>
                           <Button
                             style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                             onClick={() => {

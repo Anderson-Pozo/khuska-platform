@@ -74,13 +74,6 @@ const Header = (props) => {
             </ListItemButton>
           </ListItem>
         </Scroll>
-        <Scroll to="benefits" smooth={true}>
-          <ListItem key={3} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={'Beneficios'} />
-            </ListItemButton>
-          </ListItem>
-        </Scroll>
         <Scroll to="contacts" smooth={true}>
           <ListItem key={4} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }}>
@@ -124,9 +117,6 @@ const Header = (props) => {
             </Scroll>
             <Scroll to="about" smooth={true}>
               <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 15 }}>Somos</Button>
-            </Scroll>
-            <Scroll to="benefits" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 15 }}>Beneficios</Button>
             </Scroll>
             <Scroll to="contacts" smooth={true}>
               <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 15 }}>Contáctanos</Button>

@@ -1,5 +1,6 @@
 export const titles = {
   require: 'Todos los campos marcados con * son obligatorios.!',
+  title: 'Red de Negocios',
   successCreate: 'Usuario creado correctamente!.',
   successUpdate: 'Usuario actualizado correctamente!.',
   successDelete: 'Usuario inactivado correctamente!.',
@@ -7,6 +8,7 @@ export const titles = {
   titleCreate: 'Crear Usuario',
   titleUpdate: 'Editar Usuario',
   titleDelete: 'Inactivar Usuario',
+  titleNetwork: 'Red Negocios',
   labelCreate: 'Usuario creado',
   labelUpdate: 'Usuario actualizado',
   labelDelete: 'Usuario inactivado',
@@ -25,7 +27,14 @@ export const titles = {
   buttonUpdate: 'Actualizar',
   buttonDelete: 'Inactivar',
   buttonCancel: 'Cancelar',
-  loading: 'Cargando...'
+  loading: 'Cargando...',
+  level1: 'Nivel 1',
+  level2: 'Nivel 2',
+  level3: 'Nivel 3',
+  level4: 'Nivel 4',
+  active: 'MIEMBRO',
+  noActive: 'NO MIEMBRO',
+  altImage: 'Avatar user'
 };
 
 export const inputLabels = {

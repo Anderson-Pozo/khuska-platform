@@ -35,14 +35,16 @@ export const uiStyles = {
     fontSize: '2rem'
   },
   colorText: {
-    color: '#53338a'
+    color: '#53338a',
+    lineHeight: 'normal'
   },
   container: {
     textAlign: 'center'
   },
   title: {
     color: '#fff',
-    fontSize: '2.5rem'
+    fontSize: '2.5rem',
+    lineHeight: 'normal'
   },
   goDown: {
     color: '#9f98c2',
@@ -56,6 +58,9 @@ export const uiStyles = {
   media: {
     height: 300
   },
+  mediaService: {
+    height: 200
+  },
   mediaBenefit: {
     height: 200
   },
@@ -65,9 +70,17 @@ export const uiStyles = {
   contentAbout: {
     height: 200
   },
+  contentService: {
+    height: 100
+  },
   titlePlace: {
     fontWeight: 'bold',
     fontSize: '1.5rem',
+    color: '#fff'
+  },
+  titleService: {
+    fontWeight: 'bold',
+    fontSize: '1rem',
     color: '#fff'
   },
   descPlace: {

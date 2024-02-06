@@ -44,13 +44,6 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'network',
-      title: 'Red de Negocios',
-      type: 'item',
-      url: '/main/network',
-      icon: icons.IconNetwork
-    },
-    {
       id: 'benefits',
       title: 'Beneficios',
       type: 'item',

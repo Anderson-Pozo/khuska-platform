@@ -28,7 +28,7 @@ export default function About() {
           <Grid container spacing={1}>
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <center>
-                <Scroll to="benefits" smooth={true}>
+                <Scroll to="contacts" smooth={true}>
                   <IconButton>
                     <ExpandMoreIcon style={uiStyles.goDown} />
                   </IconButton>
@@ -45,15 +45,14 @@ export default function About() {
 const places = [
   {
     title: 'Somos KHUSKA',
-    description:
-      'Excelentes emprendedores apoyándote a crear, innovar, brindar crecimiento y sostenibilidad en el tiempo para tu negocio y empresa.',
+    description: 'Emprendedores apoyándote a crear, innovar, brindar crecimiento y sostenibilidad en el tiempo para tu negocio y empresa.',
     imageUrl: a1,
     time: 1500
   },
   {
     title: '',
     description:
-      'Institución dedicada a brindar productos y servicios únicos, oportunos y excepcionales que apoyen a nuestros emprendedores en la consecución de sus metas.',
+      'Institución dedicada a brindar productos y servicios únicos, oportunos y excepcionales que apoyan a emprendedores en la consecución de sus metas.',
     imageUrl: a2,
     time: 1500
   },

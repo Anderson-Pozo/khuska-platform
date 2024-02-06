@@ -98,8 +98,8 @@ const Subscription = () => {
                             onChange={handleRadioChange}
                             values={type}
                           >
-                            <FormControlLabel value={1} control={<Radio />} label="Mensual $30" />
-                            <FormControlLabel value={2} control={<Radio />} label="Anual $300" />
+                            <FormControlLabel value={1} control={<Radio />} label={'Mensual $ ' + genConst.CONST_MONTH_VALUE} />
+                            <FormControlLabel value={2} control={<Radio />} label={'Anual $ ' + genConst.CONST_YEAR_VALUE} />
                           </RadioGroup>
                         </FormControl>
                       </center>

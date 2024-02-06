@@ -1,21 +1,15 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 // material-ui
 import { styled } from '@mui/material/styles';
 import { Box, Grid, Typography, Modal } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-
 // project imports
 import MainCard from 'components/cards/MainCard';
-
 import defaultUser from 'assets/images/profile/profile-picture-6.jpg';
-//import camImage from 'assets/images/camera.png';
-
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 //Firebase
 import { db, storage, authentication } from 'config/firebase';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';

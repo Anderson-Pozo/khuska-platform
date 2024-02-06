@@ -18,6 +18,7 @@ import { genConst } from 'store/constant';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { getProfileUser } from 'config/firebaseEvents';
+import UsersNetwork from 'views/dashboard/Admin/Users/UsersNetwork';
 
 // Main Portal
 const Home = Loadable(lazy(() => import('views/home/Home')));
@@ -137,6 +138,7 @@ const App = () => {
               <Route element={<Settings />} path="settings" exact />
               <Route element={<Mail />} path="mail" exact />
               <Route element={<Notifications />} path="notifications" exact />
+              <Route element={<UsersNetwork />} path="network-users" exact />
               <Route element={<UserProfile />} path="user-profile" exact />
               <Route element={<UserContact />} path="user-contact" exact />
               <Route element={<UserBill />} path="user-bill" exact />

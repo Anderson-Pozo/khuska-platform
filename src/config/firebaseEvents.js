@@ -238,6 +238,16 @@ export const getUsersList = async () => {
   });
   return list;
 };
+//Obtenemos datos de Usuario por codigo
+export const getUsersDataByCode = async (code) => {
+  const list = [];
+  const q = query(collection(db, collUsers), where('ownReferal', '==', code));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
 //Obtener lista de Negocios
 export async function getBusinessList() {
   const list = [];
@@ -272,6 +282,16 @@ export async function getCourseData(id) {
 export async function getUserName(id) {
   let name = null;
   const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    name = doc.data().name + ' ' + doc.data().lastName;
+  });
+  return name;
+}
+//Obtenemos el nombre y apellido de Usuario por ID
+export async function getUserNameByCode(code) {
+  let name = null;
+  const q = query(collection(db, collUsers), where('ownReferal', '==', code));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     name = doc.data().name + ' ' + doc.data().lastName;

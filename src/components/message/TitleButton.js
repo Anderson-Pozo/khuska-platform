@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 // material-ui
 import { styled } from '@mui/material/styles';
-import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Avatar, Box, Button, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 // project imports
 import MainCard from 'components/cards/MainCard';
 // assets
 import defaultImg from 'assets/images/profile/profile-picture-6.jpg';
+import { IconArrowLeft } from '@tabler/icons';
 
 // styles
 const CardWrapper = styled(MainCard)(({ theme }) => ({
@@ -15,12 +17,18 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   position: 'relative'
 }));
 
-const Title = ({ message, submessage, avatar }) => {
+const TitleButton = ({ message, submessage, avatar, route }) => {
+  let navigate = useNavigate();
   return (
     <CardWrapper border={false} content={false}>
       <Box sx={{ p: 2 }}>
         <List sx={{ py: 0 }}>
           <ListItem alignItems="center" disableGutters sx={{ py: 0 }}>
+            <ListItemAvatar>
+              <Button onClick={() => navigate(route)}>
+                <IconArrowLeft color="#FFF" size={30} />
+              </Button>
+            </ListItemAvatar>
             <ListItemAvatar>
               <Avatar
                 variant="rounded"
@@ -61,10 +69,11 @@ const Title = ({ message, submessage, avatar }) => {
   );
 };
 
-Title.propTypes = {
+TitleButton.propTypes = {
   message: PropTypes.string,
   submessage: PropTypes.string,
-  avatar: PropTypes.string
+  avatar: PropTypes.string,
+  route: PropTypes.string
 };
 
-export default Title;
+export default TitleButton;
