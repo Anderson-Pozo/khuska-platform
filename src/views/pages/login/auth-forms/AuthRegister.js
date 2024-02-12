@@ -245,7 +245,7 @@ const AuthRegister = ({ ...others }) => {
                 setTimeout(() => {
                   setOpenLoader(false);
                   navigate('/app/dashboard');
-                }, 4000);
+                }, 2000);
               })
               .catch((error) => {
                 if (error.code === 'auth/user-not-found') {
