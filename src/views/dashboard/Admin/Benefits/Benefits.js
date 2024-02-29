@@ -29,6 +29,8 @@ import MessageDark from 'components/message/MessageDark';
 import EarningCard from 'components/cards/EarningCard';
 import EarningBlueCard from 'components/cards/EarningBlueCard';
 import { genConst } from 'store/constant';
+import EarningRedCard from 'components/cards/EarningRedCard';
+import EarningGreenCard from 'components/cards/EarningGreenCard';
 
 export default function Benefits() {
   const [page, setPage] = useState(0);
@@ -77,10 +79,16 @@ export default function Benefits() {
             <Grid item xs={12}>
               <Grid container spacing={2}>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningCard total={total} detail="Total de ingresos" />
+                  <EarningCard total={total} detail="Ingresos" />
                 </Grid>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningBlueCard total={0} detail="Total de beneficio" />
+                  <EarningBlueCard total={0} detail="Beneficio" />
+                </Grid>
+                <Grid item lg={3} md={6} sm={6} xs={6}>
+                  <EarningGreenCard total={0} detail="Pagado" />
+                </Grid>
+                <Grid item lg={3} md={6} sm={6} xs={6}>
+                  <EarningRedCard total={0} detail="Pendiente" />
                 </Grid>
               </Grid>
             </Grid>

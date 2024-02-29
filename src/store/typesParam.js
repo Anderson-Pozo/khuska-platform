@@ -1,6 +1,8 @@
 export const types = [
   { value: '', label: 'Seleccione el tipo de parámetro' },
-  { value: 'PARAM01', label: 'CONFIG' },
-  { value: 'PARAM02', label: 'STYLES' },
-  { value: 'PARAM03', label: 'DATADB' }
+  { value: 'CONFIG', label: 'CONFIGURACIÓN' },
+  { value: 'STYLES', label: 'ESTILOS' },
+  { value: 'DATADB', label: 'BASE DE DATOS' },
+  { value: 'BUSSPR', label: 'PARÁMETRO DE NEGOCIO' },
+  { value: 'CTAACC', label: 'CUENTA BANCARIA' }
 ];

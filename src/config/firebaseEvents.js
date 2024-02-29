@@ -11,6 +11,7 @@ import {
   collKhuskaBenefit,
   collLog,
   collMail,
+  collProducts,
   collSubscription,
   collUserBenefit,
   collUsers,
@@ -156,6 +157,16 @@ export async function getBusinessById(id) {
   });
   return data;
 }
+//Obtner el Producto por Id
+export async function getProductById(id) {
+  let data = [];
+  const q = query(collection(db, collProducts), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
 //LISTAS
 //Obtenemos la lista de Usuarios
 export const getUsersData = async () => {
@@ -255,6 +266,16 @@ export async function getBusinessList() {
   querySnapshot.forEach((doc) => {
     list.push(doc.data());
     list.sort((a, b) => a.name.localeCompare(b.name));
+  });
+  return list;
+}
+//Obtener lista de Productos
+export async function getProductsByBusiness(id) {
+  const list = [];
+  const q = query(collection(db, collProducts), where('idBusiness', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
   });
   return list;
 }

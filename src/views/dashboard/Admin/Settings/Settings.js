@@ -31,18 +31,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Settings.styles';
 
-import {
-  IconApps,
-  IconPlus,
-  IconDownload,
-  IconUpload,
-  IconDeviceFloppy,
-  IconTrash,
-  IconEdit,
-  IconCircleX,
-  IconPencil,
-  IconSettings
-} from '@tabler/icons';
+import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconSettings } from '@tabler/icons';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -62,6 +51,7 @@ import { createDocument, deleteDocument, updateDocument, createLogRecord, getDoc
 //types array
 import { types } from 'store/typesParam';
 import MessageDark from 'components/message/MessageDark';
+import { ctaAccount } from 'store/constant';
 
 function searchingData(search) {
   return function (x) {
@@ -87,6 +77,11 @@ export default function Settings() {
   const [value, setValue] = React.useState(null);
   const [createAt, setCreateAt] = React.useState(null);
   const [updateAt, setUpdateAt] = React.useState(null);
+
+  const [nameAccount, setNameAccount] = React.useState(null);
+  const [ctaNumberAccount, setCtaNumberAccount] = React.useState(null);
+  const [ctaCi, setCtaCi] = React.useState(null);
+  const [ctaBankName, setCtaBankName] = React.useState(null);
 
   const [search, setSearch] = React.useState('');
   const [openLoader, setOpenLoader] = React.useState(false);
@@ -157,13 +152,17 @@ export default function Settings() {
   };
 
   const handleCreate = () => {
-    if (!type || !name || !value) {
+    if (!type) {
       toast.info(Msg.settvalreq, { position: toast.POSITION.TOP_RIGHT });
     } else {
       const ide = generateId(10);
       setOpenLoader(true);
       const obj = {
         createAt: fullDate(),
+        ctaNameAccount: nameAccount,
+        ctaNumberAccount: ctaNumberAccount,
+        ctaCi: ctaCi,
+        ctaBankName: ctaBankName,
         id: ide,
         name: name,
         value: value,
@@ -183,13 +182,18 @@ export default function Settings() {
   };
 
   const handleEdit = () => {
-    if (!type || !name || !value) {
+    if (!type) {
       toast.info(Msg.settvalreq, { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpenLoader(true);
       const obj = {
         name: name,
         value: value,
+        createAt: createAt,
+        ctaCi: ctaCi,
+        ctaNameAccount: nameAccount,
+        ctaNumberAccount: ctaNumberAccount,
+        ctaBankName: ctaBankName,
         type: type,
         updateAt: fullDate()
       };
@@ -210,6 +214,10 @@ export default function Settings() {
     const obj = {
       action: LogMsg.logsettdel,
       createAt: createAt,
+      ctaNameAccount: nameAccount,
+      ctaNumberAccount: ctaNumberAccount,
+      ctaCi: ctaCi,
+      ctaBankName: ctaBankName,
       deleteAt: fullDate(),
       id: ide,
       name: name,
@@ -281,14 +289,6 @@ export default function Settings() {
                   <IconPlus style={{ marginRight: 4 }} />
                   <Typography textAlign="center">{titles.addMenu}</Typography>
                 </MenuItem>
-                <MenuItem key="id-2" onClick={handleCloseNavMenu}>
-                  <IconDownload style={{ marginRight: 10 }} />
-                  <Typography textAlign="center">{titles.exportMenu}</Typography>
-                </MenuItem>
-                <MenuItem key="id-3" onClick={handleCloseNavMenu}>
-                  <IconUpload style={{ marginRight: 10 }} />
-                  <Typography textAlign="center">{titles.importMenu}</Typography>
-                </MenuItem>
               </Menu>
             </Box>
             <Box sx={uiStyles.box2}>
@@ -322,14 +322,6 @@ export default function Settings() {
                   <IconPlus style={{ marginRight: 10 }} />
                   {titles.addMenu}
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <IconDownload style={{ marginRight: 10 }} />
-                  {titles.exportMenu}
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <IconUpload style={{ marginRight: 10 }} />
-                  {titles.importMenu}
-                </MenuItem>
               </Menu>
             </Box>
 
@@ -357,7 +349,10 @@ export default function Settings() {
               <TableHead>
                 <TableRow>
                   <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
-                    {inputLabels.name}
+                    {inputLabels.type}
+                  </TableCell>
+                  <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                    {inputLabels.nameVal}
                   </TableCell>
                   <TableCell key="id-value" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {inputLabels.value}
@@ -373,8 +368,9 @@ export default function Settings() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((r) => (
                     <TableRow hover key={r.id}>
-                      <TableCell align="left">{r.name}</TableCell>
-                      <TableCell align="left">{r.value}</TableCell>
+                      <TableCell align="left">{r.type}</TableCell>
+                      <TableCell align="left">{r.name || r.ctaBankName}</TableCell>
+                      <TableCell align="left">{r.value || r.ctaNumberAccount}</TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
                           <Button
@@ -460,60 +456,121 @@ export default function Settings() {
                     </TextField>
                   </FormControl>
                 </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="name">{inputLabels.name}</InputLabel>
-                    <OutlinedInput
-                      id="name"
-                      type="text"
-                      name="name"
-                      value={name || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setName(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="value">{inputLabels.value}</InputLabel>
-                    <OutlinedInput
-                      id="value"
-                      type="text"
-                      name="value"
-                      value={value || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setValue(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <ButtonGroup>
-                    {!isEdit ? (
+                {type == ctaAccount ? (
+                  <>
+                    <Grid item lg={6} md={6} sm={6} xs={6}>
+                      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="nameBank">{inputLabels.nameBank}</InputLabel>
+                        <OutlinedInput
+                          id="nameBank"
+                          type="text"
+                          name="nameBank"
+                          value={ctaBankName || ''}
+                          inputProps={{}}
+                          onChange={(ev) => setCtaBankName(ev.target.value)}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={6} xs={6}>
+                      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="name">{inputLabels.name}</InputLabel>
+                        <OutlinedInput
+                          id="name"
+                          type="text"
+                          name="name"
+                          value={nameAccount || ''}
+                          inputProps={{}}
+                          onChange={(ev) => setNameAccount(ev.target.value)}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={6} xs={6}>
+                      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="ctaNumber">{inputLabels.ctaNumber}</InputLabel>
+                        <OutlinedInput
+                          id="ctaNumber"
+                          type="text"
+                          name="ctaNumber"
+                          value={ctaNumberAccount || ''}
+                          inputProps={{}}
+                          onChange={(ev) => setCtaNumberAccount(ev.target.value)}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={6} xs={6}>
+                      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="ctaCi">{inputLabels.ctaCi}</InputLabel>
+                        <OutlinedInput
+                          id="ctaCi"
+                          type="number"
+                          name="ctaCi"
+                          value={ctaCi || ''}
+                          inputProps={{}}
+                          onChange={(ev) => setCtaCi(ev.target.value)}
+                        />
+                      </FormControl>
+                    </Grid>
+                  </>
+                ) : (
+                  <>
+                    <Grid item lg={6} md={6} sm={6} xs={6}>
+                      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="name">{inputLabels.nameParam}</InputLabel>
+                        <OutlinedInput
+                          id="name"
+                          type="text"
+                          name="name"
+                          value={name || ''}
+                          inputProps={{}}
+                          onChange={(ev) => setName(ev.target.value)}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item lg={6} md={6} sm={6} xs={6}>
+                      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <InputLabel htmlFor="value">{inputLabels.value}</InputLabel>
+                        <OutlinedInput
+                          id="value"
+                          type="text"
+                          name="value"
+                          value={value || ''}
+                          inputProps={{}}
+                          onChange={(ev) => setValue(ev.target.value)}
+                        />
+                      </FormControl>
+                    </Grid>
+                  </>
+                )}
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <center>
+                    <ButtonGroup>
+                      {!isEdit ? (
+                        <Button
+                          variant="contained"
+                          startIcon={<IconDeviceFloppy />}
+                          size="large"
+                          style={{ margin: 5 }}
+                          onClick={handleCreate}
+                        >
+                          {titles.buttonCreate}
+                        </Button>
+                      ) : (
+                        <Button variant="contained" startIcon={<IconPencil />} size="large" style={{ margin: 5 }} onClick={handleEdit}>
+                          {titles.buttonEdit}
+                        </Button>
+                      )}
                       <Button
                         variant="contained"
-                        startIcon={<IconDeviceFloppy />}
+                        color="error"
+                        startIcon={<IconCircleX />}
                         size="large"
                         style={{ margin: 5 }}
-                        onClick={handleCreate}
+                        onClick={handleCloseCreate}
                       >
-                        {titles.buttonCreate}
+                        {titles.buttonCancel}
                       </Button>
-                    ) : (
-                      <Button variant="contained" startIcon={<IconPencil />} size="large" style={{ margin: 5 }} onClick={handleEdit}>
-                        {titles.buttonEdit}
-                      </Button>
-                    )}
-                    <Button
-                      variant="contained"
-                      color="error"
-                      startIcon={<IconCircleX />}
-                      size="large"
-                      style={{ margin: 5 }}
-                      onClick={handleCloseCreate}
-                    >
-                      {titles.buttonCancel}
-                    </Button>
-                  </ButtonGroup>
+                    </ButtonGroup>
+                  </center>
                 </Grid>
               </Grid>
             </Grid>

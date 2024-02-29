@@ -33,7 +33,7 @@ import SubscriptionState from 'components/message/SubscriptionState';
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
 import EarningBlueCard from 'components/cards/EarningBlueCard';
-import EaringRedCard from 'components/cards/EaringRedCard';
+import EarningRedCard from 'components/cards/EarningRedCard';
 import EarningYellowCard from 'components/cards/EaringYellowCard';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
@@ -98,7 +98,7 @@ export default function Benefits() {
                       <EarningYellowCard total={totalPN} detail="Pendiente" />
                     </Grid>
                     <Grid item lg={4} md={4} sm={4} xs={4}>
-                      <EaringRedCard total={totalC} detail="Cancelado" />
+                      <EarningRedCard total={totalC} detail="Cancelado" />
                     </Grid>
                   </Grid>
                 </Grid>

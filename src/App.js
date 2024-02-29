@@ -39,6 +39,11 @@ const Business = Loadable(lazy(() => import('views/dashboard/Admin/Business/Busi
 const BusinessCreate = Loadable(lazy(() => import('views/dashboard/Admin/Business/BusinessCreate')));
 const BusinessInfo = Loadable(lazy(() => import('views/dashboard/Admin/Business/BusinessInfo')));
 const BusinessEdit = Loadable(lazy(() => import('views/dashboard/Admin/Business/BusinessEdit')));
+// dashboard Product
+const Products = Loadable(lazy(() => import('views/dashboard/Admin/Products/Products')));
+const ProductAdd = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductAdd')));
+const ProductEdit = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductEdit')));
+const ProductView = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductView')));
 // dashboard Network
 const Network = Loadable(lazy(() => import('views/dashboard/Admin/Network/Network')));
 // dashboard Mail
@@ -85,6 +90,10 @@ const BusinessInfoDefault = Loadable(lazy(() => import('views/dashboard/Default/
 const BusinessEditDefault = Loadable(lazy(() => import('views/dashboard/Default/Business/BusinessEdit')));
 const SubscriptionDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Subscription')));
 const NotificationsDefault = Loadable(lazy(() => import('views/dashboard/Default/Notifications/Notifications')));
+const ProductsDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/Products')));
+const ProductsAddDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductAdd')));
+const ProductsEditDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductEdit')));
+const ProductsViewDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductView')));
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
@@ -111,6 +120,9 @@ const App = () => {
             <Route element={<Search />} path="search" exact />
             <Route element={<BusinessInfoSearch />} path="business-info" exact />
           </Route>
+          <Route element={<SearchLayout />} path="/compra-venta" exact>
+            <Route element={<Search />} path="search" exact />
+          </Route>
           <Route element={<MinimalLayout />} path="/auth" exact>
             <Route element={<AuthSignin />} path="signin" exact />
             <Route element={<AuthSignup />} path="signup" exact />
@@ -135,6 +147,10 @@ const App = () => {
               <Route element={<BusinessInfo />} path="info-business" exact />
               <Route element={<Network />} path="network" exact />
               <Route element={<Benefits />} path="benefits" exact />
+              <Route element={<Products />} path="products" exact />
+              <Route element={<ProductAdd />} path="add-product" exact />
+              <Route element={<ProductEdit />} path="edit-product" exact />
+              <Route element={<ProductView />} path="info-product" exact />
               <Route element={<Settings />} path="settings" exact />
               <Route element={<Mail />} path="mail" exact />
               <Route element={<Notifications />} path="notifications" exact />
@@ -156,6 +172,10 @@ const App = () => {
               <Route element={<BusinessCreateDefault />} path="add-business" exact />
               <Route element={<BusinessEditDefault />} path="edit-business" exact />
               <Route element={<BusinessInfoDefault />} path="info-business" exact />
+              <Route element={<ProductsDefault />} path="products" exact />
+              <Route element={<ProductsAddDefault />} path="add-product" exact />
+              <Route element={<ProductsEditDefault />} path="edit-product" exact />
+              <Route element={<ProductsViewDefault />} path="info-product" exact />
               <Route element={<NotificationsDefault />} path="notifications" exact />
               <Route element={<NetworkDefault />} path="network" exact />
               <Route element={<BenefitsDefault />} path="benefits" exact />

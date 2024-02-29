@@ -27,12 +27,16 @@ export const titles = {
 };
 
 export const inputLabels = {
-  type: 'Tipo de Método de Pago',
-  name: 'Nombre',
+  type: 'Tipo Parámetro',
+  nameVal: 'Nombre',
+  name: 'Nombre Beneficiario',
+  nameBank: 'Nombre Institución Bancaria',
+  nameParam: 'Nombre Parámetro',
+  value: 'Valor',
   ctaNumber: 'Número de Cuenta',
   ctaOwner: 'Propietario',
   ctaType: 'Tipo de Cuenta',
   ctaCi: 'Identificación',
   ctaEmail: 'Correo Electrónico',
-  search: 'Buscar por Nombre.'
+  search: 'Buscar por Nombre de Parámetro'
 };

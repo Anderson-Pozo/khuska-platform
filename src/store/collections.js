@@ -16,6 +16,7 @@ export const collSettings = 'Settings';
 export const collIncomes = 'Incomes';
 export const collPaymentMtd = 'PaymentsMethods';
 export const collBusiness = 'Business';
+export const collProducts = 'Products';
 export const collBenefits = 'Benefits';
 export const collNetwork = 'Network';
 

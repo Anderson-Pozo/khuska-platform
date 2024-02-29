@@ -22,7 +22,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { uiStyles } from './Business.styles';
-import { IconEdit, IconTrash, IconPlus, IconSearch, IconEye, IconCircleX } from '@tabler/icons';
+import { IconEdit, IconTrash, IconPlus, IconSearch, IconEye, IconCircleX, IconArchive } from '@tabler/icons';
 import SubscriptionState from 'components/message/SubscriptionState';
 //Notifications
 import { ToastContainer } from 'react-toastify';
@@ -170,6 +170,17 @@ export default function Business() {
                         <TableCell align="left">{item.email}</TableCell>
                         <TableCell align="center">
                           <ButtonGroup variant="contained">
+                            <Button
+                              style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
+                              onClick={() => {
+                                navigate({
+                                  pathname: '/app/products',
+                                  search: `?id=${item.id}`
+                                });
+                              }}
+                            >
+                              <IconArchive />
+                            </Button>
                             <Button
                               style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
                               onClick={() => {

@@ -46,7 +46,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   }
 }));
 
-const EaringRedCard = ({ total, detail }) => {
+const EarningRedCard = ({ total, detail }) => {
   const theme = useTheme();
 
   return (
@@ -94,9 +94,9 @@ const EaringRedCard = ({ total, detail }) => {
   );
 };
 
-EaringRedCard.propTypes = {
+EarningRedCard.propTypes = {
   total: PropTypes.number,
   detail: PropTypes.string
 };
 
-export default EaringRedCard;
+export default EarningRedCard;

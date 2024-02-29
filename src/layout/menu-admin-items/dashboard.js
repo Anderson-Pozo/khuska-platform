@@ -36,14 +36,6 @@ const dashboard = {
       breadcrumbs: false
     },
     {
-      id: 'clients',
-      title: 'Clientes',
-      type: 'item',
-      url: '/main/clients',
-      icon: icons.IconFriends,
-      breadcrumbs: false
-    },
-    {
       id: 'benefits',
       title: 'Beneficios',
       type: 'item',

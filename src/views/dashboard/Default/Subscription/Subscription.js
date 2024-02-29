@@ -54,20 +54,23 @@ const Subscription = () => {
     if (event.target.value == 1) {
       setIsType(true);
       setType(1);
-      let ivaValue = genConst.CONST_MONTH_VALUE * genConst.CONST_IVA;
+      let subtotal = Math.round((genConst.CONST_MONTH_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
+      let ivaValue = genConst.CONST_MONTH_VALUE - subtotal;
       let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
-      let totalValue = genConst.CONST_MONTH_VALUE - ivaRound;
+      //let totalValue = genConst.CONST_MONTH_VALUE - ivaRound;
       setIva(ivaRound);
-      setSubtotal(totalValue);
+      setSubtotal(subtotal);
       setTotal(genConst.CONST_MONTH_VALUE);
       setEndDate(endDateWithParam(genConst.CONST_MONTH_DAYS));
     } else if (event.target.value == 2) {
       setIsType(true);
       setType(2);
-      let ivaValue = genConst.CONST_YEAR_VALUE * genConst.CONST_IVA;
-      let totalValue = genConst.CONST_YEAR_VALUE - ivaValue;
-      setIva(ivaValue);
-      setSubtotal(totalValue);
+      let subtotal = Math.round((genConst.CONST_YEAR_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
+      let ivaValue = genConst.CONST_YEAR_VALUE - subtotal;
+      let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
+      //let totalValue = genConst.CONST_YEAR_VALUE - ivaValue;
+      setIva(ivaRound);
+      setSubtotal(subtotal);
       setTotal(genConst.CONST_YEAR_VALUE);
       setEndDate(endDateWithParam(genConst.CONST_YEAR_DAYS));
     }

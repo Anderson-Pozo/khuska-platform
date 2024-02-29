@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Paper,
   Table,
@@ -22,20 +22,21 @@ import {
   Modal,
   Grid,
   OutlinedInput,
-  ButtonGroup
+  ButtonGroup,
+  Avatar
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
-import { uiStyles } from './Business.styles';
-import { IconApps, IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive } from '@tabler/icons';
+import { uiStyles } from './Products.styles';
+import { IconApps, IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArrowBack } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //Collections
 import * as Msg from 'store/message';
-import { titles, inputLabels } from './Business.texts';
+import { titles, inputLabels } from './Products.texts';
 //Utils
-import { deleteDocument, getBusinessList } from 'config/firebaseEvents';
+import { deleteDocument, getProductsByBusiness } from 'config/firebaseEvents';
 //types array
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
@@ -46,27 +47,29 @@ function searchingData(search) {
   };
 }
 
-export default function Business() {
+export default function Products() {
   let navigate = useNavigate();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [searchParams] = useSearchParams();
+  const idBusiness = searchParams.get('id');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [id, setId] = React.useState(null);
-  const [name, setName] = React.useState(null);
-  const [search, setSearch] = React.useState('');
-  const [openLoader, setOpenLoader] = React.useState(false);
-  const [dataList, setDataList] = React.useState([]);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [id, setId] = useState(null);
+  const [name, setName] = useState(null);
+  const [search, setSearch] = useState('');
+  const [openLoader, setOpenLoader] = useState(false);
+  const [dataList, setDataList] = useState([]);
 
   const getData = () => {
-    getBusinessList().then((data) => {
+    getProductsByBusiness(idBusiness).then((data) => {
       setDataList(data);
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getData();
   }, []);
 
@@ -150,11 +153,26 @@ export default function Business() {
                 <MenuItem
                   key="id-1"
                   onClick={() => {
-                    navigate('/main/add-business');
+                    navigate({
+                      pathname: '/main/business',
+                      search: `?id=${r.id}`
+                    });
                   }}
                 >
                   <IconPlus style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.addMenu}</Typography>
+                  <Typography textAlign="center">{titles.viewBusiness}</Typography>
+                </MenuItem>
+                <MenuItem
+                  key="id-1"
+                  onClick={() => {
+                    navigate({
+                      pathname: '/main/add-product',
+                      search: `?id=${idBusiness}`
+                    });
+                  }}
+                >
+                  <IconPlus style={{ marginRight: 4 }} />
+                  <Typography textAlign="center">{titles.addProduct}</Typography>
                 </MenuItem>
               </Menu>
             </Box>
@@ -180,11 +198,22 @@ export default function Business() {
               >
                 <MenuItem
                   onClick={() => {
-                    navigate('/main/add-business');
+                    navigate('/main/business');
+                  }}
+                >
+                  <IconArrowBack style={{ marginRight: 10 }} />
+                  {titles.viewBusiness}
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate({
+                      pathname: '/main/add-product',
+                      search: `?id=${idBusiness}`
+                    });
                   }}
                 >
                   <IconPlus style={{ marginRight: 10 }} />
-                  {titles.addMenu}
+                  {titles.addProduct}
                 </MenuItem>
               </Menu>
             </Box>
@@ -212,23 +241,18 @@ export default function Business() {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
+                  <TableCell key="id-name" align="left" style={{ minWidth: 60, fontWeight: 'bold' }}></TableCell>
                   <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
                     {inputLabels.name}
                   </TableCell>
                   <TableCell key="id-owner" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                    {inputLabels.owner}
+                    {inputLabels.price}
                   </TableCell>
                   <TableCell key="id-phone" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                    {inputLabels.phone}
-                  </TableCell>
-                  <TableCell key="id-city" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                    {inputLabels.city}
-                  </TableCell>
-                  <TableCell key="id-address" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
-                    {inputLabels.address}
+                    {inputLabels.quantity}
                   </TableCell>
                   <TableCell key="id-actions" align="center" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                    {titles.actions}
+                    {titles.actionsTitle}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -238,29 +262,21 @@ export default function Business() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((r) => (
                     <TableRow hover key={r.id}>
+                      <TableCell align="left">
+                        <ButtonGroup>
+                          <Avatar src={r.logo || ''} color="inherit" style={{ width: 32, height: 32 }} />
+                        </ButtonGroup>
+                      </TableCell>
                       <TableCell align="left">{r.name}</TableCell>
-                      <TableCell align="left">{r.owner}</TableCell>
-                      <TableCell align="left">{r.phone}</TableCell>
-                      <TableCell align="left">{r.city}</TableCell>
-                      <TableCell align="left">{r.address}</TableCell>
+                      <TableCell align="left">$ {r.price}</TableCell>
+                      <TableCell align="left">{r.quantity} u</TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
-                          <Button
-                            style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                            onClick={() => {
-                              navigate({
-                                pathname: '/main/products',
-                                search: `?id=${r.id}`
-                              });
-                            }}
-                          >
-                            <IconArchive />
-                          </Button>
                           <Button
                             style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
                             onClick={() => {
                               navigate({
-                                pathname: '/main/info-business',
+                                pathname: '/main/info-product',
                                 search: `?id=${r.id}`
                               });
                             }}
@@ -271,7 +287,7 @@ export default function Business() {
                             style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                             onClick={() => {
                               navigate({
-                                pathname: '/main/edit-business',
+                                pathname: '/main/edit-product',
                                 search: `?id=${r.id}`
                               });
                             }}

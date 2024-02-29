@@ -143,7 +143,7 @@ export default function BusinessInfo() {
                 <MenuItem
                   key="id-1"
                   onClick={() => {
-                    navigate('/app/business');
+                    navigate('/main/business');
                   }}
                 >
                   <IconBusinessplan style={{ marginRight: 4 }} />
@@ -173,7 +173,7 @@ export default function BusinessInfo() {
               >
                 <MenuItem
                   onClick={() => {
-                    navigate('/app/business');
+                    navigate('/main/business');
                   }}
                 >
                   <IconBook style={{ marginRight: 10 }} />
@@ -187,7 +187,7 @@ export default function BusinessInfo() {
       <Box>
         <Grid container spacing={1} style={{ marginTop: 5 }}>
           <Grid item lg={6} xs={12}>
-            <Grid container spacing={0}>
+            <Grid container spacing={0} style={{ paddingLeft: 20 }}>
               <Grid item xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <h2>{name}</h2>

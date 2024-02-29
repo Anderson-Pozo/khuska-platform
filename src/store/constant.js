@@ -2,6 +2,7 @@
 export const gridSpacing = 3;
 export const drawerWidth = 260;
 export const appDrawerWidth = 320;
+export const ctaAccount = 'CTAACC';
 
 export const genConst = {
   CONST_PRO_ADM: 1001,
@@ -65,7 +66,7 @@ export const genConst = {
   CONST_YEAR_DAYS: 365,
   CONST_MONTH_CHAR: 1,
   CONST_YEAR_CHAR: 2,
-  CONST_IVA: 0.12,
+  CONST_IVA: 1.12,
   CONST_400: 400,
   CONST_200: 200,
   CONST_LVL1: 0.2,

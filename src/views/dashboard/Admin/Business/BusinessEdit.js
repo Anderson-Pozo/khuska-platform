@@ -71,6 +71,11 @@ export default function BusinessEdit() {
   const [url2, setUrl2] = useState(null);
   const [url3, setUrl3] = useState(null);
   const [url4, setUrl4] = useState(null);
+  const [change0, setChange0] = useState(false);
+  const [change1, setChange1] = useState(false);
+  const [change2, setChange2] = useState(false);
+  const [change3, setChange3] = useState(false);
+  const [change4, setChange4] = useState(false);
 
   React.useEffect(() => {
     getBusinessById(id).then((data) => {
@@ -112,16 +117,6 @@ export default function BusinessEdit() {
   const handleEdit = () => {
     if (!name || !owner || !description || !phone || !province || !address || !city || !email) {
       toast.info(Msg.requiered, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!logo.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture1.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture2.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture3.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture4.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpenLoader(true);
       const object = {
@@ -134,11 +129,11 @@ export default function BusinessEdit() {
         province: province,
         city: city,
         address: address,
-        logo: null,
-        picture1: null,
-        picture2: null,
-        picture3: null,
-        picture4: null,
+        logo: url0,
+        picture1: url1,
+        picture2: url2,
+        picture3: url3,
+        picture4: url4,
         facebook: facebook,
         instagram: instagram,
         youtube: youtube,
@@ -147,74 +142,82 @@ export default function BusinessEdit() {
         deleteAt: null,
         state: 1
       };
-      //console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
-      //console.log(Intl.DateTimeFormat().resolvedOptions().locale);
       setTimeout(() => {
         updateDocument(collBusiness, id, object);
         //Logo
-        if (logo.raw !== null) {
-          const imageName = id + 'logo.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, logo.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                logo: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change0) {
+          if (logo.raw !== null) {
+            const imageName = id + 'logo.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, logo.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  logo: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture1
-        if (picture1.raw !== null) {
-          const imageName = id + 'p1.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture1.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture1: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change1) {
+          if (picture1.raw !== null) {
+            const imageName = id + 'p1.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture1.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture1: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture2
-        if (picture2.raw !== null) {
-          const imageName = id + 'p2.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture2.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture2: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change2) {
+          if (picture2.raw !== null) {
+            const imageName = id + 'p2.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture2.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture2: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture3
-        if (picture3.raw !== null) {
-          const imageName = id + 'p3.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture3.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture3: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change3) {
+          if (picture3.raw !== null) {
+            const imageName = id + 'p3.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture3.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture3: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture4
-        if (picture4.raw !== null) {
-          const imageName = id + 'p4.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture4.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture4: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change4) {
+          if (picture4.raw !== null) {
+            const imageName = id + 'p4.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture4.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture4: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         setOpenLoader(false);
         toast.success(Msg.coucresucc, { position: toast.POSITION.TOP_RIGHT });
@@ -268,6 +271,7 @@ export default function BusinessEdit() {
           preview: img.src,
           raw: raw
         });
+        setChange0(true);
       };
     }
   };
@@ -282,6 +286,7 @@ export default function BusinessEdit() {
           preview: img.src,
           raw: raw
         });
+        setChange1(true);
       };
     }
   };
@@ -296,6 +301,7 @@ export default function BusinessEdit() {
           preview: img.src,
           raw: raw
         });
+        setChange2(true);
       };
     }
   };
@@ -310,6 +316,7 @@ export default function BusinessEdit() {
           preview: img.src,
           raw: raw
         });
+        setChange3(true);
       };
     }
   };
@@ -324,6 +331,7 @@ export default function BusinessEdit() {
           preview: img.src,
           raw: raw
         });
+        setChange4(true);
       };
     }
   };
@@ -365,7 +373,7 @@ export default function BusinessEdit() {
                 <MenuItem
                   key="id-1"
                   onClick={() => {
-                    navigate('/app/business');
+                    navigate('/main/business');
                   }}
                 >
                   <IconBook style={{ marginRight: 4 }} />
@@ -395,7 +403,7 @@ export default function BusinessEdit() {
               >
                 <MenuItem
                   onClick={() => {
-                    navigate('/app/business');
+                    navigate('/main/business');
                   }}
                 >
                   <IconBook style={{ marginRight: 10 }} />
