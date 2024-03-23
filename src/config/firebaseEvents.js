@@ -178,6 +178,16 @@ export const getUsersData = async () => {
   });
   return list;
 };
+//Obtenemos la lista de Productos
+export const getProducts = async () => {
+  const list = [];
+  const querySnapshot = await getDocs(collection(db, collProducts));
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+    list.sort((a, b) => a.name.localeCompare(b.name));
+  });
+  return list;
+};
 //
 export const getGeneralNotifications = async () => {
   const list = [];

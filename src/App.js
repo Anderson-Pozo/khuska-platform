@@ -10,7 +10,8 @@ import themes from 'themes';
 import Loadable from 'components/Loadable';
 import MinimalLayout from 'layout/MinimalLayout';
 import MainLayout from 'layout/MainLayout';
-import HomeLayout from 'layout/HomeLayout';
+//import HomeLayout from 'layout/HomeLayout';
+import MarketLayout from 'layout/MarketLayout';
 import DefaultLayout from 'layout/DefaultLayout';
 import SearchLayout from 'layout/SearchLayout';
 import { genConst } from 'store/constant';
@@ -113,7 +114,7 @@ const App = () => {
     <ThemeProvider theme={themes(customization)}>
       <Router basename={config.basename}>
         <Routes>
-          <Route element={<HomeLayout />} path="/" exact>
+          <Route element={<MarketLayout />} path="/" exact>
             <Route element={<Home />} path="/" exact />
           </Route>
           <Route element={<SearchLayout />} path="/net" exact>
