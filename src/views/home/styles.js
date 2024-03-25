@@ -41,12 +41,17 @@ export const uiStyles = {
     display: 'flex',
     flexDirection: 'column',
     paddingLeft: 0,
-    paddingRight: 2
+    paddingRight: 2,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar': {
+      width: 0,
+      height: 0,
+      backgroundColor: 'transparent'
+    }
   },
   main: {
     height: '92vh',
-    position: 'relative',
-    overflowY: 'scroll'
+    position: 'relative'
   },
   sidebar: {
     color: 'white',
@@ -54,8 +59,7 @@ export const uiStyles = {
     position: 'absolute',
     top: 0,
     bottom: 0,
-    left: 0,
-    overflowY: 'scroll'
+    left: 0
   },
   inputNew: {
     backgroundColor: '#242526',

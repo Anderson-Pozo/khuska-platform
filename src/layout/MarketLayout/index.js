@@ -194,7 +194,13 @@ function Market(props) {
 
   const CustomDrawer = () => {
     return (
-      <div style={{ backgroundColor: '#242526', height: '200%', borderColor: '#272829' }}>
+      <div
+        style={{
+          backgroundColor: '#242526',
+          height: '200%',
+          borderColor: '#272829'
+        }}
+      >
         <Toolbar style={{ height: 60, borderColor: '#242526' }}>
           <img src={logo} alt="Logo" width={130} height={45} />
         </Toolbar>
@@ -448,7 +454,13 @@ function Market(props) {
             display: { xs: 'block', sm: 'none' },
             borderColor: '#272829',
             borderWidth: 0,
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            overflowY: 'scroll',
+            '&::WebkitScrollbar': {
+              width: 0,
+              height: 0,
+              backgroundColor: 'transparent'
+            }
           }}
         >
           {isCreate ? <CustomDrawerCreate /> : <CustomDrawer />}
@@ -459,7 +471,13 @@ function Market(props) {
             display: { xs: 'none', sm: 'block' },
             borderColor: '#272829',
             borderWidth: 0,
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            overflowY: 'scroll',
+            '&::WebkitScrollbar': {
+              width: 0,
+              height: 0,
+              backgroundColor: 'transparent'
+            }
           }}
           open
         >
