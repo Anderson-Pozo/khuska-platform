@@ -13,7 +13,6 @@ import MainLayout from 'layout/MainLayout';
 //import HomeLayout from 'layout/HomeLayout';
 import MarketLayout from 'layout/MarketLayout';
 import DefaultLayout from 'layout/DefaultLayout';
-import SearchLayout from 'layout/SearchLayout';
 import { genConst } from 'store/constant';
 //Firebase
 import { onAuthStateChanged } from 'firebase/auth';
@@ -21,9 +20,17 @@ import { authentication } from 'config/firebase';
 import { getProfileUser } from 'config/firebaseEvents';
 import UsersNetwork from 'views/dashboard/Admin/Users/UsersNetwork';
 
-// Main Portal
-const Home = Loadable(lazy(() => import('views/home/Home')));
-const Search = Loadable(lazy(() => import('views/home/Search')));
+// Market Portal
+const Login = Loadable(lazy(() => import('views/home/Login')));
+const Register = Loadable(lazy(() => import('views/home/Register')));
+const Recovery = Loadable(lazy(() => import('views/home/Recovery')));
+const Market = Loadable(lazy(() => import('views/home/Market')));
+const CreateProduct = Loadable(lazy(() => import('views/home/CreateProduct')));
+const Product = Loadable(lazy(() => import('views/home/Product')));
+const MyItems = Loadable(lazy(() => import('views/home/MyItems')));
+const Item = Loadable(lazy(() => import('views/home/Item')));
+const NotificationsMarket = Loadable(lazy(() => import('views/home/Notifications')));
+const BusinessMarket = Loadable(lazy(() => import('views/home/Business')));
 const BusinessInfoSearch = Loadable(lazy(() => import('views/home/BusinessInfo')));
 // Error
 const NotFound = Loadable(lazy(() => import('views/pages/error/NotFound')));
@@ -115,14 +122,17 @@ const App = () => {
       <Router basename={config.basename}>
         <Routes>
           <Route element={<MarketLayout />} path="/" exact>
-            <Route element={<Home />} path="/" exact />
-          </Route>
-          <Route element={<SearchLayout />} path="/net" exact>
-            <Route element={<Search />} path="search" exact />
+            <Route element={<Market />} path="/" exact />
+            <Route element={<CreateProduct />} path="create" exact />
+            <Route element={<Product />} path="product" exact />
+            <Route element={<MyItems />} path="my-items" exact />
+            <Route element={<Item />} path="create/item" exact />
+            <Route element={<NotificationsMarket />} path="notifications" exact />
+            <Route element={<BusinessMarket />} path="business" exact />
             <Route element={<BusinessInfoSearch />} path="business-info" exact />
-          </Route>
-          <Route element={<SearchLayout />} path="/compra-venta" exact>
-            <Route element={<Search />} path="search" exact />
+            <Route element={<Login />} path="login" exact />
+            <Route element={<Register />} path="register" exact />
+            <Route element={<Recovery />} path="recovery" exact />
           </Route>
           <Route element={<MinimalLayout />} path="/auth" exact>
             <Route element={<AuthSignin />} path="signin" exact />

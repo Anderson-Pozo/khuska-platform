@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import MainCard from 'components/cards/MainCard';
 
-const AuthCardWrapper = ({ children, ...other }) => (
+const AuthCard = ({ children, ...other }) => (
   <MainCard
     sx={{
+      backgroundColor: '#242526',
       maxWidth: { xs: 400, lg: 475 },
       margin: { xs: 2.5, md: 3 },
       '& > *': {
@@ -19,8 +20,8 @@ const AuthCardWrapper = ({ children, ...other }) => (
   </MainCard>
 );
 
-AuthCardWrapper.propTypes = {
+AuthCard.propTypes = {
   children: PropTypes.node
 };
 
-export default AuthCardWrapper;
+export default AuthCard;

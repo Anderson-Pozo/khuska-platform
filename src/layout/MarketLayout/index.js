@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate, Outlet } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
@@ -18,37 +20,50 @@ import {
   ListItemIcon,
   Toolbar,
   Typography,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  OutlinedInput,
-  Button
+  Button,
+  Modal
 } from '@mui/material';
-import { IconApps, IconBell, IconCar, IconDeviceMobile, IconHome, IconHome2, IconLockOpen, IconPlus, IconRun } from '@tabler/icons';
+import {
+  IconApps,
+  IconBell,
+  IconBuildingBridge,
+  IconCar,
+  IconDeviceMobile,
+  IconHome,
+  IconHome2,
+  IconLockOpen,
+  IconPlus,
+  IconRun,
+  IconTicket
+} from '@tabler/icons';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from 'assets/images/khuska/logo.png';
-import { getProducts } from 'config/firebaseEvents';
-import { searchingProducts } from 'utils/search';
+import { onAuthStateChanged, signOut, getAuth } from 'firebase/auth';
+import { authentication } from 'config/firebase';
+import { uiStyles } from './index.style';
 
 const drawerWidth = 280;
 
 function Market(props) {
   const { window } = props;
+  let navigate = useNavigate();
+  const auth = getAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState('');
-  const [user, setUserId] = useState(false);
+  const [user, setUser] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [isCreate, setIsCreate] = useState(false);
 
   useEffect(() => {
-    console.log();
-    getProducts().then((data) => {
-      setProducts(data);
+    onAuthStateChanged(authentication, async (user) => {
+      if (user) {
+        setUser(true);
+      } else {
+        setUser(false);
+      }
     });
-    setUserId(true);
   }, []);
 
   const CustomButton = styled(ListItemButton)({
@@ -75,6 +90,18 @@ function Market(props) {
       color: '#FFF'
     }
   });
+  const CreateActiveButton = styled(ListItemButton)({
+    minHeight: 50,
+    justifyContent: 'center',
+    color: '#FFF',
+    backgroundColor: '#3a3b3c',
+    borderRadius: 8,
+    margin: 6,
+    '&:hover': {
+      backgroundColor: '#242526',
+      color: '#FFF'
+    }
+  });
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -98,154 +125,244 @@ function Market(props) {
     setAnchorEl(null);
   };
 
-  const drawer = (
-    <div style={{ backgroundColor: '#242526', height: '200%', borderColor: '#272829' }}>
-      <Toolbar style={{ height: 60, borderColor: '#242526' }}>
-        <img src={logo} alt="Logo" width={130} height={45} />
-      </Toolbar>
-      <Divider sx={{ borderColor: '#272829' }} />
-      <Typography variant="h4" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10 }}>
-        Compra Venta
-      </Typography>
-      <List>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconHome color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Principal</span>
-          </CustomButton>
-        </ListItem>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconBell color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Notificaciones</span>
-          </CustomButton>
-        </ListItem>
-        {user ? (
+  const handleLogout = () => {
+    setOpen(true);
+    signOut(auth)
+      .then(() => {
+        setUser(false);
+        navigate('/');
+        setAnchorEl(null);
+        setOpen(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setAnchorEl(null);
+        setOpen(false);
+      });
+  };
+
+  const CustomDrawerCreate = () => {
+    return (
+      <div style={{ backgroundColor: '#242526', height: '200%', borderColor: '#272829', borderWidth: 0 }}>
+        <Toolbar style={{ height: 60, borderColor: '#242526' }}>
+          <img src={logo} alt="Logo" width={130} height={45} />
+        </Toolbar>
+        <Divider sx={{ borderColor: '#3a3b3c' }} />
+        <Typography variant="h3" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}>
+          Crear Publicación Nueva
+        </Typography>
+        <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CreateButton>
-              <ListItemIcon>
-                <IconPlus color="#FFF" />
+            <CreateActiveButton onClick={() => navigate('/create')}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconHome color="#FFF" size={16} />
               </ListItemIcon>
-              <span>Crear Publicación</span>
-            </CreateButton>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Elije el tipo de Publicación</span>
+            </CreateActiveButton>
           </ListItem>
-        ) : (
-          <></>
-        )}
-      </List>
-      <Divider sx={{ borderColor: '#272829' }} />
-      <Typography variant="h4" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10 }}>
-        Categorías
-      </Typography>
-      <List>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconApps color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Todos los Productos</span>
-          </CustomButton>
-        </ListItem>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconRun color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Articulos Deportivos</span>
-          </CustomButton>
-        </ListItem>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconDeviceMobile color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Electrónica</span>
-          </CustomButton>
-        </ListItem>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconCar color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Vehículos</span>
-          </CustomButton>
-        </ListItem>
-        <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-          <CustomButton>
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                justifyContent: 'center',
-                backgroundColor: '#3a3b3c',
-                padding: 1,
-                borderRadius: 50
-              }}
-            >
-              <IconHome2 color="#FFF" />
-            </ListItemIcon>
-            <span style={{ marginLeft: 12 }}>Hogar</span>
-          </CustomButton>
-        </ListItem>
-      </List>
-    </div>
-  );
+        </List>
+        <Divider sx={{ borderColor: '#3a3b3c' }} />
+        <List>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton onClick={() => navigate('/my-items')}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconTicket color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Tus Publicaciones</span>
+            </CustomButton>
+          </ListItem>
+        </List>
+      </div>
+    );
+  };
+
+  const CustomDrawer = () => {
+    return (
+      <div style={{ backgroundColor: '#242526', height: '200%', borderColor: '#272829' }}>
+        <Toolbar style={{ height: 60, borderColor: '#242526' }}>
+          <img src={logo} alt="Logo" width={130} height={45} />
+        </Toolbar>
+        <Divider sx={{ borderColor: '#3a3b3c' }} />
+        <Typography variant="h5" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}>
+          Compra Venta
+        </Typography>
+        <List>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton onClick={() => navigate('/')}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconHome color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Principal</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton onClick={() => navigate('/business')}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconBuildingBridge color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Negocios</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton onClick={() => navigate('/notifications')}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconBell color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Notificaciones</span>
+            </CustomButton>
+          </ListItem>
+          {user ? (
+            <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+              <CreateButton
+                onClick={() => {
+                  setIsCreate(true);
+                  navigate('/create');
+                }}
+              >
+                <ListItemIcon>
+                  <IconPlus color="#FFF" size={16} />
+                </ListItemIcon>
+                <span>Crear Publicación</span>
+              </CreateButton>
+            </ListItem>
+          ) : (
+            <></>
+          )}
+        </List>
+        <Divider sx={{ borderColor: '#3a3b3c' }} />
+        <Typography variant="h5" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}>
+          Categorías
+        </Typography>
+        <List>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconApps color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Todos los Productos</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconRun color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Articulos Deportivos</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconDeviceMobile color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Electrónica</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconCar color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Vehículos</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconHome2 color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Hogar</span>
+            </CustomButton>
+          </ListItem>
+        </List>
+      </div>
+    );
+  };
 
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', backgroundColor: '#18191a', height: '100vh' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -302,17 +419,22 @@ function Market(props) {
                 onClose={handleClose}
               >
                 <MenuItem onClick={handleClose}>Perfil</MenuItem>
-                <MenuItem onClick={handleClose}>Cerrar Sesión</MenuItem>
+                <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
               </Menu>
             </Box>
           ) : (
-            <Button style={{ color: '#FFF', fontSize: 12 }} variant="outlined" startIcon={<IconLockOpen size={16} />}>
+            <Button
+              style={{ color: '#FFF', fontSize: 12 }}
+              variant="outlined"
+              startIcon={<IconLockOpen size={16} />}
+              onClick={() => navigate('/login')}
+            >
               Login
             </Button>
           )}
         </Toolbar>
       </AppBar>
-      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} aria-label="mailbox folders">
+      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 }, borderColor: '#272829', borderWidth: 0 }}>
         <Drawer
           container={container}
           variant="temporary"
@@ -324,76 +446,37 @@ function Market(props) {
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
+            borderColor: '#272829',
+            borderWidth: 0,
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
           }}
         >
-          {drawer}
+          {isCreate ? <CustomDrawerCreate /> : <CustomDrawer />}
         </Drawer>
         <Drawer
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
+            borderColor: '#272829',
+            borderWidth: 0,
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
           }}
           open
         >
-          {drawer}
+          {isCreate ? <CustomDrawerCreate /> : <CustomDrawer />}
         </Drawer>
       </Box>
       <Box component="main" sx={{ flexGrow: 1, pl: 1, pr: 1, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
         <Toolbar style={{ height: 60, borderColor: '#242526' }} />
-        <Box sx={{ flexGrow: 0, mt: 1 }}>
-          <OutlinedInput
-            id={'search'}
-            type="text"
-            name={'search'}
-            onChange={(ev) => setSearch(ev.target.value)}
-            placeholder={'Buscar en Khuska Market'}
-            style={{ width: '100%' }}
-          />
-        </Box>
-        <Typography variant="h4" noWrap component="div" style={{ color: '#242526', paddingTop: 20, paddingBottom: 20 }}>
-          Productos sugeridos hoy
-        </Typography>
-        <Grid container spacing={0}>
-          <Grid item xs={12}>
-            <Grid container spacing={0.5}>
-              {products.filter(searchingProducts(search)).map((item) => {
-                return (
-                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={2}>
-                    <Card sx={{ maxWidth: '100%', height: 270, borderRadius: 3, backgroundColor: '#242526', cursor: 'pointer' }}>
-                      <CardMedia
-                        sx={{ borderRadius: 3, padding: 0.5 }}
-                        component="img"
-                        height={194}
-                        image={item.picture1}
-                        alt="Portada img"
-                      />
-                      <CardContent sx={{ backgroundColor: '#242526', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
-                        <Typography variant="h4" color="#FFF">
-                          ${item.price}
-                        </Typography>
-                        <p
-                          style={{
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            color: '#FFF',
-                            fontSize: 11,
-                            textOverflow: 'ellipsis',
-                            maxWidth: '100%'
-                          }}
-                        >
-                          {item.name}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </Grid>
-        </Grid>
+        <Outlet />
       </Box>
+      <Modal open={open} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <center>
+          <Box sx={uiStyles.modalLoader}>
+            <CircularProgress color="info" size={100} />
+          </Box>
+        </center>
+      </Modal>
     </Box>
   );
 }
