@@ -19,6 +19,7 @@ export const collBusiness = 'Business';
 export const collProducts = 'Products';
 export const collBenefits = 'Benefits';
 export const collNetwork = 'Network';
+export const collCategories = 'Categories';
 
 //New Tables Khuska
 export const collSubscription = 'Subscription';

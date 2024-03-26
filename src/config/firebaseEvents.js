@@ -12,6 +12,7 @@ import {
   collLog,
   collMail,
   collProducts,
+  collSettings,
   collSubscription,
   collUserBenefit,
   collUsers,
@@ -380,6 +381,17 @@ export async function getBusinessListByUser(id) {
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());
+  });
+  return data;
+}
+//Lista Categorias
+export async function getCategories() {
+  let data = [];
+  const q = query(collection(db, collSettings), where('name', '==', 'categoria'));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+    data.sort((a, b) => a.value.localeCompare(b.value));
   });
   return data;
 }

@@ -34,7 +34,7 @@ import {
   IconLockOpen,
   IconPlus,
   IconRun,
-  IconTicket
+  IconTags
 } from '@tabler/icons';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -182,10 +182,20 @@ function Market(props) {
                   borderRadius: 50
                 }}
               >
-                <IconTicket color="#FFF" size={16} />
+                <IconTags color="#FFF" size={16} />
               </ListItemIcon>
               <span style={{ marginLeft: 12, fontSize: 13 }}>Tus Publicaciones</span>
             </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CreateButton
+              onClick={() => {
+                setIsCreate(false);
+                navigate('/');
+              }}
+            >
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Salir sin guardar</span>
+            </CreateButton>
           </ListItem>
         </List>
       </div>
