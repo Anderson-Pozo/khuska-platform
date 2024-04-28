@@ -65,7 +65,7 @@ const Business = () => {
           <Grid item xs={12}>
             <Grid container spacing={1}>
               <Grid item lg={6} md={6} sm={6} xs={6}>
-                <InputLabel id="name" style={{ textAlign: 'left', color: '#000', marginLeft: 10 }}>
+                <InputLabel id="name" style={{ textAlign: 'left', color: '#FFF', marginLeft: 10 }}>
                   Filtrar por nombre de Negocio
                 </InputLabel>
                 <FormControl fullWidth sx={{ m: 0 }}>
@@ -83,7 +83,7 @@ const Business = () => {
               </Grid>
               <Grid item lg={3} md={3} sm={3} xs={3}>
                 <Box sx={{ p: 0 }}>
-                  <InputLabel id="province" style={{ textAlign: 'left', color: '#000' }}>
+                  <InputLabel id="province" style={{ textAlign: 'left', color: '#FFF' }}>
                     Provincia
                   </InputLabel>
                   <Select
@@ -107,7 +107,7 @@ const Business = () => {
               </Grid>
               <Grid item lg={3} md={3} sm={3} xs={3}>
                 <Box sx={{ p: 0 }}>
-                  <InputLabel id="city" style={{ textAlign: 'left', color: '#000' }}>
+                  <InputLabel id="city" style={{ textAlign: 'left', color: '#FFF' }}>
                     Ciudad
                   </InputLabel>
                   <Select

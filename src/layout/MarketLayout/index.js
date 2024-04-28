@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import {
   IconApps,
+  IconArrowLeft,
   IconBell,
   IconBuildingBridge,
   IconCar,
@@ -64,6 +65,7 @@ function Market(props) {
         setUser(false);
       }
     });
+    setIsCreate(false);
   }, []);
 
   const CustomButton = styled(ListItemButton)({
@@ -125,12 +127,22 @@ function Market(props) {
     setAnchorEl(null);
   };
 
+  const handleNotifications = () => {
+    setAnchorEl(null);
+    navigate('/market/notifications');
+  };
+
+  const handleProfile = () => {
+    setAnchorEl(null);
+    navigate('/market/profile');
+  };
+
   const handleLogout = () => {
     setOpen(true);
     signOut(auth)
       .then(() => {
         setUser(false);
-        navigate('/');
+        navigate('/market/main');
         setAnchorEl(null);
         setOpen(false);
       })
@@ -153,7 +165,7 @@ function Market(props) {
         </Typography>
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CreateActiveButton onClick={() => navigate('/create')}>
+            <CreateActiveButton onClick={() => navigate('/market/create')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -168,11 +180,32 @@ function Market(props) {
               <span style={{ marginLeft: 12, fontSize: 13 }}>Elije el tipo de Publicación</span>
             </CreateActiveButton>
           </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10, padding: 0.5 }}>
+            <CustomButton
+              onClick={() => {
+                setIsCreate(false);
+                navigate('/market/main');
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconArrowLeft color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Regresar</span>
+            </CustomButton>
+          </ListItem>
         </List>
         <Divider sx={{ borderColor: '#3a3b3c' }} />
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/my-items')}>
+            <CustomButton onClick={() => navigate('/market/my-items')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -191,7 +224,7 @@ function Market(props) {
             <CreateButton
               onClick={() => {
                 setIsCreate(false);
-                navigate('/');
+                navigate('/market/main');
               }}
             >
               <span style={{ marginLeft: 12, fontSize: 13 }}>Salir sin guardar</span>
@@ -220,7 +253,7 @@ function Market(props) {
         </Typography>
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/')}>
+            <CustomButton onClick={() => navigate('/market/main')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -236,7 +269,7 @@ function Market(props) {
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/business')}>
+            <CustomButton onClick={() => navigate('/market/business')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -252,7 +285,7 @@ function Market(props) {
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/notifications')}>
+            <CustomButton onClick={() => navigate('/market/notifications')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -272,7 +305,7 @@ function Market(props) {
               <CreateButton
                 onClick={() => {
                   setIsCreate(true);
-                  navigate('/create');
+                  navigate('/market/create');
                 }}
               >
                 <ListItemIcon>
@@ -403,7 +436,13 @@ function Market(props) {
           <Box sx={{ flexGrow: 1 }} />
           {user ? (
             <Box sx={{ mr: -5 }}>
-              <IconButton style={{ marginLeft: 5 }} size="large" aria-label="show n new notifications" color="inherit">
+              <IconButton
+                style={{ marginLeft: 5 }}
+                size="large"
+                aria-label="show n new notifications"
+                color="inherit"
+                onClick={handleNotifications}
+              >
                 <Badge badgeContent={1} color="error">
                   <NotificationsIcon />
                 </Badge>
@@ -434,7 +473,7 @@ function Market(props) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Perfil</MenuItem>
+                <MenuItem onClick={handleProfile}>Perfil</MenuItem>
                 <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
               </Menu>
             </Box>

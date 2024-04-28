@@ -17,7 +17,7 @@ export default function CreateProduct() {
       if (user) {
         console.log(user);
       } else {
-        navigate('/');
+        navigate('/market/main');
       }
     });
   }, []);
@@ -60,7 +60,7 @@ export default function CreateProduct() {
                 <CustomButton
                   onClick={() => {
                     navigate({
-                      pathname: '/create/item',
+                      pathname: '/market/create/item',
                       search: `?idType=${1}`
                     });
                   }}
@@ -82,7 +82,7 @@ export default function CreateProduct() {
                 <CustomButton
                   onClick={() => {
                     navigate({
-                      pathname: '/create/item',
+                      pathname: '/market/create/item',
                       search: `?idType=${2}`
                     });
                   }}
@@ -104,7 +104,7 @@ export default function CreateProduct() {
                 <CustomButton
                   onClick={() => {
                     navigate({
-                      pathname: '/create/item',
+                      pathname: '/market/create/item',
                       search: `?idType=${3}`
                     });
                   }}

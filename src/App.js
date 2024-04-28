@@ -10,7 +10,7 @@ import themes from 'themes';
 import Loadable from 'components/Loadable';
 import MinimalLayout from 'layout/MinimalLayout';
 import MainLayout from 'layout/MainLayout';
-//import HomeLayout from 'layout/HomeLayout';
+import HomeLayout from 'layout/HomeLayout';
 import MarketLayout from 'layout/MarketLayout';
 import DefaultLayout from 'layout/DefaultLayout';
 import { genConst } from 'store/constant';
@@ -32,6 +32,7 @@ const Item = Loadable(lazy(() => import('views/home/Item')));
 const NotificationsMarket = Loadable(lazy(() => import('views/home/Notifications')));
 const BusinessMarket = Loadable(lazy(() => import('views/home/Business')));
 const BusinessInfoSearch = Loadable(lazy(() => import('views/home/BusinessInfo')));
+const Home = Loadable(lazy(() => import('views/home/Home')));
 // Error
 const NotFound = Loadable(lazy(() => import('views/pages/error/NotFound')));
 // dashboard Admin
@@ -121,8 +122,11 @@ const App = () => {
     <ThemeProvider theme={themes(customization)}>
       <Router basename={config.basename}>
         <Routes>
-          <Route element={<MarketLayout />} path="/" exact>
-            <Route element={<Market />} path="/" exact />
+          <Route element={<HomeLayout />} path="/" exact>
+            <Route element={<Home />} path="/" exact />
+          </Route>
+          <Route element={<MarketLayout />} path="/market" exact>
+            <Route element={<Market />} path="main" exact />
             <Route element={<CreateProduct />} path="create" exact />
             <Route element={<Product />} path="product" exact />
             <Route element={<MyItems />} path="my-items" exact />

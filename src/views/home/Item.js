@@ -157,7 +157,7 @@ export default function Item() {
                   >
                     {preview.length > 0 ? (
                       (preview || []).map((url, i) => (
-                        <img key={i} style={{ width: 78, height: 95, borderRadius: 12, padding: 2 }} src={url} alt="firebaseImg" />
+                        <img key={i} style={{ width: 68, height: 85, borderRadius: 12, padding: 2 }} src={url} alt="firebaseImg" />
                       ))
                     ) : (
                       <div>
