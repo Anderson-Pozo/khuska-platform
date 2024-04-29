@@ -23,7 +23,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Box } from '@mui/system';
 import Hero from './Hero';
 import logo from 'assets/images/khuska/logo.png';
-import { IconSearch } from '@tabler/icons';
 import defaultAvatar from 'assets/images/profile/profile-picture-6.jpg';
 import { useAuth } from 'hooks/useAuth';
 import { isSessionActive } from 'config/firebaseEvents';
@@ -121,11 +120,6 @@ const Header = (props) => {
             <Scroll to="contacts" smooth={true}>
               <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 15 }}>Contáctanos</Button>
             </Scroll>
-          </Box>
-          <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, marginRight: 3, cursor: 'pointer' }}>
-            <Typography component={Link} to="/net/search" sx={{ textDecoration: 'none' }}>
-              <IconSearch color="#FFF" size={20} />
-            </Typography>
           </Box>
           {isLoggin ? (
             <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }} onClick={handleGoTo}>

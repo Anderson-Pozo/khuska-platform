@@ -17,7 +17,7 @@ export default function Recovery() {
           container
           justifyContent="center"
           alignItems="center"
-          sx={{ minHeight: 'calc(100vh - 57px)', backgroundColor: '#FFF', borderRadius: 4 }}
+          sx={{ minHeight: 'calc(100vh - 60px)', backgroundColor: 'transparent' }}
         >
           <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
             <AuthCard>
@@ -58,7 +58,7 @@ export default function Recovery() {
                 </Grid>
                 <Grid item xs={12}>
                   <Grid item container direction="column" alignItems="center" xs={12}>
-                    <Typography component={Link} to="/login" variant="subtitle1" sx={{ textDecoration: 'none', color: '#FFF' }}>
+                    <Typography component={Link} to="/market/login" variant="subtitle1" sx={{ textDecoration: 'none', color: '#FFF' }}>
                       Volver
                     </Typography>
                   </Grid>

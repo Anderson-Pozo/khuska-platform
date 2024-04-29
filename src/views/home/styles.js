@@ -49,8 +49,22 @@ export const uiStyles = {
       backgroundColor: 'transparent'
     }
   },
+  layoutItem: {
+    //height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    paddingTop: 2,
+    paddingLeft: 2,
+    paddingRight: 2,
+    overflowY: 'scroll',
+    '&::-webkit-scrollbar': {
+      width: 0,
+      height: 0,
+      backgroundColor: 'transparent'
+    }
+  },
   main: {
-    height: '92vh',
+    height: '88vh',
     position: 'relative'
   },
   sidebar: {

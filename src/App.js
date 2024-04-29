@@ -29,6 +29,9 @@ const CreateProduct = Loadable(lazy(() => import('views/home/CreateProduct')));
 const Product = Loadable(lazy(() => import('views/home/Product')));
 const MyItems = Loadable(lazy(() => import('views/home/MyItems')));
 const Item = Loadable(lazy(() => import('views/home/Item')));
+const ViewItem = Loadable(lazy(() => import('views/home/ViewItem')));
+const Messages = Loadable(lazy(() => import('views/home/Messages')));
+const Profile = Loadable(lazy(() => import('views/home/Profile')));
 const NotificationsMarket = Loadable(lazy(() => import('views/home/Notifications')));
 const BusinessMarket = Loadable(lazy(() => import('views/home/Business')));
 const BusinessInfoSearch = Loadable(lazy(() => import('views/home/BusinessInfo')));
@@ -127,10 +130,13 @@ const App = () => {
           </Route>
           <Route element={<MarketLayout />} path="/market" exact>
             <Route element={<Market />} path="main" exact />
+            <Route element={<Profile />} path="profile" exact />
             <Route element={<CreateProduct />} path="create" exact />
             <Route element={<Product />} path="product" exact />
             <Route element={<MyItems />} path="my-items" exact />
             <Route element={<Item />} path="create/item" exact />
+            <Route element={<ViewItem />} path="item" exact />
+            <Route element={<Messages />} path="messages" exact />
             <Route element={<NotificationsMarket />} path="notifications" exact />
             <Route element={<BusinessMarket />} path="business" exact />
             <Route element={<BusinessInfoSearch />} path="business-info" exact />

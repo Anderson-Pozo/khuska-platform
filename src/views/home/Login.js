@@ -24,7 +24,7 @@ export default function Login() {
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
-        navigate('/');
+        navigate('/market/main');
       }
     });
   }, []);
@@ -40,7 +40,7 @@ export default function Login() {
           console.log(user);
           setTimeout(() => {
             setOpen(false);
-            navigate('/');
+            navigate('/market/main');
           }, 2000);
         })
         .catch((error) => {
@@ -73,7 +73,7 @@ export default function Login() {
           container
           justifyContent="center"
           alignItems="center"
-          sx={{ minHeight: 'calc(100vh - 57px)', backgroundColor: '#FFF', borderRadius: 4 }}
+          sx={{ minHeight: 'calc(100vh - 60px)', backgroundColor: 'transparent' }}
         >
           <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
             <AuthCard>
@@ -92,12 +92,12 @@ export default function Login() {
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <InputLabel htmlFor="outlined-adornment-email-login">Correo Electrónico / Username</InputLabel>
+                    <InputLabel htmlFor="outlined-adornment-email-login">Correo Electrónico</InputLabel>
                     <OutlinedInput
                       id="outlined-adornment-email-login"
                       type="email"
                       name="email"
-                      label="Correo Electrónico / Username"
+                      label="Correo Electrónico"
                       onChange={(ev) => setEmail(ev.target.value)}
                     />
                   </FormControl>
@@ -131,7 +131,7 @@ export default function Login() {
                 </Grid>
                 <Grid item xs={12}>
                   <Grid item container direction="column" alignItems="center" xs={12}>
-                    <Typography component={Link} to="/recovery" variant="h5" sx={{ textDecoration: 'none', color: '#FFF' }}>
+                    <Typography component={Link} to="/market/recovery" variant="h5" sx={{ textDecoration: 'none', color: '#FFF' }}>
                       Olvidaste tu contraseña?
                     </Typography>
                   </Grid>
@@ -141,7 +141,7 @@ export default function Login() {
                     Aún no tienes una cuenta?
                   </Typography>
                   <Grid item container direction="column" alignItems="center" xs={12}>
-                    <Typography component={Link} to="/register" variant="subtitle1" sx={{ textDecoration: 'none', color: '#FFF' }}>
+                    <Typography component={Link} to="/market/register" variant="subtitle1" sx={{ textDecoration: 'none', color: '#FFF' }}>
                       Regístrate
                     </Typography>
                   </Grid>

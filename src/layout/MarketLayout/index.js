@@ -27,12 +27,12 @@ import {
   IconApps,
   IconArrowLeft,
   IconBell,
-  IconBuildingBridge,
   IconCar,
   IconDeviceMobile,
   IconHome,
   IconHome2,
   IconLockOpen,
+  IconMessage,
   IconPlus,
   IconRun,
   IconTags
@@ -269,7 +269,7 @@ function Market(props) {
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/market/business')}>
+            <CustomButton onClick={() => navigate('/market/messages')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -279,9 +279,9 @@ function Market(props) {
                   borderRadius: 50
                 }}
               >
-                <IconBuildingBridge color="#FFF" size={16} />
+                <IconMessage color="#FFF" size={16} />
               </ListItemIcon>
-              <span style={{ marginLeft: 12, fontSize: 13 }}>Negocios</span>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Mensajes</span>
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
@@ -482,7 +482,7 @@ function Market(props) {
               style={{ color: '#FFF', fontSize: 12 }}
               variant="outlined"
               startIcon={<IconLockOpen size={16} />}
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/market/login')}
             >
               Login
             </Button>

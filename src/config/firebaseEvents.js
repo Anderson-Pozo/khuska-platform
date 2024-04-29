@@ -11,6 +11,7 @@ import {
   collKhuskaBenefit,
   collLog,
   collMail,
+  collMessage,
   collProducts,
   collSettings,
   collSubscription,
@@ -536,3 +537,14 @@ export const getUserDataObject = () => {
     );
   });
 };
+//Message
+//Obtner Mensajes por Id Usuario
+export async function getMessageByUserId(id) {
+  let data = [];
+  const q = query(collection(db, collMessage), where('from', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
