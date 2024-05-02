@@ -15,6 +15,10 @@ export const coucresucc = 'Curso creado correctamente!.';
 export const couupdsucc = 'Curso actualizado correctamente!.';
 export const coudelsucc = 'Curso eliminado correctamente!.';
 
+export const procresucc = 'Producto creado correctamente!.';
+export const proupdsucc = 'Producto actualizado correctamente!.';
+export const prodelsucc = 'Producto eliminado correctamente!.';
+
 export const modcresucc = 'Modulo creado correctamente!.';
 export const modupdsucc = 'Modulo actualizado correctamente!.';
 export const moddelsucc = 'Modulo eliminado correctamente!.';

@@ -21,13 +21,10 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import MenuIcon from '@mui/icons-material/Menu';
 import { uiStyles } from './Products.styles';
-
 import { IconBook, IconApps, IconDeviceFloppy } from '@tabler/icons';
-
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 //Collections
 import * as Msg from 'store/message';
 import { generateId } from 'utils/idGenerator';
@@ -35,7 +32,6 @@ import { titles, inputLabels } from './Products.texts';
 import defaultImageCourse from 'assets/images/defaultCourse.jpg';
 import { fullDate } from 'utils/validations';
 import { collProducts } from 'store/collections';
-
 import { authentication, storage } from 'config/firebase';
 import { createDocument, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -49,6 +45,7 @@ export default function ProductAdd() {
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
   const [openLoader, setOpenLoader] = useState(false);
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
@@ -56,17 +53,16 @@ export default function ProductAdd() {
   const [price, setPrice] = useState(null);
   const [quantity, setQuantity] = useState(null);
   const [category, setCategory] = useState(null);
-
-  //const [telegram, setTelegram] = useState(null);
-  const [logo, setLogo] = useState({ preview: '', raw: '' });
   const [picture1, setPicture1] = useState({ preview: '', raw: '' });
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
+  const [picture4, setPicture4] = useState({ preview: '', raw: '' });
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         setUserId(user.uid);
+        setUserName(user.displayName);
       }
     });
   }, []);
@@ -89,30 +85,32 @@ export default function ProductAdd() {
   const handleCreate = () => {
     if (!name || !description || !price || !quantity || !category) {
       toast.info(Msg.requiered, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!logo.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else if (!picture1.preview) {
       toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else if (!picture2.preview) {
       toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else if (!picture3.preview) {
       toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
+    } else if (!picture4.preview) {
+      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpenLoader(true);
       const ide = generateId(10);
       const object = {
         id: ide,
+        type: 0,
         idBusiness: idBusiness,
         userId: userId,
+        userName: userName,
         name: name,
         description: description,
         price: price,
         quantity: quantity,
         category: category,
-        logo: null,
         picture1: null,
         picture2: null,
         picture3: null,
+        picture4: null,
         createAt: fullDate(),
         updateAt: null,
         deleteAt: null,
@@ -120,23 +118,10 @@ export default function ProductAdd() {
       };
       setTimeout(() => {
         createDocument(collProducts, ide, object);
-        //Logo
-        if (logo.raw !== null) {
-          const imageName = ide + 'main.jpg';
-          const imageRef = ref(storage, `business/products/${imageName}`);
-          uploadBytes(imageRef, logo.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                logo: url
-              };
-              updateDocument(collProducts, ide, obj);
-            });
-          });
-        }
         //Picture1
         if (picture1.raw !== null) {
           const imageName = ide + 'p1.jpg';
-          const imageRef = ref(storage, `business/products/${imageName}`);
+          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
           uploadBytes(imageRef, picture1.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
@@ -149,7 +134,7 @@ export default function ProductAdd() {
         //Picture2
         if (picture2.raw !== null) {
           const imageName = ide + 'p2.jpg';
-          const imageRef = ref(storage, `business/products/${imageName}`);
+          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
           uploadBytes(imageRef, picture2.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
@@ -162,11 +147,24 @@ export default function ProductAdd() {
         //Picture3
         if (picture3.raw !== null) {
           const imageName = ide + 'p3.jpg';
-          const imageRef = ref(storage, `business/products/${imageName}`);
+          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
           uploadBytes(imageRef, picture3.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
                 picture3: url
+              };
+              updateDocument(collProducts, ide, obj);
+            });
+          });
+        }
+        //Picture 4
+        if (picture4.raw !== null) {
+          const imageName = ide + 'p4.jpg';
+          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          uploadBytes(imageRef, picture4.raw).then((snap) => {
+            getDownloadURL(snap.ref).then((url) => {
+              const obj = {
+                picture4: url
               };
               updateDocument(collProducts, ide, obj);
             });
@@ -185,10 +183,6 @@ export default function ProductAdd() {
     setDescription('');
     setPrice('');
     setQuantity('');
-    setLogo({
-      preview: '',
-      raw: ''
-    });
     setPicture1({
       preview: '',
       raw: ''
@@ -201,20 +195,10 @@ export default function ProductAdd() {
       preview: '',
       raw: ''
     });
-  };
-
-  const handleLogoChange = (e) => {
-    if (e.target.files.length) {
-      let img = new Image();
-      img.src = window.URL.createObjectURL(e.target.files[0]);
-      let raw = e.target.files[0];
-      img.onload = () => {
-        setLogo({
-          preview: img.src,
-          raw: raw
-        });
-      };
-    }
+    setPicture4({
+      preview: '',
+      raw: ''
+    });
   };
 
   const handlePicture1Change = (e) => {
@@ -252,6 +236,20 @@ export default function ProductAdd() {
       let raw = e.target.files[0];
       img.onload = () => {
         setPicture3({
+          preview: img.src,
+          raw: raw
+        });
+      };
+    }
+  };
+
+  const handlePicture4Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture4({
           preview: img.src,
           raw: raw
         });
@@ -416,26 +414,6 @@ export default function ProductAdd() {
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
               <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
                 <center>
-                  <input type="file" id="logo" style={{ display: 'none' }} onChange={handleLogoChange} accept="image/*" />
-                  <div htmlFor="logo" id="logo">
-                    <label htmlFor="logo">
-                      <img
-                        src={logo.preview || defaultImageCourse}
-                        alt="Logo"
-                        width={180}
-                        height={140}
-                        style={{ borderRadius: 15, paddingTop: 5 }}
-                      />
-                      <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
-                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
-                    </label>
-                  </div>
-                </center>
-              </div>
-            </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
-                <center>
                   <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                   <div htmlFor="picture1" id="picture1">
                     <label htmlFor="picture1">
@@ -487,6 +465,26 @@ export default function ProductAdd() {
                         style={{ borderRadius: 15 }}
                       />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
+                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+                <center>
+                  <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
+                  <div htmlFor="picture4" id="picture4">
+                    <label htmlFor="picture4">
+                      <img
+                        src={picture4.preview || defaultImageCourse}
+                        alt="Picture4"
+                        width={180}
+                        height={140}
+                        style={{ borderRadius: 15, paddingTop: 5 }}
+                      />
+                      <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
                   </div>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { createDocument, getBusinessById, getProductById } from 'config/firebaseEvents';
+import { createDocument, getBusinessById, getProductById, getUserById } from 'config/firebaseEvents';
 import { Avatar, Box, Divider, Grid, Typography, TextField, Button, ButtonGroup, Modal } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import { ToastContainer, toast } from 'react-toastify';
@@ -30,9 +30,12 @@ export default function ViewItem() {
   const [quantity, setQuantity] = useState(null);
   const [category, setCategory] = useState(null);
   const [url0, setUrl0] = useState(null);
-  //const [url1, setUrl1] = useState(null);
-  //const [url2, setUrl2] = useState(null);
-  //const [url3, setUrl3] = useState(null);
+
+  const [userIdd, setUserIdd] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [userLogo, setUserLogo] = useState(null);
+  const [userCreateAt, setUserCreateAt] = useState(null);
+
   const [images, setImages] = useState([]);
   const [businessId, setBusinessId] = useState(null);
   const [businessName, setBusinessName] = useState(null);
@@ -56,60 +59,68 @@ export default function ViewItem() {
       setPrice(data[0].price);
       setQuantity(data[0].quantity);
       setCategory(data[0].category);
-      setUrl0(data[0].logo);
+      setUrl0(data[0].picture1);
       setImages([
-        {
-          original: data[0].logo,
-          thumbnail: data[0].logo,
-          originalHeight: 400,
-          thumbnailWidth: 40,
-          thumbnailHeight: 50
-        },
         {
           original: data[0].picture1,
           thumbnail: data[0].picture1,
-          originalHeight: 400,
+          originalHeight: 500,
           thumbnailWidth: 40,
           thumbnailHeight: 50
         },
         {
           original: data[0].picture2,
           thumbnail: data[0].picture2,
-          originalHeight: 400,
+          originalHeight: 500,
           thumbnailWidth: 40,
           thumbnailHeight: 50
         },
         {
           original: data[0].picture3,
           thumbnail: data[0].picture3,
-          originalHeight: 400,
+          originalHeight: 500,
+          thumbnailWidth: 40,
+          thumbnailHeight: 50
+        },
+        {
+          original: data[0].picture4,
+          thumbnail: data[0].picture4,
+          originalHeight: 500,
           thumbnailWidth: 40,
           thumbnailHeight: 50
         }
       ]);
       setBusinessId(data[0].idBusiness);
-      getBusinessById(data[0].idBusiness).then((data) => {
-        setBusinessName(data[0].name);
-        setBusinessLogo(data[0].logo);
-        setBusinessCreateAt(data[0].createAt);
-        setBusinessCity(data[0].city);
-        setBusinessUserId(data[0].userId);
-      });
+      if (data[0].type !== 0) {
+        getUserById(data[0].userId).then((dat) => {
+          setUserIdd(dat[0].id);
+          setUserName(dat[0].fullName);
+          setUserLogo(dat[0].avatar);
+          setUserCreateAt(dat[0].createAt);
+        });
+      } else {
+        getBusinessById(data[0].idBusiness).then((dataa) => {
+          setBusinessName(dataa[0].name);
+          setBusinessLogo(dataa[0].logo);
+          setBusinessCreateAt(dataa[0].createAt);
+          setBusinessCity(dataa[0].city);
+          setBusinessUserId(dataa[0].userId);
+        });
+      }
     });
   }, []);
 
   const handleSendMessage = () => {
     setOpenLoader(true);
-    console.log(businessUserId, message);
-    console.log(userId, message);
     const msnId = generateId(10);
     const obj = {
       id: msnId,
       to: userId,
       from: fromId,
       fromName: fromName,
-      businessId: businessId,
-      businessName: businessName,
+      businessId: businessId || userIdd,
+      businessName: businessName || userName,
+      businessUserId: businessUserId || '',
       message: message,
       idProduct: id,
       nameProduct: name,
@@ -172,12 +183,12 @@ export default function ViewItem() {
                   Información del vendedor
                 </Typography>
                 <ButtonGroup sx={{ mt: 2 }}>
-                  <Avatar src={businessLogo} color="inherit" style={{ width: 32, height: 32 }} />
-                  <span style={{ margin: 6, color: '#E4E6EB', fontSize: 16 }}>{businessName}</span>
+                  <Avatar src={businessLogo || userLogo} color="inherit" style={{ width: 32, height: 32 }} />
+                  <span style={{ margin: 6, color: '#E4E6EB', fontSize: 16 }}>{businessName || userName}</span>
                 </ButtonGroup>
                 <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 14 }}>
                   <strong>Se unió a Khuska Market en </strong>
-                  {businessCreateAt}
+                  {businessCreateAt || userCreateAt}
                 </Typography>
                 <Divider sx={{ borderColor: '#3E4042' }} />
                 <Typography variant="h2" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 18 }}>

@@ -25,3 +25,15 @@ export function searchingProducts(search) {
     return x.name.toLowerCase().includes(search) || x.name.toUpperCase().includes(search) || !search;
   };
 }
+
+export function searchingProductsByNameOrCategory(search) {
+  return function (x) {
+    return (
+      x.name.toLowerCase().includes(search) ||
+      x.name.toUpperCase().includes(search) ||
+      x.category.toLowerCase().includes(search) ||
+      x.category.toUpperCase().includes(search) ||
+      !search
+    );
+  };
+}

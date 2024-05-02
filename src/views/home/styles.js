@@ -1,5 +1,6 @@
 export const uiStyles = {
   box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
+  paper: { width: '100%', overflow: 'hidden', marginTop: 2 },
   modalLogin: {
     position: 'absolute',
     top: '50%',

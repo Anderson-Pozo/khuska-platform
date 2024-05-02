@@ -159,10 +159,30 @@ export async function getBusinessById(id) {
   });
   return data;
 }
+//Obtner el Usuario por Id
+export async function getUserById(id) {
+  let data = [];
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
 //Obtner el Producto por Id
 export async function getProductById(id) {
   let data = [];
   const q = query(collection(db, collProducts), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
+//Obtner el Producto por Id Usuario
+export async function getProductByUserId(id) {
+  let data = [];
+  const q = query(collection(db, collProducts), where('userId', '==', id));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());

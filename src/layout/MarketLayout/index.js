@@ -205,22 +205,6 @@ function Market(props) {
         <Divider sx={{ borderColor: '#3a3b3c' }} />
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/market/my-items')}>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  justifyContent: 'center',
-                  backgroundColor: '#3a3b3c',
-                  padding: 1,
-                  borderRadius: 50
-                }}
-              >
-                <IconTags color="#FFF" size={16} />
-              </ListItemIcon>
-              <span style={{ marginLeft: 12, fontSize: 13 }}>Tus Publicaciones</span>
-            </CustomButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
             <CreateButton
               onClick={() => {
                 setIsCreate(false);
@@ -245,7 +229,15 @@ function Market(props) {
         }}
       >
         <Toolbar style={{ height: 60, borderColor: '#242526' }}>
-          <img src={logo} alt="Logo" width={130} height={45} />
+          <div
+            aria-hidden="true"
+            onClick={() => {
+              navigate('/');
+            }}
+            style={{ cursor: 'pointer' }}
+          >
+            <img src={logo} alt="Logo" width={130} height={45} />
+          </div>
         </Toolbar>
         <Divider sx={{ borderColor: '#3a3b3c' }} />
         <Typography variant="h5" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}>
@@ -268,52 +260,70 @@ function Market(props) {
               <span style={{ marginLeft: 12, fontSize: 13 }}>Principal</span>
             </CustomButton>
           </ListItem>
-          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/market/messages')}>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  justifyContent: 'center',
-                  backgroundColor: '#3a3b3c',
-                  padding: 1,
-                  borderRadius: 50
-                }}
-              >
-                <IconMessage color="#FFF" size={16} />
-              </ListItemIcon>
-              <span style={{ marginLeft: 12, fontSize: 13 }}>Mensajes</span>
-            </CustomButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/market/notifications')}>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  justifyContent: 'center',
-                  backgroundColor: '#3a3b3c',
-                  padding: 1,
-                  borderRadius: 50
-                }}
-              >
-                <IconBell color="#FFF" size={16} />
-              </ListItemIcon>
-              <span style={{ marginLeft: 12, fontSize: 13 }}>Notificaciones</span>
-            </CustomButton>
-          </ListItem>
           {user ? (
-            <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-              <CreateButton
-                onClick={() => {
-                  setIsCreate(true);
-                  navigate('/market/create');
-                }}
-              >
-                <ListItemIcon>
-                  <IconPlus color="#FFF" size={16} />
-                </ListItemIcon>
-                <span>Crear Publicación</span>
-              </CreateButton>
-            </ListItem>
+            <>
+              <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+                <CustomButton onClick={() => navigate('/market/messages')}>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      justifyContent: 'center',
+                      backgroundColor: '#3a3b3c',
+                      padding: 1,
+                      borderRadius: 50
+                    }}
+                  >
+                    <IconMessage color="#FFF" size={16} />
+                  </ListItemIcon>
+                  <span style={{ marginLeft: 12, fontSize: 13 }}>Mensajes</span>
+                </CustomButton>
+              </ListItem>
+              <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+                <CustomButton onClick={() => navigate('/market/notifications')}>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      justifyContent: 'center',
+                      backgroundColor: '#3a3b3c',
+                      padding: 1,
+                      borderRadius: 50
+                    }}
+                  >
+                    <IconBell color="#FFF" size={16} />
+                  </ListItemIcon>
+                  <span style={{ marginLeft: 12, fontSize: 13 }}>Notificaciones</span>
+                </CustomButton>
+              </ListItem>
+              <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+                <CustomButton onClick={() => navigate('/market/my-items')}>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      justifyContent: 'center',
+                      backgroundColor: '#3a3b3c',
+                      padding: 1,
+                      borderRadius: 50
+                    }}
+                  >
+                    <IconTags color="#FFF" size={16} />
+                  </ListItemIcon>
+                  <span style={{ marginLeft: 12, fontSize: 13 }}>Mis Publicaciones</span>
+                </CustomButton>
+              </ListItem>
+              <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+                <CreateButton
+                  onClick={() => {
+                    setIsCreate(true);
+                    navigate('/market/create');
+                  }}
+                >
+                  <ListItemIcon>
+                    <IconPlus color="#FFF" size={16} />
+                  </ListItemIcon>
+                  <span>Crear Publicación</span>
+                </CreateButton>
+              </ListItem>
+            </>
           ) : (
             <></>
           )}
