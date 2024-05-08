@@ -2,27 +2,11 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import {
-  Button,
-  Box,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  InputLabel,
-  OutlinedInput,
-  FormControl,
-  AppBar,
-  Container,
-  Toolbar,
-  Typography,
-  Modal
-} from '@mui/material';
+import { Button, Box, Grid, InputLabel, OutlinedInput, FormControl, AppBar, Container, Toolbar, Modal } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import MenuIcon from '@mui/icons-material/Menu';
 import { uiStyles } from './Business.styles';
 
-import { IconBook, IconApps, IconDeviceFloppy } from '@tabler/icons';
+import { IconDeviceFloppy, IconArrowBack } from '@tabler/icons';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -40,13 +24,10 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function BusinessEdit() {
   let navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const [openLoader, setOpenLoader] = useState(false);
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
   const [owner, setOwner] = useState(null);
   const [description, setDescription] = useState(null);
@@ -98,21 +79,6 @@ export default function BusinessEdit() {
       setUrl4(data[0].picture4);
     });
   }, []);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleEdit = () => {
     if (!name || !owner || !description || !phone || !province || !address || !city || !email) {
@@ -340,88 +306,25 @@ export default function BusinessEdit() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.containerAdd}>
+        <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconBook />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/main/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/main/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 10 }} />
-                  {titles.viewMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={{ flexGrow: 0 }}>
-              <Button variant="primary" endIcon={<IconDeviceFloppy />} onClick={handleEdit}>
+            <IconArrowBack
+              color="#FFF"
+              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate('/main/business');
+              }}
+            />
+            <Box>
+              <Button variant="primary" startIcon={<IconDeviceFloppy />} onClick={handleEdit}>
                 {titles.buttonEdit}
               </Button>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
-
       <Grid container spacing={1} style={{ marginTop: 5 }}>
-        <Grid item lg={7} xs={12}>
+        <Grid item lg={12} xs={12}>
           <Grid container spacing={1}>
             <Grid item xs={7}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
@@ -582,26 +485,22 @@ export default function BusinessEdit() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} lg={3}>
-                <Grid item xs={12} style={{ marginTop: 20 }}>
-                  <center>
-                    <input type="file" id="logo" style={{ display: 'none' }} onChange={handleLogoChange} accept="image/*" />
-                    <div htmlFor="logo" id="logo">
-                      <label htmlFor="logo">
-                        <img src={logo.preview || url0} alt="Logo" height={150} style={{ borderRadius: 15 }} />
-                        <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
-                      </label>
-                    </div>
-                  </center>
-                </Grid>
-              </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item lg={5} xs={12}>
+        <Grid item lg={12} xs={12}>
           <center>
             <Grid container spacing={1}>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
+                <input type="file" id="logo" style={{ display: 'none' }} onChange={handleLogoChange} accept="image/*" />
+                <div htmlFor="logo" id="logo">
+                  <label htmlFor="logo">
+                    <img src={logo.preview || url0} alt="Logo" height={150} style={{ borderRadius: 15 }} />
+                    <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
+                  </label>
+                </div>
+              </Grid>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                 <div htmlFor="picture1" id="picture1">
                   <label htmlFor="picture1">
@@ -610,7 +509,7 @@ export default function BusinessEdit() {
                   </label>
                 </div>
               </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
                 <div htmlFor="picture2" id="picture2">
                   <label htmlFor="picture2">
@@ -619,7 +518,7 @@ export default function BusinessEdit() {
                   </label>
                 </div>
               </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
                 <div htmlFor="picture3" id="picture3">
                   <label htmlFor="picture3">
@@ -628,7 +527,7 @@ export default function BusinessEdit() {
                   </label>
                 </div>
               </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
                 <div htmlFor="picture4" id="picture4">
                   <label htmlFor="picture4">

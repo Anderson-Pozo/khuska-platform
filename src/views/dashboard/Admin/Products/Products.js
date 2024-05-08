@@ -11,12 +11,9 @@ import {
   TablePagination,
   TableRow,
   Button,
-  Menu,
-  MenuItem,
   AppBar,
   Box,
   Toolbar,
-  IconButton,
   Typography,
   Container,
   Modal,
@@ -25,10 +22,9 @@ import {
   ButtonGroup,
   Avatar
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Products.styles';
-import { IconApps, IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArrowBack } from '@tabler/icons';
+import { IconPlus, IconTrash, IconEdit, IconCircleX, IconEye, IconArrowBack } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,6 +36,7 @@ import { deleteDocument, getProductsByBusiness } from 'config/firebaseEvents';
 //types array
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
+import { collProducts } from 'store/collections';
 
 function searchingData(search) {
   return function (x) {
@@ -53,9 +50,6 @@ export default function Products() {
   const idBusiness = searchParams.get('id');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [id, setId] = useState(null);
   const [name, setName] = useState(null);
@@ -80,21 +74,6 @@ export default function Products() {
     setOpenDelete(false);
   };
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -106,13 +85,12 @@ export default function Products() {
 
   const handleDelete = () => {
     setOpenLoader(true);
-    deleteDocument(collCourses, id);
+    deleteDocument(collProducts, id);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);
-      reloadCoursesData();
       getData();
-      toast.success(Msg.coudelsucc, { position: toast.POSITION.TOP_RIGHT });
+      toast.success(Msg.prodelsucc, { position: toast.POSITION.TOP_RIGHT });
     }, 2000);
   };
 
@@ -122,119 +100,40 @@ export default function Products() {
       <AppBar position="static" style={uiStyles.appbar}>
         <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconBuilding />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate({
-                      pathname: '/main/business',
-                      search: `?id=${r.id}`
-                    });
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewBusiness}</Typography>
-                </MenuItem>
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate({
-                      pathname: '/main/add-product',
-                      search: `?id=${idBusiness}`
-                    });
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.addProduct}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/main/business');
-                  }}
-                >
-                  <IconArrowBack style={{ marginRight: 10 }} />
-                  {titles.viewBusiness}
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    navigate({
-                      pathname: '/main/add-product',
-                      search: `?id=${idBusiness}`
-                    });
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 10 }} />
-                  {titles.addProduct}
-                </MenuItem>
-              </Menu>
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              {dataList.length > 0 ? (
-                <OutlinedInput
-                  id={inputLabels.search}
-                  type="text"
-                  name={inputLabels.search}
-                  onChange={(ev) => setSearch(ev.target.value)}
-                  placeholder={inputLabels.placeHolderSearch}
-                  style={{ width: 300 }}
-                />
-              ) : (
-                <></>
-              )}
-            </Box>
+            <IconArrowBack
+              color="#FFF"
+              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate('/main/business');
+              }}
+            />
+            <IconPlus
+              color="#FFF"
+              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate({
+                  pathname: '/main/add-product',
+                  search: `?id=${idBusiness}`
+                });
+              }}
+            />
           </Toolbar>
         </Container>
       </AppBar>
+      <Box sx={{ flexGrow: 0 }}>
+        {dataList.length > 0 ? (
+          <OutlinedInput
+            id={inputLabels.search}
+            type="text"
+            name={inputLabels.search}
+            onChange={(ev) => setSearch(ev.target.value)}
+            placeholder={inputLabels.placeHolderSearch}
+            style={{ width: '100%', marginTop: 10 }}
+          />
+        ) : (
+          <></>
+        )}
+      </Box>
       {dataList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 400 }}>

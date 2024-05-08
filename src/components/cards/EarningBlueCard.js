@@ -15,20 +15,6 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   color: '#fff',
   overflow: 'hidden',
   position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: 'rgba(255,255,255,0.7)',
-    borderRadius: '50%',
-    top: -85,
-    right: -95,
-    [theme.breakpoints.down('sm')]: {
-      top: -105,
-      right: -140
-    }
-  },
   '&:before': {
     content: '""',
     position: 'absolute',

@@ -2,27 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import {
-  Button,
-  Box,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  InputLabel,
-  OutlinedInput,
-  FormControl,
-  AppBar,
-  Container,
-  Toolbar,
-  Typography,
-  Modal
-} from '@mui/material';
+import { Button, Box, Grid, InputLabel, OutlinedInput, FormControl, AppBar, Container, Toolbar, Modal } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import MenuIcon from '@mui/icons-material/Menu';
 import { uiStyles } from './Business.styles';
 
-import { IconBook, IconApps, IconDeviceFloppy } from '@tabler/icons';
+import { IconDeviceFloppy, IconArrowBack } from '@tabler/icons';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -43,12 +27,9 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 export default function BusinessCreate() {
   let navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
   const [userId, setUserId] = useState(null);
   const [openLoader, setOpenLoader] = useState(false);
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
   const [owner, setOwner] = useState(null);
   const [description, setDescription] = useState(null);
@@ -77,21 +58,6 @@ export default function BusinessCreate() {
       }
     });
   }, []);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleCreate = () => {
     if (!name || !owner || !description || !phone || !province || !address || !city || !email) {
@@ -134,8 +100,6 @@ export default function BusinessCreate() {
         deleteAt: null,
         state: 1
       };
-      //console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
-      //console.log(Intl.DateTimeFormat().resolvedOptions().locale);
       setTimeout(() => {
         createDocument(collBusiness, ide, object);
         //Logo
@@ -319,89 +283,26 @@ export default function BusinessCreate() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.containerAdd}>
+        <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconBook />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 10 }} />
-                  {titles.viewMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={{ flexGrow: 0 }}>
-              <Button variant="primary" endIcon={<IconDeviceFloppy />} onClick={handleCreate}>
+            <IconArrowBack
+              color="#FFF"
+              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate('/main/business');
+              }}
+            />
+            <Box>
+              <Button variant="primary" startIcon={<IconDeviceFloppy />} onClick={handleCreate}>
                 {titles.buttonCreate}
               </Button>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
-
-      <Grid container spacing={1} style={{ marginTop: 5 }}>
-        <Grid item lg={7} xs={12}>
-          <Grid container spacing={1}>
+      <Grid container spacing={0} style={{ marginTop: 0 }}>
+        <Grid item lg={12} xs={12}>
+          <Grid container spacing={0.5}>
             <Grid item xs={7}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="name">{inputLabels.name + ' *'}</InputLabel>
@@ -428,7 +329,7 @@ export default function BusinessCreate() {
                 />
               </FormControl>
             </Grid>
-            <Grid container spacing={1}>
+            <Grid container spacing={0.5}>
               <Grid item xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="description">{inputLabels.description + ' *'}</InputLabel>
@@ -561,81 +462,53 @@ export default function BusinessCreate() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} lg={3}>
-                <Grid item xs={12} style={{ marginTop: 20 }}>
-                  <center>
-                    <input type="file" id="logo" style={{ display: 'none' }} onChange={handleLogoChange} accept="image/*" />
-                    <div htmlFor="logo" id="logo">
-                      <label htmlFor="logo">
-                        <img src={logo.preview || defaultImageCourse} alt="Logo" height={150} style={{ borderRadius: 15 }} />
-                        <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
-                      </label>
-                    </div>
-                  </center>
-                </Grid>
-              </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item lg={5} xs={12}>
+        <Grid item lg={12} xs={12}>
           <center>
-            <Grid container spacing={1}>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+            <Grid container spacing={0}>
+              <Grid Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
+                <input type="file" id="logo" style={{ display: 'none' }} onChange={handleLogoChange} accept="image/*" />
+                <div htmlFor="logo" id="logo">
+                  <label htmlFor="logo">
+                    <img src={logo.preview || defaultImageCourse} alt="Logo" height={150} style={{ borderRadius: 15 }} />
+                    <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
+                  </label>
+                </div>
+              </Grid>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                 <div htmlFor="picture1" id="picture1">
                   <label htmlFor="picture1">
-                    <img
-                      src={picture1.preview || defaultImageCourse}
-                      alt="picture1"
-                      width={200}
-                      height={140}
-                      style={{ borderRadius: 15 }}
-                    />
+                    <img src={picture1.preview || defaultImageCourse} alt="picture1" height={150} style={{ borderRadius: 15 }} />
                     <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                   </label>
                 </div>
               </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
                 <div htmlFor="picture2" id="picture2">
                   <label htmlFor="picture2">
-                    <img
-                      src={picture2.preview || defaultImageCourse}
-                      alt="picture2"
-                      width={200}
-                      height={140}
-                      style={{ borderRadius: 15 }}
-                    />
+                    <img src={picture2.preview || defaultImageCourse} alt="picture2" height={150} style={{ borderRadius: 15 }} />
                     <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                   </label>
                 </div>
               </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
                 <div htmlFor="picture3" id="picture3">
                   <label htmlFor="picture3">
-                    <img
-                      src={picture3.preview || defaultImageCourse}
-                      alt="picture3"
-                      width={200}
-                      height={140}
-                      style={{ borderRadius: 15 }}
-                    />
+                    <img src={picture3.preview || defaultImageCourse} alt="picture3" height={150} style={{ borderRadius: 15 }} />
                     <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                   </label>
                 </div>
               </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
+              <Grid item lg={3} md={3} sm={4} xs={6} style={{ marginTop: 20 }}>
                 <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
                 <div htmlFor="picture4" id="picture4">
                   <label htmlFor="picture4">
-                    <img
-                      src={picture4.preview || defaultImageCourse}
-                      alt="picture4"
-                      width={200}
-                      height={140}
-                      style={{ borderRadius: 15 }}
-                    />
+                    <img src={picture4.preview || defaultImageCourse} alt="picture4" height={150} style={{ borderRadius: 15 }} />
                     <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                   </label>
                 </div>

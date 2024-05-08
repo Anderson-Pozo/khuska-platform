@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@mui/material/styles';
-import { Grid, Typography, useMediaQuery, Divider, FormControl, InputLabel, OutlinedInput, Button, Modal, Box } from '@mui/material';
+import { Grid, Typography, useMediaQuery, Divider, FormControl, Button, Modal, Box, TextField } from '@mui/material';
 import AnimateButton from 'components/extended/AnimateButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import AuthCard from './AuthCard';
@@ -10,23 +11,63 @@ import Logo from 'components/Logo';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth';
-import { authentication, db } from 'config/firebase';
+import { authentication } from 'config/firebase';
 import { generateOwnReferalNumber } from 'utils/idGenerator';
-import { doc, setDoc } from 'firebase/firestore';
-import { collUsers } from 'store/collections';
-import { fullDate } from 'utils/validations';
+import {
+  collInbox,
+  collNotifications,
+  collSubscription,
+  collUserAddress,
+  collUserBillData,
+  collUserLog,
+  collUserPaymentMethod,
+  collUserPhone,
+  collUsers
+} from 'store/collections';
+import { fullDate, generateDate } from 'utils/validations';
 import { uiStyles } from './styles';
 import { genConst } from 'store/constant';
+import { createDocument } from 'config/firebaseEvents';
+
+const useStyles = makeStyles(() => ({
+  root: {
+    '& .MuiInputBase-root': {
+      color: '#FFF'
+    },
+    '& .MuiFilledInput-root': {
+      backgroundColor: '#242526',
+      borderRadius: 10,
+      marginBottom: 15,
+      color: '#FFF'
+    },
+    '& .MuiFilledInput-root:hover': {
+      backgroundColor: '#242526',
+      color: '#FFF',
+      '@media (hover: none)': {
+        backgroundColor: '#242526'
+      }
+    },
+    '& .MuiFilledInput-root.Mui-focused': {
+      backgroundColor: '#242526',
+      color: '#FFF',
+      border: '1px solid #242526'
+    },
+    '& .MuiInputLabel-outlined': {
+      color: '#FFF'
+    }
+  }
+}));
 
 export default function Register() {
   const theme = useTheme();
   let navigate = useNavigate();
+  const classes = useStyles();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [openLoader, setOpenLoader] = React.useState(false);
+  const [openLoader, setOpenLoader] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -35,6 +76,86 @@ export default function Register() {
       }
     });
   }, []);
+
+  const createUserAditionalData = (uid, email) => {
+    //Subscription
+    const objSubscription = {
+      idUser: uid,
+      startDate: null,
+      endDate: null,
+      cancelDate: null,
+      state: genConst.CONST_STATE_IN
+    };
+    createDocument(collSubscription, uid, objSubscription);
+    //Log
+    const userLog = {
+      idUser: uid,
+      loginDate: fullDate(),
+      email: email,
+      state: genConst.CONST_STATE_IN,
+      message: 'Registro de nuevo usuario.'
+    };
+    createDocument(collUserLog, uid, userLog);
+    //Address
+    const userAddress = {
+      idUser: uid,
+      principal: '',
+      secondary: '',
+      number: '',
+      city: '',
+      province: '',
+      reference: ''
+    };
+    createDocument(collUserAddress, uid, userAddress);
+    //Phone
+    const userPhone = {
+      idUser: uid,
+      phone: ''
+    };
+    createDocument(collUserPhone, uid, userPhone);
+    //BillData
+    const userBillData = {
+      idUser: uid,
+      name: '',
+      ci: '',
+      address: '',
+      email: '',
+      city: '',
+      phone: '',
+      postal: ''
+    };
+    createDocument(collUserBillData, uid, userBillData);
+    //Payment Data
+    const userPaymentData = {
+      idUser: uid,
+      name: '',
+      number: '',
+      numberMask: null,
+      date: '',
+      cvc: '',
+      cvcmd5: null
+    };
+    createDocument(collUserPaymentMethod, uid, userPaymentData);
+    //Inbox
+    const inbox = {
+      to: email,
+      from: 'Khuska Admin',
+      date: generateDate(),
+      message: 'Bienvenido a Khuska',
+      subject: 'Bienvenida'
+    };
+    createDocument(collInbox, uid, inbox);
+    //Notifications
+    const notifications = {
+      to: email,
+      from: 'Khuska Admin',
+      date: generateDate(),
+      message: 'No olvides actualizar tu información de perfil.',
+      subject: 'Notificación',
+      state: genConst.CONST_NOTIF_NL
+    };
+    createDocument(collNotifications, uid, notifications);
+  };
 
   const handleRegister = () => {
     if (!name || !lastName || !email || !password) {
@@ -48,7 +169,7 @@ export default function Register() {
             displayName: name + ' ' + lastName
           });
           let refCode = generateOwnReferalNumber(6);
-          setDoc(doc(db, collUsers, user.uid), {
+          const userObject = {
             id: user.uid,
             fullName: name + ' ' + lastName,
             name: name,
@@ -69,8 +190,9 @@ export default function Register() {
             refer: null,
             ownReferal: refCode,
             url: null
-          });
-          //createUserAditionalData(user.uid, values.email);
+          };
+          createDocument(collUsers, user.uid, userObject);
+          createUserAditionalData(user.uid, email);
           toast.success('Usuario registrado correctamente!.', { position: toast.POSITION.TOP_RIGHT });
           setTimeout(() => {
             setOpenLoader(false);
@@ -115,51 +237,67 @@ export default function Register() {
                 <Grid item xs={12}>
                   <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                     <Grid item>
-                      <Typography color={theme.palette.secondary.main} gutterBottom variant={matchDownSM ? 'h5' : 'h4'}>
-                        Bienvenido a Compra Venta KHUSKA
+                      <Typography color={theme.palette.secondary.light} gutterBottom variant={matchDownSM ? 'h5' : 'h4'}>
+                        Bienvenido KHUSKA MARKET
                       </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <InputLabel htmlFor="outlined-adornment-name-login">Nombre</InputLabel>
-                    <OutlinedInput
+                    <TextField
                       id="outlined-adornment-name-login"
+                      variant="filled"
                       type="text"
                       name="name"
+                      className={classes.root}
+                      fullWidth
                       label="Nombre"
+                      color="info"
                       onChange={(ev) => setName(ev.target.value)}
+                      sx={{ input: { color: '#FFF' } }}
                     />
                   </FormControl>
                   <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <InputLabel htmlFor="outlined-adornment-lastName-login">Apellido</InputLabel>
-                    <OutlinedInput
-                      id="outlined-adornment-lastName-login"
+                    <TextField
+                      id="outlined-adornment-lastname-login"
+                      variant="filled"
                       type="text"
-                      name="lastName"
+                      name="lastname"
+                      className={classes.root}
+                      fullWidth
                       label="Apellido"
+                      color="info"
                       onChange={(ev) => setLastName(ev.target.value)}
+                      sx={{ input: { color: '#FFF' } }}
                     />
                   </FormControl>
                   <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <InputLabel htmlFor="outlined-adornment-email-login">Correo Electrónico</InputLabel>
-                    <OutlinedInput
+                    <TextField
                       id="outlined-adornment-email-login"
+                      variant="filled"
                       type="email"
                       name="email"
+                      className={classes.root}
+                      fullWidth
                       label="Correo Electrónico"
+                      color="info"
                       onChange={(ev) => setEmail(ev.target.value)}
+                      sx={{ input: { color: '#FFF' } }}
                     />
                   </FormControl>
                   <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <InputLabel htmlFor="outlined-adornment-password-login">Contraseña</InputLabel>
-                    <OutlinedInput
+                    <TextField
                       id="outlined-adornment-password-login"
+                      variant="filled"
                       type="password"
                       name="password"
+                      className={classes.root}
+                      fullWidth
                       label="Contraseña"
+                      color="info"
                       onChange={(ev) => setPassword(ev.target.value)}
+                      sx={{ input: { color: '#FFF' } }}
                     />
                   </FormControl>
                   <AnimateButton>
@@ -170,7 +308,7 @@ export default function Register() {
                       type="submit"
                       variant="contained"
                       color="secondary"
-                      style={{ borderRadius: 10 }}
+                      style={{ borderRadius: 10, height: 50, fontSize: 14 }}
                       onClick={handleRegister}
                     >
                       Registrar
@@ -178,14 +316,19 @@ export default function Register() {
                   </AnimateButton>
                 </Grid>
                 <Grid item xs={12}>
-                  <Divider />
+                  <Divider sx={{ borderColor: '#3E4042' }} />
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="h4" style={{ textAlign: 'center', marginBottom: 10, color: '#FFF' }}>
                     Ya tienes una cuenta?
                   </Typography>
                   <Grid item container direction="column" alignItems="center" xs={12}>
-                    <Typography component={Link} to="/market/login" variant="subtitle1" sx={{ textDecoration: 'none', color: '#FFF' }}>
+                    <Typography
+                      component={Link}
+                      to="/market/login"
+                      variant="subtitle1"
+                      sx={{ textDecoration: 'none', color: theme.palette.secondary.light }}
+                    >
                       Iniciar Sesión
                     </Typography>
                   </Grid>

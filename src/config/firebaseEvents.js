@@ -42,7 +42,6 @@ export function isSessionActive(navigate) {
     }
   });
 }
-
 //Encontrar Id de Usuario Sesión
 export function getUserId() {
   let userId = null;
@@ -53,7 +52,18 @@ export function getUserId() {
   });
   return userId;
 }
-
+//Buscar si existe Usuario
+export async function isExistUser(id) {
+  let isExist = false;
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    isExist = true;
+  } else {
+    isExist = false;
+  }
+  return isExist;
+}
 //CRUD FUNCTIONS
 export function createDocument(table, idRecord, object) {
   return setDoc(doc(db, table, idRecord), object);

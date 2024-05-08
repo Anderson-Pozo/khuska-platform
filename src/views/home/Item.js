@@ -8,7 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import avatarImg from 'assets/images/profile/profile-picture-6.jpg';
-import defaultImage from 'assets/images/defaultCourse.jpg';
+import defaultImage from 'assets/images/addImg.png';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -258,7 +258,7 @@ export default function Item() {
       <ToastContainer />
       <Grid item xs={12}>
         <Grid container spacing={0}>
-          <Grid item sm={12} xs={12} md={7} lg={7}>
+          <Grid item sm={12} xs={12} md={6} lg={6}>
             <Typography
               variant="h3"
               noWrap
@@ -330,15 +330,15 @@ export default function Item() {
               />
             </div>
           </Grid>
-          <Grid item sm={12} xs={12} md={5} lg={5} sx={uiStyles.layout}>
+          <Grid item sm={12} xs={12} md={6} lg={6} sx={uiStyles.layout}>
             <div style={uiStyles.main}>
               <div style={uiStyles.sidebar}>
                 <div style={{ width: '100%', height: 280, backgroundColor: 'transparent', marginTop: 0 }}>
                   <Typography
-                    variant="h3"
+                    variant="h4"
                     noWrap
                     component="div"
-                    style={{ color: '#FFF', paddingBottom: 20, paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}
+                    style={{ color: '#FFF', paddingBottom: 0, paddingTop: 40, paddingLeft: 10, fontWeight: 'bold', textAlign: 'center' }}
                   >
                     Puedes agregar un máximo de 4 fotos.
                   </Typography>
@@ -386,10 +386,11 @@ export default function Item() {
                                       <img
                                         src={picture1.preview || defaultImage}
                                         alt="Picture1"
-                                        width={130}
-                                        height={150}
+                                        width={picture1.preview ? 130 : 80}
+                                        height={picture1.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
+                                      {picture1.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
                                     </label>
                                   </div>
                                 </center>
@@ -420,11 +421,12 @@ export default function Item() {
                                     <label htmlFor="picture2">
                                       <img
                                         src={picture2.preview || defaultImage}
-                                        alt="picture2"
-                                        width={130}
-                                        height={150}
+                                        alt="Picture2"
+                                        width={picture2.preview ? 130 : 80}
+                                        height={picture2.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
+                                      {picture2.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
                                     </label>
                                   </div>
                                 </center>
@@ -455,11 +457,12 @@ export default function Item() {
                                     <label htmlFor="picture3">
                                       <img
                                         src={picture3.preview || defaultImage}
-                                        alt="picture3"
-                                        width={130}
-                                        height={150}
+                                        alt="Picture3"
+                                        width={picture3.preview ? 130 : 80}
+                                        height={picture3.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
+                                      {picture3.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
                                     </label>
                                   </div>
                                 </center>
@@ -490,11 +493,12 @@ export default function Item() {
                                     <label htmlFor="picture4">
                                       <img
                                         src={picture4.preview || defaultImage}
-                                        alt="picture4"
-                                        width={130}
-                                        height={150}
+                                        alt="Picture4"
+                                        width={picture4.preview ? 130 : 80}
+                                        height={picture4.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
+                                      {picture4.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
                                     </label>
                                   </div>
                                 </center>
@@ -505,19 +509,21 @@ export default function Item() {
                       </Grid>
                     </Grid>
                   </div>
-                  <div style={{ marginTop: 40 }}>
-                    <Button
-                      disableElevation
-                      fullWidth
-                      size="large"
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      style={{ borderRadius: 10, height: 60 }}
-                      onClick={handleSaveProduct}
-                    >
-                      Crear
-                    </Button>
+                  <div style={{ marginTop: 20 }}>
+                    <center>
+                      <Button
+                        disableElevation
+                        fullWidth
+                        size="large"
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        style={{ borderRadius: 10, height: 45 }}
+                        onClick={handleSaveProduct}
+                      >
+                        Crear
+                      </Button>
+                    </center>
                     <h5 style={{ textAlign: 'justify', textJustify: 'inter-word' }}>
                       Los artículos de KhuskaMarket son públicos, por lo que cualquier persona dentro y fuera de KhuskaMarket puede verlos.
                       Los artículos como animales, drogas, armas, falsificaciones y otros que infringen derechos de propiedad intelectual no

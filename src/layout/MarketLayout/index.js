@@ -43,6 +43,7 @@ import logo from 'assets/images/khuska/logo.png';
 import { onAuthStateChanged, signOut, getAuth } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { uiStyles } from './index.style';
+import usrAvatarDef from 'assets/images/profile/profile-picture-6.jpg';
 
 const drawerWidth = 280;
 
@@ -54,6 +55,7 @@ function Market(props) {
   const [isClosing, setIsClosing] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [user, setUser] = useState(false);
+  const [avatar, setAvatar] = useState(false);
   const [open, setOpen] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
 
@@ -61,6 +63,7 @@ function Market(props) {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
         setUser(true);
+        setAvatar(user.photoURL);
       } else {
         setUser(false);
       }
@@ -453,7 +456,7 @@ function Market(props) {
                 color="inherit"
                 onClick={handleNotifications}
               >
-                <Badge badgeContent={1} color="error">
+                <Badge badgeContent={0} color="error">
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
@@ -466,7 +469,15 @@ function Market(props) {
                   marginRight: 5
                 }}
               >
-                <AccountCircle />
+                {user ? (
+                  <div style={{ width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 50 }}>
+                    <img src={avatar || usrAvatarDef} width={40} alt="profile img" />
+                  </div>
+                ) : (
+                  <div style={{ width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 50 }}>
+                    <AccountCircle />
+                  </div>
+                )}
               </IconButton>
               <Menu
                 id="menu-appbar"

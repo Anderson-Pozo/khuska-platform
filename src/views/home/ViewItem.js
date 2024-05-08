@@ -51,6 +51,10 @@ export default function ViewItem() {
         setFromId(user.uid);
         setFromName(user.displayName);
       }
+      setOpenLoader(true);
+      setTimeout(() => {
+        setOpenLoader(false);
+      }, 2000);
     });
     getProductById(id).then((data) => {
       setUserId(data[0].userId);
@@ -108,6 +112,7 @@ export default function ViewItem() {
         });
       }
     });
+    document.getElementsByClassName('image-gallery-thumbnail-image').style = 'width: 30';
   }, []);
 
   const handleSendMessage = () => {
@@ -155,23 +160,23 @@ export default function ViewItem() {
             </Grid>
             <Grid item lg={4} xs={12} sx={uiStyles.layoutItem}>
               <div style={uiStyles.main}>
-                <Typography component={Link} to="/market/main" variant="h5" sx={{ textDecoration: 'none', color: '#FFF', pb: 2 }}>
+                <Typography component={Link} to="/market/main" variant="h6" sx={{ textDecoration: 'none', color: '#FFF', pb: 2 }}>
                   Regresar
                 </Typography>
-                <Typography variant="h2" textAlign="left" sx={{ color: '#FFF' }}>
+                <Typography variant="h3" textAlign="left" sx={{ color: '#FFF' }}>
                   {name}
                 </Typography>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 1, fontSize: 18 }}>
+                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 1, fontSize: 16 }}>
                   $ {price} - {quantity} Disponibles
                 </Typography>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#E4E6EB', pt: 1, pb: 2, fontSize: 16 }}>
-                  Publicado en {businessCity}
+                <Typography variant="h5" textAlign="left" sx={{ color: '#E4E6EB', pt: 1, pb: 2, fontSize: 14 }}>
+                  Publicado en: {businessCity || ' sin información'}
                 </Typography>
                 <Divider sx={{ borderColor: '#3E4042' }} />
                 <Typography variant="h2" textAlign="left" sx={{ color: '#FFF', pt: 2, fontSize: 18 }}>
                   Detalles
                 </Typography>
-                <Typography variant="h5" textAlign="justify" sx={{ color: '#E4E6EB', pt: 2, pb: 2, fontSize: 14 }}>
+                <Typography variant="h5" textAlign="justify" sx={{ color: '#E4E6EB', pt: 2, pb: 2, fontSize: 12 }}>
                   {description}
                 </Typography>
                 <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 16 }}>
@@ -186,36 +191,51 @@ export default function ViewItem() {
                   <Avatar src={businessLogo || userLogo} color="inherit" style={{ width: 32, height: 32 }} />
                   <span style={{ margin: 6, color: '#E4E6EB', fontSize: 16 }}>{businessName || userName}</span>
                 </ButtonGroup>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 14 }}>
+                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 12 }}>
                   <strong>Se unió a Khuska Market en </strong>
-                  {businessCreateAt || userCreateAt}
+                  <p>{businessCreateAt || userCreateAt}</p>
                 </Typography>
                 <Divider sx={{ borderColor: '#3E4042' }} />
                 <Typography variant="h2" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 18 }}>
                   Envía un mensaje al vendedor
                 </Typography>
-                <TextField
-                  variant="filled"
-                  type="text"
-                  className={classes.root}
-                  fullWidth
-                  color="info"
-                  value={message}
-                  sx={{ input: { color: '#FFF' } }}
-                  onChange={(ev) => setMessage(ev.target.value)}
-                />
-                <Button
-                  disableElevation
-                  fullWidth
-                  size="large"
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  style={{ borderRadius: 10, height: 50, marginTop: 5, marginBottom: 10 }}
-                  onClick={handleSendMessage}
-                >
-                  Enviar
-                </Button>
+                {fromId ? (
+                  <>
+                    <TextField
+                      variant="filled"
+                      type="text"
+                      className={classes.root}
+                      fullWidth
+                      color="info"
+                      value={message}
+                      sx={{ input: { color: '#FFF' } }}
+                      onChange={(ev) => setMessage(ev.target.value)}
+                    />
+                    <Button
+                      disableElevation
+                      fullWidth
+                      size="large"
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      style={{ borderRadius: 10, height: 50, marginTop: 5, marginBottom: 10 }}
+                      onClick={handleSendMessage}
+                    >
+                      Enviar
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Typography
+                      component={Link}
+                      to="/market/login"
+                      variant="h6"
+                      sx={{ textDecoration: 'none', color: '#FFF', pb: 2, textAlign: 'left' }}
+                    >
+                      Inicia sesión para escribir al vendedor del producto! Clic aquí
+                    </Typography>
+                  </>
+                )}
               </div>
             </Grid>
           </Grid>

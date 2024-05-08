@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Grid } from '@mui/material';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileData from './ProfileData';
@@ -9,6 +11,7 @@ import { authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const UserProfile = () => {
+  let navigate = useNavigate();
   const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,9 +22,12 @@ const UserProfile = () => {
         setId(user.uid);
         setName(user.displayName);
         setEmail(user.email);
+      } else {
+        navigate('/market/main');
       }
     });
   }, []);
+
   return (
     <Grid container spacing={gridSpacing} sx={{ pt: 3 }}>
       <Grid item xs={12}>

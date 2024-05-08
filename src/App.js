@@ -28,6 +28,7 @@ const Market = Loadable(lazy(() => import('views/home/Market')));
 const CreateProduct = Loadable(lazy(() => import('views/home/CreateProduct')));
 const Product = Loadable(lazy(() => import('views/home/Product')));
 const MyItems = Loadable(lazy(() => import('views/home/MyItems')));
+const ProductEditUsr = Loadable(lazy(() => import('views/home/ProductEdit')));
 const Item = Loadable(lazy(() => import('views/home/Item')));
 const ViewItem = Loadable(lazy(() => import('views/home/ViewItem')));
 const Messages = Loadable(lazy(() => import('views/home/Messages')));
@@ -133,6 +134,7 @@ const App = () => {
             <Route element={<Profile />} path="profile" exact />
             <Route element={<CreateProduct />} path="create" exact />
             <Route element={<Product />} path="product" exact />
+            <Route element={<ProductEditUsr />} path="item/edit" exact />
             <Route element={<MyItems />} path="my-items" exact />
             <Route element={<Item />} path="create/item" exact />
             <Route element={<ViewItem />} path="item" exact />

@@ -79,16 +79,16 @@ export default function Benefits() {
             <Grid item xs={12}>
               <Grid container spacing={2}>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningCard total={total} detail="Ingresos" />
+                  <EarningCard total={Number.parseFloat(total).toFixed(2)} detail="Ingresos" />
                 </Grid>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningBlueCard total={0} detail="Beneficio" />
+                  <EarningBlueCard total={Number.parseFloat(0).toFixed(2)} detail="Beneficio" />
                 </Grid>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningGreenCard total={0} detail="Pagado" />
+                  <EarningGreenCard total={Number.parseFloat(0).toFixed(2)} detail="Pagado" />
                 </Grid>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningRedCard total={0} detail="Pendiente" />
+                  <EarningRedCard total={Number.parseFloat(0).toFixed(2)} detail="Pendiente" />
                 </Grid>
               </Grid>
             </Grid>
@@ -105,7 +105,7 @@ export default function Benefits() {
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
                     <TableRow>
-                      <TableCell key="id-createAt" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                      <TableCell key="id-createAt" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Fecha'}
                       </TableCell>
                       <TableCell key="id-name" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
@@ -114,13 +114,10 @@ export default function Benefits() {
                       <TableCell key="id-email" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Email'}
                       </TableCell>
-                      <TableCell key="id-idUser" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Usuario'}
-                      </TableCell>
-                      <TableCell key="id-total" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                      <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Total'}
                       </TableCell>
-                      <TableCell key="id-actions" align="center" style={{ minWidth: 75, fontWeight: 'bold' }}>
+                      <TableCell key="id-actions" align="center" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {titles.actions}
                       </TableCell>
                     </TableRow>
@@ -131,8 +128,7 @@ export default function Benefits() {
                         <TableCell align="left">{r.createAt}</TableCell>
                         <TableCell align="left">{r.name + ' ' + r.lastName}</TableCell>
                         <TableCell align="left">{r.email}</TableCell>
-                        <TableCell align="left">{r.idUser}</TableCell>
-                        <TableCell align="left">{r.total.toFixed(2)}</TableCell>
+                        <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
                         <TableCell align="center"></TableCell>
                       </TableRow>
                     ))}
@@ -155,16 +151,16 @@ export default function Benefits() {
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
                     <TableRow>
-                      <TableCell key="id-createAt" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                      <TableCell key="id-createAt" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Fecha'}
                       </TableCell>
-                      <TableCell key="id-name" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                      <TableCell key="id-name" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Nombre'}
                       </TableCell>
-                      <TableCell key="id-email" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                      <TableCell key="id-email" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Email'}
                       </TableCell>
-                      <TableCell key="id-idUser" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
+                      <TableCell key="id-idUser" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Para'}
                       </TableCell>
                       <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
@@ -173,7 +169,7 @@ export default function Benefits() {
                       <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Estado'}
                       </TableCell>
-                      <TableCell key="id-actions" align="center" style={{ minWidth: 75, fontWeight: 'bold' }}>
+                      <TableCell key="id-actions" align="center" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {titles.actions}
                       </TableCell>
                     </TableRow>
@@ -185,7 +181,7 @@ export default function Benefits() {
                         <TableCell align="left">{r.name + ' ' + r.lastName}</TableCell>
                         <TableCell align="left">{r.email}</TableCell>
                         <TableCell align="left">{r.emailRefer}</TableCell>
-                        <TableCell align="left">{r.total.toFixed(2)}</TableCell>
+                        <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
                         <TableCell align="left">
                           {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
                         </TableCell>

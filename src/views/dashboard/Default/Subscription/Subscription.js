@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 // material-ui
 import {
   Box,
@@ -17,9 +16,7 @@ import {
   CardContent,
   Card
 } from '@mui/material';
-
 import CreditCard from 'components/creditCard/CreditCard';
-
 // project imports
 import { genConst } from 'store/constant';
 import { endDateWithParam, initDate } from 'utils/validations';
@@ -39,7 +36,7 @@ const Subscription = () => {
   const [startDate] = useState(initDate());
   const [endDate, setEndDate] = useState(null);
 
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

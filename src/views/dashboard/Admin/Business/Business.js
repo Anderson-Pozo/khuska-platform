@@ -11,12 +11,9 @@ import {
   TablePagination,
   TableRow,
   Button,
-  Menu,
-  MenuItem,
   AppBar,
   Box,
   Toolbar,
-  IconButton,
   Typography,
   Container,
   Modal,
@@ -24,10 +21,9 @@ import {
   OutlinedInput,
   ButtonGroup
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Business.styles';
-import { IconApps, IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive } from '@tabler/icons';
+import { IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -50,9 +46,6 @@ export default function Business() {
   let navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [id, setId] = React.useState(null);
   const [name, setName] = React.useState(null);
@@ -75,21 +68,6 @@ export default function Business() {
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
-  };
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -119,93 +97,31 @@ export default function Business() {
       <AppBar position="static" style={uiStyles.appbar}>
         <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconBuilding />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/main/add-business');
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.addMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/main/add-business');
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 10 }} />
-                  {titles.addMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              {dataList.length > 0 ? (
-                <OutlinedInput
-                  id={inputLabels.search}
-                  type="text"
-                  name={inputLabels.search}
-                  onChange={(ev) => setSearch(ev.target.value)}
-                  placeholder={inputLabels.placeHolderSearch}
-                  style={{ width: 300 }}
-                />
-              ) : (
-                <></>
-              )}
-            </Box>
+            <IconBuilding color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
+            <IconPlus
+              color="#FFF"
+              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate('/main/add-business');
+              }}
+            />
           </Toolbar>
         </Container>
       </AppBar>
+      <Box sx={{ flexGrow: 0 }}>
+        {dataList.length > 0 ? (
+          <OutlinedInput
+            id={inputLabels.search}
+            type="text"
+            name={inputLabels.search}
+            onChange={(ev) => setSearch(ev.target.value)}
+            placeholder={inputLabels.placeHolderSearch}
+            style={{ width: '100%', marginTop: 10 }}
+          />
+        ) : (
+          <></>
+        )}
+      </Box>
       {dataList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 400 }}>

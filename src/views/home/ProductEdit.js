@@ -1,32 +1,55 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useTheme } from '@mui/material/styles';
-import { Button, Box, Grid, InputLabel, OutlinedInput, FormControl, AppBar, Container, Toolbar, Modal } from '@mui/material';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box, Grid, Modal, Button, TextField, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { uiStyles } from './Products.styles';
-
-import { IconDeviceFloppy, IconArrowBack } from '@tabler/icons';
-
+import { uiStyles } from './styles';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 //Collections
 import * as Msg from 'store/message';
-import { titles, inputLabels } from './Products.texts';
 import { fullDate } from 'utils/validations';
 import { collProducts } from 'store/collections';
-
 import { storage } from 'config/firebase';
 import { getProductById, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
+const useStyles = makeStyles(() => ({
+  root: {
+    '& .MuiInputBase-root': {
+      color: '#FFF'
+    },
+    '& .MuiFilledInput-root': {
+      backgroundColor: '#242526',
+      borderRadius: 10,
+      marginBottom: 15,
+      color: '#FFF'
+    },
+    '& .MuiFilledInput-root:hover': {
+      backgroundColor: '#242526',
+      color: '#FFF',
+      '@media (hover: none)': {
+        backgroundColor: '#242526'
+      }
+    },
+    '& .MuiFilledInput-root.Mui-focused': {
+      backgroundColor: '#242526',
+      color: '#FFF',
+      border: '1px solid #242526'
+    },
+    '& .MuiInputLabel-outlined': {
+      color: '#FFF'
+    }
+  }
+}));
 
 export default function ProductEdit() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idProduct = searchParams.get('id');
-  const theme = useTheme();
+  const classes = useStyles();
   const [openLoader, setOpenLoader] = useState(false);
   const [name, setName] = useState(null);
   const [description, setDescription] = useState(null);
@@ -237,93 +260,80 @@ export default function ProductEdit() {
   return (
     <div>
       <ToastContainer />
-      <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconArrowBack
-              color="#FFF"
-              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
-              onClick={() => {
-                navigate('/main/business');
-              }}
-            />
-            <Box sx={{ flexGrow: 0 }}>
-              <Button variant="primary" startIcon={<IconDeviceFloppy />} onClick={handleEdit}>
-                {titles.buttonSave}
-              </Button>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
       <Grid container style={{ marginTop: 10, paddingLeft: 0 }}>
         <Grid item lg={12} xs={12}>
           <Grid container spacing={0.4}>
-            <Grid item xs={12}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="name">{inputLabels.name + ' *'}</InputLabel>
-                <OutlinedInput
-                  id="name"
-                  type="text"
-                  name="name"
-                  value={name || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setName(ev.target.value)}
-                />
-              </FormControl>
+            <Grid item xs={12} sx={{ mb: 2, mt: 2 }}>
+              <Typography component={Link} to="/market/my-items" variant="h5" sx={{ textDecoration: 'none', color: '#FFF' }}>
+                Regresar
+              </Typography>
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="description">{inputLabels.description + ' *'}</InputLabel>
-                <OutlinedInput
-                  id="description"
-                  type="text"
-                  multiline
-                  rows={6}
-                  name="description"
-                  value={description || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setDescription(ev.target.value)}
-                />
-              </FormControl>
+              <TextField
+                variant="filled"
+                type="text"
+                className={classes.root}
+                fullWidth
+                label="Título"
+                color="info"
+                value={name || ''}
+                onChange={(ev) => setName(ev.target.value)}
+                sx={{ input: { color: '#FFF' } }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="filled"
+                className={classes.root}
+                fullWidth
+                label="Descripción"
+                color="info"
+                value={description || ''}
+                multiline
+                rows={5}
+                rowsMax={10}
+                inputProps={{ style: { color: '#FFF' } }}
+                onChange={(ev) => setDescription(ev.target.value)}
+              />
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="category">{inputLabels.category + ' *'}</InputLabel>
-                <OutlinedInput
-                  id="category"
-                  type="text"
-                  name="category"
-                  value={category || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setCategory(ev.target.value)}
-                />
-              </FormControl>
+              <TextField
+                variant="filled"
+                type="text"
+                className={classes.root}
+                fullWidth
+                value={category || ''}
+                label="Categoría"
+                color="info"
+                onChange={(ev) => setCategory(ev.target.value)}
+                sx={{ input: { color: '#FFF' } }}
+              />
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="price">{inputLabels.price + ' *'}</InputLabel>
-                <OutlinedInput
-                  id="price"
-                  type="number"
-                  name="price"
-                  value={price || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setPrice(ev.target.value)}
-                />
-              </FormControl>
+              <TextField
+                variant="filled"
+                type="number"
+                className={classes.root}
+                fullWidth
+                label="Precio"
+                color="info"
+                value={price || ''}
+                onChange={(ev) => setPrice(ev.target.value)}
+                sx={{ input: { color: '#FFF' } }}
+              />
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <InputLabel htmlFor="quantity">{inputLabels.quantity + ' *'}</InputLabel>
-                <OutlinedInput
-                  id="quantity"
-                  type="number"
-                  name="quantity"
-                  value={quantity || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setQuantity(ev.target.value)}
-                />
-              </FormControl>
+              <TextField
+                variant="filled"
+                type="number"
+                className={classes.root}
+                fullWidth
+                label="Cantidad"
+                color="info"
+                value={quantity || ''}
+                onChange={(ev) => setQuantity(ev.target.value)}
+                sx={{ input: { color: '#FFF' } }}
+              />
             </Grid>
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
               <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
@@ -332,8 +342,8 @@ export default function ProductEdit() {
                   <div htmlFor="picture1" id="picture1">
                     <label htmlFor="picture1">
                       <img src={picture1.preview || url0} alt="picture1" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
+                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
                     </label>
                   </div>
                 </center>
@@ -346,8 +356,8 @@ export default function ProductEdit() {
                   <div htmlFor="picture2" id="picture2">
                     <label htmlFor="picture2">
                       <img src={picture2.preview || url1} alt="picture2" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
+                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
                     </label>
                   </div>
                 </center>
@@ -360,8 +370,8 @@ export default function ProductEdit() {
                   <div htmlFor="picture3" id="picture3">
                     <label htmlFor="picture3">
                       <img src={picture3.preview || url2} alt="picture3" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
+                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
                     </label>
                   </div>
                 </center>
@@ -374,12 +384,28 @@ export default function ProductEdit() {
                   <div htmlFor="picture4" id="picture4">
                     <label htmlFor="picture4">
                       <img src={picture4.preview || url3} alt="picture4" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
-                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
+                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
                     </label>
                   </div>
                 </center>
               </div>
+            </Grid>
+            <Grid item xs={12} lg={12} style={{ marginTop: 20 }}>
+              <center>
+                <Button
+                  disableElevation
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{ borderRadius: 10, height: 45 }}
+                  onClick={handleEdit}
+                >
+                  Guardar
+                </Button>
+              </center>
             </Grid>
           </Grid>
         </Grid>

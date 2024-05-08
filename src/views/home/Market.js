@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Grid, Card, CardMedia, CardContent, Box, OutlinedInput } from '@mui/material';
+import { Typography, Grid, Card, CardMedia, CardContent, Box, OutlinedInput, Modal } from '@mui/material';
 import { getProducts } from 'config/firebaseEvents';
 import { searchingProducts } from 'utils/search';
+import CircularProgress from '@mui/material/CircularProgress';
+import { uiStyles } from './styles';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   let navigate = useNavigate();
+  const [openLoader, setOpenLoader] = useState(false);
+
   useEffect(() => {
     getProducts().then((data) => {
       setProducts(data);
     });
+    setOpenLoader(true);
+    setTimeout(() => {
+      setOpenLoader(false);
+    }, 2000);
   }, []);
 
   return (
@@ -77,6 +85,13 @@ const Home = () => {
           </Grid>
         </Grid>
       </Grid>
+      <Modal open={openLoader} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <center>
+          <Box sx={uiStyles.modalLoader}>
+            <CircularProgress color="info" size={100} />
+          </Box>
+        </center>
+      </Modal>
     </Box>
   );
 };

@@ -55,16 +55,16 @@ const Dashboard = () => {
             <TotalYellowCard total={totalBusiness} detail="Negocios" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningCard total={totalIncomes} detail="Ingresos" />
+            <EarningCard total={Number.parseFloat(totalIncomes).toFixed(2)} detail="Ingresos" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningBlueCard total={0} detail="Beneficio" />
+            <EarningBlueCard total={Number.parseFloat(0).toFixed(2)} detail="Beneficio" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningGreenCard total={0} detail="Pagado" />
+            <EarningGreenCard total={Number.parseFloat(0).toFixed(2)} detail="Pagado" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningRedCard total={0} detail="Pendiente" />
+            <EarningRedCard total={Number.parseFloat(0).toFixed(2)} detail="Pendiente" />
           </Grid>
         </Grid>
       </Grid>

@@ -12,12 +12,10 @@ import {
   TablePagination,
   TableRow,
   Button,
-  Menu,
   MenuItem,
   AppBar,
   Box,
   Toolbar,
-  IconButton,
   Typography,
   Container,
   Modal,
@@ -28,11 +26,10 @@ import {
   ButtonGroup,
   Select
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
-import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUsers, IconNetwork } from '@tabler/icons';
+import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconNetwork, IconUserCircle } from '@tabler/icons';
 //Firebase Events
 import { createDocument, deleteDocument, getDad, getUserDataSubscription, updateDocument } from 'config/firebaseEvents';
 //Notifications
@@ -54,10 +51,7 @@ export default function Users() {
   let navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [openCreate, setOpenCreate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -102,21 +96,6 @@ export default function Users() {
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
-  };
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleUsrck = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -450,101 +429,34 @@ export default function Users() {
       <AppBar position="static" style={uiStyles.appbar}>
         <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconUsers />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{
-                  display: { xs: 'block', md: 'none' }
-                }}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    setTitle(titles.titleCreate);
-                    cleanData();
-                    setIsEdit(false);
-                    handleOpenCreate();
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.menuCreate}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.boxMenuActions}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleUsrck}
-              >
-                {titles.generalAction}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    setTitle(titles.titleCreate);
-                    cleanData();
-                    setIsEdit(false);
-                    handleOpenCreate();
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 10 }} />
-                  {titles.menuCreate}
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={{ flexGrow: 0 }}>
-              {usersList.length > 0 ? (
-                <OutlinedInput
-                  id={inputLabels.search}
-                  type="text"
-                  name={inputLabels.search}
-                  fullWidth
-                  onChange={(ev) => setSearch(ev.target.value)}
-                  placeholder={inputLabels.placeHolderSearch}
-                  style={{ width: 300 }}
-                />
-              ) : (
-                <></>
-              )}
-            </Box>
+            <IconUserCircle color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
+            <IconPlus
+              color="#FFF"
+              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                setTitle(titles.titleCreate);
+                cleanData();
+                setIsEdit(false);
+                handleOpenCreate();
+              }}
+            />
           </Toolbar>
         </Container>
       </AppBar>
+      <Box sx={{ flexGrow: 0 }}>
+        {usersList.length > 0 ? (
+          <OutlinedInput
+            id={inputLabels.search}
+            type="text"
+            name={inputLabels.search}
+            onChange={(ev) => setSearch(ev.target.value)}
+            placeholder={inputLabels.placeHolderSearch}
+            style={{ width: '100%', marginTop: 10 }}
+          />
+        ) : (
+          <></>
+        )}
+      </Box>
       {usersList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 500 }}>
