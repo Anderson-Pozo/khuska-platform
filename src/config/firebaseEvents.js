@@ -5,6 +5,7 @@ import { collection, setDoc, doc, updateDoc, deleteDoc, getDocs, addDoc, where, 
 import {
   collAdminUsers,
   collBusiness,
+  collChat,
   collCourses,
   collGenNoti,
   collIncomes,
@@ -585,6 +586,17 @@ export async function getMessageByUserId(id) {
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());
+  });
+  return data;
+}
+//Obtner chats por Id de Mensaje
+export async function getChatByMessageId(id) {
+  let data = [];
+  const q = query(collection(db, collChat), where('idMsn', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+    data.sort((a, b) => a.createAt - b.createAt);
   });
   return data;
 }

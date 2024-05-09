@@ -14,7 +14,8 @@ import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
-import { collMessage } from 'store/collections';
+import { collChat, collMessage } from 'store/collections';
+import { serverTimestamp } from 'firebase/firestore';
 
 export default function ViewItem() {
   const [searchParams] = useSearchParams();
@@ -112,13 +113,14 @@ export default function ViewItem() {
         });
       }
     });
-    document.getElementsByClassName('image-gallery-thumbnail-image').style = 'width: 30';
+    document.getElementsByClassName('image-gallery-thumbnail-image').style = 'width: 30px';
   }, []);
 
   const handleSendMessage = () => {
     setOpenLoader(true);
-    const msnId = generateId(10);
-    const obj = {
+    const msnId = id + userId;
+    const msnChat = generateId(10);
+    const objMsn = {
       id: msnId,
       to: userId,
       from: fromId,
@@ -126,18 +128,24 @@ export default function ViewItem() {
       businessId: businessId || userIdd,
       businessName: businessName || userName,
       businessUserId: businessUserId || '',
-      message: message,
       idProduct: id,
       nameProduct: name,
       createAt: fullDate(),
       preview: url0
     };
-    createDocument(collMessage, msnId, obj);
+    const objChat = {
+      id: msnChat,
+      idMsn: msnId,
+      message: message,
+      createAt: serverTimestamp()
+    };
+    createDocument(collMessage, msnId, objMsn);
+    createDocument(collChat, msnChat, objChat);
     setTimeout(() => {
       setOpenLoader(false);
       toast.success('Mensaje enviado correctamente!', { position: toast.POSITION.TOP_RIGHT });
-      setMessage('Hola. ¿Sigue estando disponible? ');
-    }, 2000);
+      setMessage('');
+    }, 200);
   };
 
   return (

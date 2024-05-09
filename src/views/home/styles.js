@@ -44,7 +44,7 @@ export const uiStyles = {
     paddingLeft: 0,
     paddingRight: 2,
     overflowY: 'scroll',
-    '&::-webkit-scrollbar': {
+    '&::WebkitScrollbar': {
       width: 0,
       height: 0,
       backgroundColor: 'transparent'
@@ -55,16 +55,33 @@ export const uiStyles = {
     display: 'flex',
     flexDirection: 'column',
     paddingTop: 2,
-    paddingLeft: 2,
-    paddingRight: 2,
+    paddingLeft: 0,
+    paddingRight: 0,
     overflowY: 'scroll',
-    '&::-webkit-scrollbar': {
+    '&::WebkitScrollbar': {
       width: 0,
       height: 0,
       backgroundColor: 'transparent'
     }
   },
   main: {
+    height: '78vh',
+    position: 'relative'
+  },
+  layoutItemChat: {
+    display: 'flex',
+    flexDirection: 'column',
+    paddingTop: 2,
+    paddingLeft: 0,
+    paddingRight: 0,
+    overflowY: 'scroll',
+    '&::WebkitScrollbar': {
+      width: 0,
+      height: 0,
+      backgroundColor: 'transparent'
+    }
+  },
+  mainChat: {
     height: '88vh',
     position: 'relative'
   },

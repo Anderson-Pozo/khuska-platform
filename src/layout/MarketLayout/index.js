@@ -593,11 +593,11 @@ function Market(props) {
                 }}
               >
                 {user ? (
-                  <div style={{ width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 50 }}>
-                    <img src={avatar || usrAvatarDef} width={40} alt="profile img" />
+                  <div style={{ width: 40, height: 40, backgroundColor: 'rgba(36, 37, 38, 0.8)', borderRadius: 50 }}>
+                    <img src={avatar || usrAvatarDef} width={40} alt="profile img" style={{ borderRadius: 50 }} />
                   </div>
                 ) : (
-                  <div style={{ width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 50 }}>
+                  <div style={{ width: 40, height: 40, backgroundColor: 'rgba(36, 37, 38, 0.8)', borderRadius: 50 }}>
                     <AccountCircle />
                   </div>
                 )}
