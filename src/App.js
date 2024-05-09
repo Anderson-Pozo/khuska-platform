@@ -25,6 +25,7 @@ const Login = Loadable(lazy(() => import('views/home/Login')));
 const Register = Loadable(lazy(() => import('views/home/Register')));
 const Recovery = Loadable(lazy(() => import('views/home/Recovery')));
 const Market = Loadable(lazy(() => import('views/home/Market')));
+const MarketFilter = Loadable(lazy(() => import('views/home/MarketFilter')));
 const CreateProduct = Loadable(lazy(() => import('views/home/CreateProduct')));
 const Product = Loadable(lazy(() => import('views/home/Product')));
 const MyItems = Loadable(lazy(() => import('views/home/MyItems')));
@@ -131,6 +132,7 @@ const App = () => {
           </Route>
           <Route element={<MarketLayout />} path="/market" exact>
             <Route element={<Market />} path="main" exact />
+            <Route element={<MarketFilter />} path="filter" exact />
             <Route element={<Profile />} path="profile" exact />
             <Route element={<CreateProduct />} path="create" exact />
             <Route element={<Product />} path="product" exact />

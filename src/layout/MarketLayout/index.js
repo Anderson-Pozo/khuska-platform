@@ -26,11 +26,14 @@ import {
 import {
   IconApps,
   IconArrowLeft,
+  IconBallFootball,
   IconBell,
   IconCar,
+  IconClothesRack,
+  IconDeviceLaptop,
   IconDeviceMobile,
+  IconGoGame,
   IconHome,
-  IconHome2,
   IconLockOpen,
   IconMessage,
   IconPlus,
@@ -337,7 +340,7 @@ function Market(props) {
         </Typography>
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton>
+            <CustomButton onClick={() => navigate('/market/main')}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -353,7 +356,14 @@ function Market(props) {
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'CLA'}`
+                });
+              }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -365,11 +375,64 @@ function Market(props) {
               >
                 <IconRun color="#FFF" size={16} />
               </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Clasificados</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'DEP'}`
+                });
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconBallFootball color="#FFF" size={16} />
+              </ListItemIcon>
               <span style={{ marginLeft: 12, fontSize: 13 }}>Articulos Deportivos</span>
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'COMP'}`
+                });
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconDeviceLaptop color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Computación</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'ELE'}`
+                });
+              }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -385,7 +448,83 @@ function Market(props) {
             </CustomButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'ELE'}`
+                });
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconGoGame color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Entretenimiento</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'ROP'}`
+                });
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconClothesRack color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Ropa y Accesorios</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'HOM'}`
+                });
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconHome color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Casa / Jardín</span>
+            </CustomButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton
+              onClick={() => {
+                navigate({
+                  pathname: '/market/filter/',
+                  search: `?category=${'VEH'}`
+                });
+              }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -398,22 +537,6 @@ function Market(props) {
                 <IconCar color="#FFF" size={16} />
               </ListItemIcon>
               <span style={{ marginLeft: 12, fontSize: 13 }}>Vehículos</span>
-            </CustomButton>
-          </ListItem>
-          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton>
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  justifyContent: 'center',
-                  backgroundColor: '#3a3b3c',
-                  padding: 1,
-                  borderRadius: 50
-                }}
-              >
-                <IconHome2 color="#FFF" size={16} />
-              </ListItemIcon>
-              <span style={{ marginLeft: 12, fontSize: 13 }}>Hogar</span>
             </CustomButton>
           </ListItem>
         </List>

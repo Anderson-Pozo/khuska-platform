@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, Grid, Modal, Button, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { Box, Grid, Modal, Button, TextField, Typography, Menu, MenuItem } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './styles';
 //Notifications
@@ -13,7 +14,7 @@ import * as Msg from 'store/message';
 import { fullDate } from 'utils/validations';
 import { collProducts } from 'store/collections';
 import { storage } from 'config/firebase';
-import { getProductById, updateDocument } from 'config/firebaseEvents';
+import { getCategories, getProductById, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const useStyles = makeStyles(() => ({
@@ -45,6 +46,42 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+const StyledMenu = styled((props) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right'
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right'
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: '30%',
+    backgroundColor: '#242526',
+    color: '#FFF',
+    '& .MuiMenu-list': {
+      padding: '4px 0'
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5)
+      },
+      '&:active': {
+        backgroundColor: '#fff'
+      }
+    }
+  }
+}));
+
 export default function ProductEdit() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -55,7 +92,9 @@ export default function ProductEdit() {
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
   const [quantity, setQuantity] = useState(null);
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState('');
+  const [categoryValue, setCategoryValue] = useState('');
+  const [categories, setCategories] = useState([]);
 
   const [picture1, setPicture1] = useState({ preview: '', raw: '' });
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
@@ -69,6 +108,15 @@ export default function ProductEdit() {
   const [change2, setChange2] = useState(false);
   const [change3, setChange3] = useState(false);
   const [change4, setChange4] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     getProductById(idProduct).then((data) => {
@@ -82,6 +130,9 @@ export default function ProductEdit() {
       setUrl2(data[0].picture3);
       setUrl3(data[0].picture4);
     });
+    getCategories().then((data) => {
+      setCategories(data);
+    });
   }, []);
 
   const handleEdit = () => {
@@ -94,7 +145,7 @@ export default function ProductEdit() {
         description: description,
         price: price,
         quantity: quantity,
-        category: category,
+        category: categoryValue,
         picture1: url0,
         picture2: url1,
         picture3: url2,
@@ -297,17 +348,52 @@ export default function ProductEdit() {
               />
             </Grid>
             <Grid item xs={4}>
-              <TextField
-                variant="filled"
-                type="text"
-                className={classes.root}
+              <Button
+                id="demo-customized-button"
                 fullWidth
-                value={category || ''}
-                label="Categoría"
-                color="info"
-                onChange={(ev) => setCategory(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
+                onClick={handleClick}
+                style={{
+                  backgroundColor: '#242526',
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  color: '#697586',
+                  marginBottom: 18,
+                  borderRadius: 10,
+                  height: 50
+                }}
+              >
+                {category ? (
+                  <>
+                    <p style={{ color: '#FFF', fontSize: 14, marginLeft: 5 }}>{category}</p>
+                  </>
+                ) : (
+                  <span>Seleccione Categoría</span>
+                )}
+              </Button>
+              <StyledMenu
+                id="demo-customized-menu"
+                MenuListProps={{
+                  'aria-labelledby': 'demo-customized-button'
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+              >
+                {categories.map((p) => (
+                  <MenuItem
+                    key={p.id}
+                    value={p.id}
+                    style={{ textAlign: 'left' }}
+                    onClick={() => {
+                      setCategory(p.name);
+                      setCategoryValue(p.value);
+                      handleClose();
+                    }}
+                  >
+                    {p.name}
+                  </MenuItem>
+                ))}
+              </StyledMenu>
             </Grid>
             <Grid item xs={4}>
               <TextField

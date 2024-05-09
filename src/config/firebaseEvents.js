@@ -220,6 +220,16 @@ export const getProducts = async () => {
   });
   return list;
 };
+//Obtenemos la lista de Productos por categoria
+export async function getProductsByCategory(id) {
+  let data = [];
+  const q = query(collection(db, collProducts), where('category', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
 //
 export const getGeneralNotifications = async () => {
   const list = [];
@@ -418,7 +428,7 @@ export async function getBusinessListByUser(id) {
 //Lista Categorias
 export async function getCategories() {
   let data = [];
-  const q = query(collection(db, collSettings), where('name', '==', 'categoria'));
+  const q = query(collection(db, collSettings), where('type', '==', 'CAT'));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());

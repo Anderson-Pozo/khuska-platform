@@ -4,5 +4,6 @@ export const types = [
   { value: 'STYLES', label: 'ESTILOS' },
   { value: 'DATADB', label: 'BASE DE DATOS' },
   { value: 'BUSSPR', label: 'PARÁMETRO DE NEGOCIO' },
-  { value: 'CTAACC', label: 'CUENTA BANCARIA' }
+  { value: 'CTAACC', label: 'CUENTA BANCARIA' },
+  { value: 'CAT', label: 'CATEGORÍAS' }
 ];

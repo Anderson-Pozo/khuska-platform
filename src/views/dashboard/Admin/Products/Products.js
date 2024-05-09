@@ -163,7 +163,7 @@ export default function Products() {
                     <TableRow hover key={r.id}>
                       <TableCell align="left">
                         <ButtonGroup>
-                          <Avatar src={r.logo || ''} color="inherit" style={{ width: 32, height: 32 }} />
+                          <Avatar src={r.picture1 || ''} color="inherit" style={{ width: 32, height: 32 }} />
                         </ButtonGroup>
                       </TableCell>
                       <TableCell align="left">{r.name}</TableCell>
