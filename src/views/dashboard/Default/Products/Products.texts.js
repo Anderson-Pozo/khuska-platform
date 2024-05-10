@@ -69,7 +69,7 @@ export const inputLabels = {
   phone: 'Teléfono',
   price: 'Precio',
   category: 'Categoría',
-  quantity: 'Cantidad Disponible',
+  quantity: 'Disponible',
   email: 'Correo',
   province: 'Provincia',
   city: 'Ciudad',

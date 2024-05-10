@@ -6,25 +6,25 @@ import {
   Button,
   Box,
   Grid,
-  IconButton,
-  Menu,
-  MenuItem,
   InputLabel,
   OutlinedInput,
   FormControl,
   AppBar,
   Container,
   Toolbar,
-  Typography,
-  Modal
+  Modal,
+  Select,
+  MenuItem
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import MenuIcon from '@mui/icons-material/Menu';
 import { uiStyles } from './Products.styles';
-import { IconBook, IconApps, IconDeviceFloppy } from '@tabler/icons';
+
+import { IconDeviceFloppy, IconArrowBack } from '@tabler/icons';
+
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 //Collections
 import * as Msg from 'store/message';
 import { generateId } from 'utils/idGenerator';
@@ -32,8 +32,9 @@ import { titles, inputLabels } from './Products.texts';
 import defaultImageCourse from 'assets/images/defaultCourse.jpg';
 import { fullDate } from 'utils/validations';
 import { collProducts } from 'store/collections';
+
 import { authentication, storage } from 'config/firebase';
-import { createDocument, updateDocument } from 'config/firebaseEvents';
+import { createDocument, getCategories, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -41,18 +42,17 @@ export default function ProductAdd() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idBusiness = searchParams.get('id');
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
   const [openLoader, setOpenLoader] = useState(false);
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
   const [quantity, setQuantity] = useState(null);
   const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  //const [telegram, setTelegram] = useState(null);
   const [picture1, setPicture1] = useState({ preview: '', raw: '' });
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
@@ -65,22 +65,10 @@ export default function ProductAdd() {
         setUserName(user.displayName);
       }
     });
+    getCategories().then((data) => {
+      setCategories(data);
+    });
   }, []);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleCreate = () => {
     if (!name || !description || !price || !quantity || !category) {
@@ -98,7 +86,6 @@ export default function ProductAdd() {
       const ide = generateId(10);
       const object = {
         id: ide,
-        type: 0,
         idBusiness: idBusiness,
         userId: userId,
         userName: userName,
@@ -114,14 +101,15 @@ export default function ProductAdd() {
         createAt: fullDate(),
         updateAt: null,
         deleteAt: null,
-        state: 1
+        state: 1,
+        type: 1
       };
       setTimeout(() => {
         createDocument(collProducts, ide, object);
         //Picture1
         if (picture1.raw !== null) {
           const imageName = ide + 'p1.jpg';
-          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          const imageRef = ref(storage, `business/products/${imageName}`);
           uploadBytes(imageRef, picture1.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
@@ -134,7 +122,7 @@ export default function ProductAdd() {
         //Picture2
         if (picture2.raw !== null) {
           const imageName = ide + 'p2.jpg';
-          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          const imageRef = ref(storage, `business/products/${imageName}`);
           uploadBytes(imageRef, picture2.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
@@ -147,7 +135,7 @@ export default function ProductAdd() {
         //Picture3
         if (picture3.raw !== null) {
           const imageName = ide + 'p3.jpg';
-          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          const imageRef = ref(storage, `business/products/${imageName}`);
           uploadBytes(imageRef, picture3.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
@@ -157,10 +145,10 @@ export default function ProductAdd() {
             });
           });
         }
-        //Picture 4
+        //Picture4
         if (picture4.raw !== null) {
           const imageName = ide + 'p4.jpg';
-          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          const imageRef = ref(storage, `business/products/${imageName}`);
           uploadBytes(imageRef, picture4.raw).then((snap) => {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
@@ -257,90 +245,31 @@ export default function ProductAdd() {
     }
   };
 
+  function handleChangeCategory(e) {
+    setCategory(e.target.value);
+  }
+
   return (
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.containerAdd}>
+        <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconBook />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/app/products');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 10 }} />
-                  {titles.viewMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
+            <IconArrowBack
+              color="#FFF"
+              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate('/app/business');
+              }}
+            />
             <Box sx={{ flexGrow: 0 }}>
-              <Button variant="primary" endIcon={<IconDeviceFloppy />} onClick={handleCreate}>
-                {titles.viewBusiness}
+              <Button variant="primary" startIcon={<IconDeviceFloppy />} onClick={handleCreate}>
+                {titles.addProduct}
               </Button>
             </Box>
           </Toolbar>
         </Container>
       </AppBar>
-
       <Grid container style={{ marginTop: 10, paddingLeft: 0 }}>
         <Grid item lg={12} xs={12}>
           <Grid container spacing={0.4}>
@@ -375,14 +304,21 @@ export default function ProductAdd() {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="category">{inputLabels.category + ' *'}</InputLabel>
-                <OutlinedInput
+                <Select
+                  labelId="category-select-label"
                   id="category"
-                  type="text"
-                  name="category"
                   value={category || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setCategory(ev.target.value)}
-                />
+                  label="Categoría"
+                  onChange={handleChangeCategory}
+                  fullWidth
+                  defaultValue={'COMP'}
+                >
+                  {categories.map((p) => (
+                    <MenuItem key={p.id} value={p.id} style={{ textAlign: 'left' }}>
+                      {p.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
             </Grid>
             <Grid item xs={4}>
@@ -417,13 +353,7 @@ export default function ProductAdd() {
                   <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                   <div htmlFor="picture1" id="picture1">
                     <label htmlFor="picture1">
-                      <img
-                        src={picture1.preview || defaultImageCourse}
-                        alt="picture1"
-                        width={180}
-                        height={140}
-                        style={{ borderRadius: 15 }}
-                      />
+                      <img src={picture1.preview || defaultImageCourse} alt="picture1" height={140} style={{ borderRadius: 15 }} />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
@@ -437,13 +367,7 @@ export default function ProductAdd() {
                   <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
                   <div htmlFor="picture2" id="picture2">
                     <label htmlFor="picture2">
-                      <img
-                        src={picture2.preview || defaultImageCourse}
-                        alt="picture2"
-                        width={180}
-                        height={140}
-                        style={{ borderRadius: 15 }}
-                      />
+                      <img src={picture2.preview || defaultImageCourse} alt="picture2" height={140} style={{ borderRadius: 15 }} />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
@@ -457,13 +381,7 @@ export default function ProductAdd() {
                   <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
                   <div htmlFor="picture3" id="picture3">
                     <label htmlFor="picture3">
-                      <img
-                        src={picture3.preview || defaultImageCourse}
-                        alt="picture3"
-                        width={180}
-                        height={140}
-                        style={{ borderRadius: 15 }}
-                      />
+                      <img src={picture3.preview || defaultImageCourse} alt="picture3" height={140} style={{ borderRadius: 15 }} />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
@@ -477,13 +395,7 @@ export default function ProductAdd() {
                   <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
                   <div htmlFor="picture4" id="picture4">
                     <label htmlFor="picture4">
-                      <img
-                        src={picture4.preview || defaultImageCourse}
-                        alt="Picture4"
-                        width={180}
-                        height={140}
-                        style={{ borderRadius: 15, paddingTop: 5 }}
-                      />
+                      <img src={picture4.preview || defaultImageCourse} alt="picture4" height={140} style={{ borderRadius: 15 }} />
                       <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>

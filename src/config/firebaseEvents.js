@@ -589,6 +589,16 @@ export async function getMessageByUserId(id) {
   });
   return data;
 }
+//Obtner Mensajes por Id Producto
+export async function getMessageByProductId(id) {
+  let data = [];
+  const q = query(collection(db, collMessage), where('idProduct', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
 //Obtner chats por Id de Mensaje
 export async function getChatByMessageId(id) {
   let data = [];

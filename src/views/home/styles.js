@@ -115,5 +115,36 @@ export const uiStyles = {
     '& fieldset': {
       top: 0
     }
+  },
+  root: {
+    '& .MuiInputBase-root': {
+      color: '#FFF'
+    },
+    '& .MuiFilledInput-root': {
+      backgroundColor: '#242526',
+      borderRadius: 10,
+      marginBottom: 15,
+      color: '#FFF'
+    },
+    '& .MuiFilledInput-root:hover': {
+      backgroundColor: '#242526',
+      color: '#FFF',
+      '@media (hover: none)': {
+        backgroundColor: '#242526'
+      }
+    },
+    '& .MuiFilledInput-root.Mui-focused': {
+      backgroundColor: '#242526',
+      color: '#FFF',
+      border: '1px solid #242526'
+    },
+    '& .MuiInputLabel-outlined': {
+      color: '#FFF'
+    }
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    background: '#FFF'
   }
 };

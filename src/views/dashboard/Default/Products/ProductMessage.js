@@ -1,28 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Grid, Modal, ListItemButton } from '@mui/material';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Avatar, Box, Grid, Modal, ListItemButton, ButtonGroup } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CircularProgress from '@mui/material/CircularProgress';
-import { uiStyles } from './styles';
+import { uiStyles } from './Products.styles';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
-import { getMessageByUserId } from 'config/firebaseEvents';
+import { getMessageByProductId } from 'config/firebaseEvents';
 import MessageDark from 'components/message/MessageDark';
 
 export default function Messages() {
   let navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const idProduct = searchParams.get('id');
   const [openLoader, setOpenLoader] = useState(false);
   const [messages, setMessages] = useState([]);
 
   const CustomButton = styled(ListItemButton)({
-    minHeight: 60,
+    height: 70,
     justifyContent: 'initial',
     color: '#FFF',
     backgroundColor: '#242526',
-    borderRadius: 8,
-    marginTop: 4,
+    borderRadius: 10,
+    marginTop: 1,
     '&:hover': {
       backgroundColor: '#3a3b3c',
       color: '#FFF'
@@ -32,13 +34,13 @@ export default function Messages() {
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
-        getMessageByUserId(user.uid).then((data) => {
+        getMessageByProductId(idProduct).then((data) => {
           setMessages(data);
         });
       }
     });
     setOpenLoader(false);
-  }, []);
+  }, [idProduct]);
 
   return (
     <Box>
@@ -53,7 +55,7 @@ export default function Messages() {
                     key={item.id}
                     onClick={() => {
                       navigate({
-                        pathname: '/market/chat/',
+                        pathname: '/app/chat-product/',
                         search: `?id=${item.id}&name=${item.nameProduct}`
                       });
                     }}
@@ -89,6 +91,7 @@ export default function Messages() {
                         </p>
                       </Grid>
                     </Grid>
+                    <ButtonGroup></ButtonGroup>
                   </CustomButton>
                 ))}
               </Grid>

@@ -2,31 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import {
-  Button,
-  Box,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  InputLabel,
-  OutlinedInput,
-  FormControl,
-  AppBar,
-  Container,
-  Toolbar,
-  Typography
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Grid, InputLabel, OutlinedInput, FormControl, AppBar, Container, Toolbar } from '@mui/material';
 import { uiStyles } from './Products.styles';
 
-import { IconBook, IconApps } from '@tabler/icons';
+import { IconArrowBack } from '@tabler/icons';
 
 //Notifications
 import 'react-toastify/dist/ReactToastify.css';
 
 //Collections
-import { titles, inputLabels } from './Products.texts';
+import { inputLabels } from './Products.texts';
 
 import { getProductById } from 'config/firebaseEvents';
 
@@ -34,10 +19,7 @@ export default function ProductView() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idProduct = searchParams.get('id');
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
@@ -56,106 +38,28 @@ export default function ProductView() {
       setPrice(data[0].price);
       setQuantity(data[0].quantity);
       setCategory(data[0].category);
-      setUrl0(data[0].logo);
-      setUrl1(data[0].picture1);
-      setUrl2(data[0].picture2);
-      setUrl3(data[0].picture3);
+      setUrl0(data[0].picture1);
+      setUrl1(data[0].picture2);
+      setUrl2(data[0].picture3);
+      setUrl3(data[0].picture4);
     });
   }, []);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
     <div>
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.containerAdd}>
+        <Container maxWidth="xl" style={uiStyles.container}>
           <Toolbar disableGutters>
-            <IconBook />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/app/products');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 10 }} />
-                  {titles.viewBusiness}
-                </MenuItem>
-              </Menu>
-            </Box>
+            <IconArrowBack
+              color="#FFF"
+              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+              onClick={() => {
+                navigate('/app/business');
+              }}
+            />
           </Toolbar>
         </Container>
       </AppBar>
-
       <Grid container style={{ marginTop: 10, paddingLeft: 0 }}>
         <Grid item lg={12} xs={12}>
           <Grid container spacing={0.4}>
@@ -234,20 +138,9 @@ export default function ProductView() {
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
               <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 160, cursor: 'pointer' }}>
                 <center>
-                  <div htmlFor="logo" id="logo">
-                    <label htmlFor="logo">
-                      <img src={url0} alt="Logo" width={180} height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                    </label>
-                  </div>
-                </center>
-              </div>
-            </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 160, cursor: 'pointer' }}>
-                <center>
                   <div htmlFor="picture1" id="picture1">
                     <label htmlFor="picture1">
-                      <img src={url1} alt="picture1" width={180} height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={url0} alt="picture1" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
                     </label>
                   </div>
                 </center>
@@ -258,7 +151,7 @@ export default function ProductView() {
                 <center>
                   <div htmlFor="picture2" id="picture2">
                     <label htmlFor="picture2">
-                      <img src={url2} alt="picture2" width={180} height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={url1} alt="picture2" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
                     </label>
                   </div>
                 </center>
@@ -269,7 +162,18 @@ export default function ProductView() {
                 <center>
                   <div htmlFor="picture3" id="picture3">
                     <label htmlFor="picture3">
-                      <img src={url3} alt="picture3" width={180} height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={url2} alt="picture3" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 160, cursor: 'pointer' }}>
+                <center>
+                  <div htmlFor="picture4" id="picture4">
+                    <label htmlFor="picture4">
+                      <img src={url3} alt="picture4" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
                     </label>
                   </div>
                 </center>

@@ -33,6 +33,7 @@ const ProductEditUsr = Loadable(lazy(() => import('views/home/ProductEdit')));
 const Item = Loadable(lazy(() => import('views/home/Item')));
 const ViewItem = Loadable(lazy(() => import('views/home/ViewItem')));
 const Messages = Loadable(lazy(() => import('views/home/Messages')));
+const Chat = Loadable(lazy(() => import('views/home/Chat')));
 const Profile = Loadable(lazy(() => import('views/home/Profile')));
 const NotificationsMarket = Loadable(lazy(() => import('views/home/Notifications')));
 const BusinessMarket = Loadable(lazy(() => import('views/home/Business')));
@@ -58,6 +59,7 @@ const Products = Loadable(lazy(() => import('views/dashboard/Admin/Products/Prod
 const ProductAdd = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductAdd')));
 const ProductEdit = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductEdit')));
 const ProductView = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductView')));
+
 // dashboard Network
 const Network = Loadable(lazy(() => import('views/dashboard/Admin/Network/Network')));
 // dashboard Mail
@@ -108,6 +110,8 @@ const ProductsDefault = Loadable(lazy(() => import('views/dashboard/Default/Prod
 const ProductsAddDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductAdd')));
 const ProductsEditDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductEdit')));
 const ProductsViewDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductView')));
+const ProductMessagesDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductMessage')));
+const ProductMessagesChatDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductMessageChat')));
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
@@ -141,6 +145,7 @@ const App = () => {
             <Route element={<Item />} path="create/item" exact />
             <Route element={<ViewItem />} path="item" exact />
             <Route element={<Messages />} path="messages" exact />
+            <Route element={<Chat />} path="chat" exact />
             <Route element={<NotificationsMarket />} path="notifications" exact />
             <Route element={<BusinessMarket />} path="business" exact />
             <Route element={<BusinessInfoSearch />} path="business-info" exact />
@@ -201,6 +206,8 @@ const App = () => {
               <Route element={<ProductsAddDefault />} path="add-product" exact />
               <Route element={<ProductsEditDefault />} path="edit-product" exact />
               <Route element={<ProductsViewDefault />} path="info-product" exact />
+              <Route element={<ProductMessagesDefault />} path="messages-product" exact />
+              <Route element={<ProductMessagesChatDefault />} path="chat-product" exact />
               <Route element={<NotificationsDefault />} path="notifications" exact />
               <Route element={<NetworkDefault />} path="network" exact />
               <Route element={<BenefitsDefault />} path="benefits" exact />
