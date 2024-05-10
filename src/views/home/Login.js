@@ -200,14 +200,14 @@ export default function Login() {
     setOpen(true);
     signInWithPopup(auth, provider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
+        //const credential = GoogleAuthProvider.credentialFromResult(result);
+        //const token = credential.accessToken;
         const user = result.user;
-        console.log(user);
-        console.log(token);
+        //console.log(user);
+        //console.log(token);
         isExistUser(user.uid).then((res) => {
           if (res) {
-            console.log(res, user.uid);
+            console.log(res, 'User valid');
           } else {
             let refCode = generateOwnReferalNumber(6);
             const userObject = {
