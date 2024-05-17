@@ -36,6 +36,7 @@ import {
   IconHome,
   IconLockOpen,
   IconMessage,
+  IconNetwork,
   IconPlus,
   IconRun,
   IconTags
@@ -171,7 +172,12 @@ function Market(props) {
         </Typography>
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CreateActiveButton onClick={() => navigate('/market/create')}>
+            <CreateActiveButton
+              onClick={() => {
+                navigate('/market/create');
+                setMobileOpen(false);
+              }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -191,6 +197,7 @@ function Market(props) {
               onClick={() => {
                 setIsCreate(false);
                 navigate('/market/main');
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -215,6 +222,7 @@ function Market(props) {
               onClick={() => {
                 setIsCreate(false);
                 navigate('/market/main');
+                setMobileOpen(false);
               }}
             >
               <span style={{ marginLeft: 12, fontSize: 13 }}>Salir sin guardar</span>
@@ -246,12 +254,40 @@ function Market(props) {
           </div>
         </Toolbar>
         <Divider sx={{ borderColor: '#3a3b3c' }} />
+        <List>
+          <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
+            <CustomButton
+              onClick={() => {
+                navigate('/app/dashboard');
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  backgroundColor: '#3a3b3c',
+                  padding: 1,
+                  borderRadius: 50
+                }}
+              >
+                <IconNetwork color="#FFF" size={16} />
+              </ListItemIcon>
+              <span style={{ marginLeft: 12, fontSize: 13 }}>Ir a Red de Mercadeo</span>
+            </CustomButton>
+          </ListItem>
+        </List>
+        <Divider sx={{ borderColor: '#3a3b3c' }} />
         <Typography variant="h5" noWrap component="div" style={{ color: '#FFF', paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}>
           Compra Venta
         </Typography>
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/market/main')}>
+            <CustomButton
+              onClick={() => {
+                navigate('/market/main');
+                setMobileOpen(false);
+              }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -269,7 +305,12 @@ function Market(props) {
           {user ? (
             <>
               <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-                <CustomButton onClick={() => navigate('/market/messages')}>
+                <CustomButton
+                  onClick={() => {
+                    navigate('/market/messages');
+                    setMobileOpen(false);
+                  }}
+                >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
@@ -285,7 +326,12 @@ function Market(props) {
                 </CustomButton>
               </ListItem>
               <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-                <CustomButton onClick={() => navigate('/market/notifications')}>
+                <CustomButton
+                  onClick={() => {
+                    navigate('/market/notifications');
+                    setMobileOpen(false);
+                  }}
+                >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
@@ -301,7 +347,12 @@ function Market(props) {
                 </CustomButton>
               </ListItem>
               <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-                <CustomButton onClick={() => navigate('/market/my-items')}>
+                <CustomButton
+                  onClick={() => {
+                    navigate('/market/my-items');
+                    setMobileOpen(false);
+                  }}
+                >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
@@ -321,6 +372,7 @@ function Market(props) {
                   onClick={() => {
                     setIsCreate(true);
                     navigate('/market/create');
+                    setMobileOpen(false);
                   }}
                 >
                   <ListItemIcon>
@@ -340,7 +392,12 @@ function Market(props) {
         </Typography>
         <List>
           <ListItem disablePadding sx={{ display: 'block', borderRadius: 10 }}>
-            <CustomButton onClick={() => navigate('/market/main')}>
+            <CustomButton
+              onClick={() => {
+                navigate('/market/main');
+                setMobileOpen(false);
+              }}
+            >
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -362,6 +419,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'CLA'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -385,6 +443,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'DEP'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -408,6 +467,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'COMP'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -431,6 +491,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'ELE'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -454,6 +515,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'ELE'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -477,6 +539,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'ROP'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -500,6 +563,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'HOM'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -523,6 +587,7 @@ function Market(props) {
                   pathname: '/market/filter/',
                   search: `?category=${'VEH'}`
                 });
+                setMobileOpen(false);
               }}
             >
               <ListItemIcon
@@ -547,7 +612,7 @@ function Market(props) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex', backgroundColor: '#18191a', height: '100vh' }}>
+    <Box sx={{ display: 'flex', backgroundColor: 'transparent', paddingBottom: 5 }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -647,12 +712,26 @@ function Market(props) {
             display: { xs: 'block', sm: 'none' },
             borderColor: '#272829',
             borderWidth: 0,
+            overflowX: 'hidden',
+            overflowY: 'hidden',
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            overflowY: 'scroll',
+            //overflowY: 'scroll',
             '&::WebkitScrollbar': {
+              display: 'none',
               width: 0,
               height: 0,
-              backgroundColor: 'transparent'
+              backgroundColor: 'transparent',
+              overflowX: 'hidden',
+              overflowY: 'hidden'
+            },
+            '&::WebkitScrollbarThumb': {
+              display: 'none',
+              backgroundColor: 'transparent',
+              overflowX: 'hidden',
+              overflowY: 'hidden'
+            },
+            '&::-webkit-scrollbar': {
+              display: 'none'
             }
           }}
         >
@@ -664,12 +743,26 @@ function Market(props) {
             display: { xs: 'none', sm: 'block' },
             borderColor: '#272829',
             borderWidth: 0,
+            overflowX: 'hidden',
+            overflowY: 'hidden',
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-            overflowY: 'scroll',
+            //overflowY: 'scroll',
             '&::WebkitScrollbar': {
+              display: 'none',
               width: 0,
               height: 0,
-              backgroundColor: 'transparent'
+              backgroundColor: 'transparent',
+              overflowX: 'hidden',
+              overflowY: 'hidden'
+            },
+            '&::WebkitScrollbarThumb': {
+              display: 'none',
+              backgroundColor: 'transparent',
+              overflowX: 'hidden',
+              overflowY: 'hidden'
+            },
+            '&::-webkit-scrollbar': {
+              display: 'none'
             }
           }}
           open
@@ -677,7 +770,7 @@ function Market(props) {
           {isCreate ? <CustomDrawerCreate /> : <CustomDrawer />}
         </Drawer>
       </Box>
-      <Box component="main" sx={{ flexGrow: 1, pl: 1, pr: 1, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
+      <Box component="main" sx={{ flexGrow: 1, pl: 1, pr: 1, width: '100%' }}>
         <Toolbar style={{ height: 60, borderColor: '#242526' }} />
         <Outlet />
       </Box>

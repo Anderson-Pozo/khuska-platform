@@ -16,7 +16,7 @@ export const uiStyles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40
+    padding: 0
   },
   appbar: {
     background: 'rgba(255,255,255,0.4)',
@@ -43,17 +43,27 @@ export const uiStyles = {
   },
   title: {
     color: '#fff',
-    fontSize: '2.5rem',
-    lineHeight: 'normal'
+    lineHeight: 'normal',
+    marginTop: 40,
+    fontSize: '1.6rem'
   },
   goDown: {
     color: '#9f98c2',
     fontSize: '4rem'
   },
   rootPlace: {
-    maxWidth: 645,
+    width: 250,
+    height: 150,
     background: 'rgba(0,0,0,0.7)',
-    margin: '20px'
+    borderRadius: 20,
+    color: '#FFF'
+  },
+  rootPlaceCard: {
+    width: '95%',
+    height: '100%',
+    background: 'rgba(0,0,0,0.7)',
+    borderRadius: 20,
+    color: '#FFF'
   },
   media: {
     height: 300
@@ -81,11 +91,13 @@ export const uiStyles = {
   titleService: {
     fontWeight: 'bold',
     fontSize: '1rem',
-    color: '#fff'
+    color: '#FFF',
+    textDecoration: 'none'
   },
   descPlace: {
     fontSize: '1rem',
-    color: '#ddd'
+    color: '#ddd',
+    textDecoration: 'none'
   },
   titlePlaceBenefit: {
     fontWeight: 'bold',

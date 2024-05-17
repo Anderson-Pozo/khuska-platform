@@ -311,10 +311,10 @@ export default function ProductAdd() {
                   label="Categoría"
                   onChange={handleChangeCategory}
                   fullWidth
-                  defaultValue={'COMP'}
+                  defaultValue={'CLA'}
                 >
                   {categories.map((p) => (
-                    <MenuItem key={p.id} value={p.id} style={{ textAlign: 'left' }}>
+                    <MenuItem key={p.id} value={p.value} style={{ textAlign: 'left' }}>
                       {p.name}
                     </MenuItem>
                   ))}

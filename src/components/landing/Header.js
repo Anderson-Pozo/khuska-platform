@@ -34,7 +34,7 @@ const Header = (props) => {
   const { isLoggin, name } = useAuth();
   const { window } = props;
   const [checked, setChecked] = useState(false);
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -61,35 +61,28 @@ const Header = (props) => {
       <List>
         <Scroll to="header" smooth={true}>
           <ListItem key={1} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
+            <ListItemButton sx={{ textAlign: 'center' }} onClick={() => setMobileOpen(false)}>
               <ListItemText primary={'Inicio'} />
             </ListItemButton>
           </ListItem>
         </Scroll>
         <Scroll to="about" smooth={true}>
           <ListItem key={2} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
+            <ListItemButton sx={{ textAlign: 'center' }} onClick={() => setMobileOpen(false)}>
               <ListItemText primary={'Somos'} />
             </ListItemButton>
           </ListItem>
         </Scroll>
         <Scroll to="contacts" smooth={true}>
           <ListItem key={4} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
+            <ListItemButton sx={{ textAlign: 'center' }} onClick={() => setMobileOpen(false)}>
               <ListItemText primary={'Contáctanos'} />
             </ListItemButton>
           </ListItem>
         </Scroll>
-        <Scroll to="contacts" smooth={true}>
-          <ListItem key={5} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={'Red de Negocios'} />
-            </ListItemButton>
-          </ListItem>
-        </Scroll>
-        <Box style={{ marginTop: 10 }}>
+        <Box style={{ padding: 10 }}>
           <center>
-            <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo}>
+            <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} fullWidth style={{ borderRadius: 10, height: 40 }}>
               Login
             </Button>
           </center>
@@ -112,29 +105,29 @@ const Header = (props) => {
           </div>
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
             <Scroll to="header" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 0, fontSize: 15 }}>Inicio</Button>
+              <Button sx={{ color: '#fff', marginLeft: 0, fontSize: 13 }}>Inicio</Button>
             </Scroll>
             <Scroll to="about" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 15 }}>Somos</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 13 }}>Somos</Button>
             </Scroll>
             <Scroll to="contacts" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 15 }}>Contáctanos</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 13 }}>Contáctanos</Button>
             </Scroll>
           </Box>
           {isLoggin ? (
             <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }} onClick={handleGoTo}>
               <List>
                 <ListItem disablePadding>
-                  <ListItemButton onClick={handleGoDash}>
+                  <ListItemButton onClick={handleGoDash} style={{ borderRadius: 12, height: 50 }}>
                     <Avatar alt="avatar user" src={defaultAvatar} sx={{ width: 35, height: 35, marginRight: 1 }} />
-                    <p style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>{name}</p>
+                    <p style={{ color: '#FFF', fontSize: 12, fontWeight: 'bold' }}>{name}</p>
                   </ListItemButton>
                 </ListItem>
               </List>
             </Box>
           ) : (
             <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
-              <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} style={{ width: 120, fontSize: 15 }}>
+              <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} style={{ width: 120, fontSize: 12 }}>
                 Login
               </Button>
             </Box>
@@ -146,7 +139,7 @@ const Header = (props) => {
             onClick={handleDrawerToggle}
             sx={{ ml: 2, mr: 2, display: { xs: 'block', sm: 'block', md: 'none' } }}
           >
-            <MenuIcon style={{ fontSize: 40 }} />
+            <MenuIcon style={{ fontSize: 30 }} />
           </IconButton>
         </Toolbar>
       </AppBar>

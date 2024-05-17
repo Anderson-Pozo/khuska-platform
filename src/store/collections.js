@@ -17,6 +17,7 @@ export const collIncomes = 'Incomes';
 export const collPaymentMtd = 'PaymentsMethods';
 export const collBusiness = 'Business';
 export const collProducts = 'Products';
+export const collVoucher = 'Vouchers';
 export const collBenefits = 'Benefits';
 export const collNetwork = 'Network';
 export const collCategories = 'Categories';

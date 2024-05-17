@@ -18,7 +18,8 @@ import {
   collSubscription,
   collUserBenefit,
   collUsers,
-  collUsrNoti
+  collUsrNoti,
+  collVoucher
 } from 'store/collections';
 import { genConst } from 'store/constant';
 import { labels } from 'store/labels';
@@ -130,6 +131,16 @@ export async function getProfileUserAdmin(id) {
   });
   return profile;
 }
+//Obtener Telefono de Usuario
+export async function getPhoneUser(id) {
+  let phone = null;
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    phone = doc.data().phone;
+  });
+  return phone;
+}
 //Obtener el Estado de una Usuario por ID
 export async function getSubscribeStateUser(id) {
   let state = null;
@@ -149,6 +160,26 @@ export async function getUserSubscription(id) {
     state = doc.data().state;
   });
   return state;
+}
+//Obtener la fecha de la Subscripción de un Usuario por ID
+export async function getUserSubscriptionEndDate(id) {
+  let date = null;
+  const q = query(collection(db, collSubscription), where('idUser', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    date = doc.data().endDate;
+  });
+  return date;
+}
+//Obtener la fecha de la Subscripción de un Usuario por ID
+export async function getUserSubscriptionStartDate(id) {
+  let date = null;
+  const q = query(collection(db, collSubscription), where('idUser', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    date = doc.data().startDate;
+  });
+  return date;
 }
 //Obtener datos de la Subscripción de un Usuario por ID
 export async function getUserDataSubscription(id) {
@@ -342,6 +373,15 @@ export const getCoursesList = async () => {
   });
   return list;
 };
+//Obtenemos la Lista de Comprobantes
+export const getVouchers = async () => {
+  const list = [];
+  const querySnapshot = await getDocuments(collVoucher);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
 //Obtenemos los Datos de un Curso por ID
 export async function getCourseData(id) {
   let data = [];
@@ -434,6 +474,17 @@ export async function getCategories() {
   querySnapshot.forEach((doc) => {
     data.push(doc.data());
     data.sort((a, b) => a.value.localeCompare(b.value));
+  });
+  return data;
+}
+
+//Lista Cuentas
+export async function getCtaList() {
+  let data = [];
+  const q = query(collection(db, collSettings), where('type', '==', 'CTAACC'));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
   });
   return data;
 }
@@ -583,6 +634,16 @@ export const getUserDataObject = () => {
 export async function getMessageByUserId(id) {
   let data = [];
   const q = query(collection(db, collMessage), where('from', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
+//Obtner Mensajes recibidos por Id Usuario
+export async function getRecibeMessageByUserId(id) {
+  let data = [];
+  const q = query(collection(db, collMessage), where('to', '==', id));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());

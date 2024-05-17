@@ -124,3 +124,26 @@ export const calcularDiferenciaFechas = (fecha1, fecha2) => {
   const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
   return diferenciaDias;
 };
+
+export const changeFormatDate = (date) => {
+  const newDate = new Date(date);
+  return newDate.toString();
+};
+
+export const calculateStateSubscription = (date) => {
+  var res;
+  var fi = new Date(date).getTime();
+  var ff = new Date().getTime();
+  var diff = fi - ff;
+  if (diff / (1000 * 60 * 60 * 24) <= 0 && diff / (1000 * 60 * 60 * 24) >= -1) {
+    console.log('Queda 1 día');
+    res = 1;
+  } else if (diff / (1000 * 60 * 60 * 24) <= 0) {
+    console.log('Mes vencido');
+    res = 0;
+  } else {
+    console.log('Quedan ' + Math.floor(diff / (1000 * 60 * 60 * 24)) + ' días.');
+    res = 2;
+  }
+  return res;
+};

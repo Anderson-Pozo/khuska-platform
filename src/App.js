@@ -59,6 +59,8 @@ const Products = Loadable(lazy(() => import('views/dashboard/Admin/Products/Prod
 const ProductAdd = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductAdd')));
 const ProductEdit = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductEdit')));
 const ProductView = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductView')));
+//Comprobantes
+const Vouchers = Loadable(lazy(() => import('views/dashboard/Admin/Vouchers/Vouchers')));
 
 // dashboard Network
 const Network = Loadable(lazy(() => import('views/dashboard/Admin/Network/Network')));
@@ -176,6 +178,7 @@ const App = () => {
               <Route element={<BusinessEdit />} path="edit-business" exact />
               <Route element={<BusinessInfo />} path="info-business" exact />
               <Route element={<Network />} path="network" exact />
+              <Route element={<Vouchers />} path="vouchers" exact />
               <Route element={<Benefits />} path="benefits" exact />
               <Route element={<Products />} path="products" exact />
               <Route element={<ProductAdd />} path="add-product" exact />

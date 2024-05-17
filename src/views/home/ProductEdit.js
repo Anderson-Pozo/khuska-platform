@@ -100,14 +100,20 @@ export default function ProductEdit() {
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
   const [picture4, setPicture4] = useState({ preview: '', raw: '' });
+  const [picture5, setPicture5] = useState({ preview: '', raw: '' });
+  const [picture6, setPicture6] = useState({ preview: '', raw: '' });
   const [url0, setUrl0] = useState(null);
   const [url1, setUrl1] = useState(null);
   const [url2, setUrl2] = useState(null);
   const [url3, setUrl3] = useState(null);
+  const [url4, setUrl4] = useState(null);
+  const [url5, setUrl5] = useState(null);
   const [change1, setChange1] = useState(false);
   const [change2, setChange2] = useState(false);
   const [change3, setChange3] = useState(false);
   const [change4, setChange4] = useState(false);
+  const [change5, setChange5] = useState(false);
+  const [change6, setChange6] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -129,6 +135,8 @@ export default function ProductEdit() {
       setUrl1(data[0].picture2);
       setUrl2(data[0].picture3);
       setUrl3(data[0].picture4);
+      setUrl4(data[0].picture5);
+      setUrl5(data[0].picture6);
     });
     getCategories().then((data) => {
       setCategories(data);
@@ -150,6 +158,8 @@ export default function ProductEdit() {
         picture2: url1,
         picture3: url2,
         picture4: url3,
+        picture5: url4,
+        picture6: url5,
         updateAt: fullDate(),
         deleteAt: null,
         state: 1
@@ -216,6 +226,36 @@ export default function ProductEdit() {
             });
           }
         }
+        //Picture5
+        if (change5) {
+          if (picture5.raw !== null) {
+            const imageName = ide + 'p5.jpg';
+            const imageRef = ref(storage, `business/products/${imageName}`);
+            uploadBytes(imageRef, picture5.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture5: url
+                };
+                updateDocument(collProducts, ide, obj);
+              });
+            });
+          }
+        }
+        //Picture6
+        if (change6) {
+          if (picture6.raw !== null) {
+            const imageName = ide + 'p6.jpg';
+            const imageRef = ref(storage, `business/products/${imageName}`);
+            uploadBytes(imageRef, picture6.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture6: url
+                };
+                updateDocument(collProducts, ide, obj);
+              });
+            });
+          }
+        }
         setOpenLoader(false);
         navigate('/main/products');
         toast.success(Msg.coucresucc, { position: toast.POSITION.TOP_RIGHT });
@@ -243,6 +283,14 @@ export default function ProductEdit() {
       raw: ''
     });
     setPicture4({
+      preview: '',
+      raw: ''
+    });
+    setPicture5({
+      preview: '',
+      raw: ''
+    });
+    setPicture6({
       preview: '',
       raw: ''
     });
@@ -308,6 +356,36 @@ export default function ProductEdit() {
     }
   };
 
+  const handlePicture5Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture5({
+          preview: img.src,
+          raw: raw
+        });
+        setChange5(true);
+      };
+    }
+  };
+
+  const handlePicture6Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture6({
+          preview: img.src,
+          raw: raw
+        });
+        setChange6(true);
+      };
+    }
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -315,7 +393,7 @@ export default function ProductEdit() {
         <Grid item lg={12} xs={12}>
           <Grid container spacing={0.4}>
             <Grid item xs={12} sx={{ mb: 2, mt: 2 }}>
-              <Typography component={Link} to="/market/my-items" variant="h5" sx={{ textDecoration: 'none', color: '#FFF' }}>
+              <Typography component={Link} to="/market/my-items" variant="h5" sx={{ textDecoration: 'none', color: '#3a3b3c' }}>
                 Regresar
               </Typography>
             </Grid>
@@ -347,7 +425,7 @@ export default function ProductEdit() {
                 onChange={(ev) => setDescription(ev.target.value)}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12}>
               <Button
                 id="demo-customized-button"
                 fullWidth
@@ -395,7 +473,7 @@ export default function ProductEdit() {
                 ))}
               </StyledMenu>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12}>
               <TextField
                 variant="filled"
                 type="number"
@@ -408,7 +486,7 @@ export default function ProductEdit() {
                 sx={{ input: { color: '#FFF' } }}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12}>
               <TextField
                 variant="filled"
                 type="number"
@@ -422,7 +500,7 @@ export default function ProductEdit() {
               />
             </Grid>
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                   <div htmlFor="picture1" id="picture1">
@@ -436,7 +514,7 @@ export default function ProductEdit() {
               </div>
             </Grid>
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
                   <div htmlFor="picture2" id="picture2">
@@ -450,7 +528,7 @@ export default function ProductEdit() {
               </div>
             </Grid>
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
                   <div htmlFor="picture3" id="picture3">
@@ -464,12 +542,40 @@ export default function ProductEdit() {
               </div>
             </Grid>
             <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
                   <div htmlFor="picture4" id="picture4">
                     <label htmlFor="picture4">
                       <img src={picture4.preview || url3} alt="picture4" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
+                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+                <center>
+                  <input type="file" id="picture5" style={{ display: 'none' }} onChange={handlePicture5Change} accept="image/*" />
+                  <div htmlFor="picture5" id="picture5">
+                    <label htmlFor="picture5">
+                      <img src={picture5.preview || url4} alt="picture5" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
+                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+                <center>
+                  <input type="file" id="picture6" style={{ display: 'none' }} onChange={handlePicture6Change} accept="image/*" />
+                  <div htmlFor="picture6" id="picture6">
+                    <label htmlFor="picture6">
+                      <img src={picture6.preview || url5} alt="picture6" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
                       <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
                       <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
                     </label>

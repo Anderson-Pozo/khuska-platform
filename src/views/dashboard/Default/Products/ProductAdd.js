@@ -42,6 +42,7 @@ export default function ProductAdd() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idBusiness = searchParams.get('id');
+  const nameBusiness = searchParams.get('name');
   const theme = useTheme();
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
@@ -87,6 +88,7 @@ export default function ProductAdd() {
       const object = {
         id: ide,
         idBusiness: idBusiness,
+        nameBusiness: nameBusiness,
         userId: userId,
         userName: userName,
         name: name,
@@ -314,7 +316,7 @@ export default function ProductAdd() {
                   defaultValue={'COMP'}
                 >
                   {categories.map((p) => (
-                    <MenuItem key={p.id} value={p.id} style={{ textAlign: 'left' }}>
+                    <MenuItem key={p.id} value={p.value} style={{ textAlign: 'left' }}>
                       {p.name}
                     </MenuItem>
                   ))}

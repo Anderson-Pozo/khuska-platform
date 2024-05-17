@@ -2,7 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { Button, Box, Grid, InputLabel, OutlinedInput, FormControl, AppBar, Container, Toolbar, Modal } from '@mui/material';
+import {
+  Button,
+  Box,
+  Grid,
+  InputLabel,
+  OutlinedInput,
+  FormControl,
+  AppBar,
+  Container,
+  Toolbar,
+  Modal,
+  Select,
+  MenuItem
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Products.styles';
 
@@ -19,7 +32,7 @@ import { fullDate } from 'utils/validations';
 import { collProducts } from 'store/collections';
 
 import { storage } from 'config/firebase';
-import { getProductById, updateDocument } from 'config/firebaseEvents';
+import { getCategories, getProductById, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function ProductEdit() {
@@ -33,6 +46,7 @@ export default function ProductEdit() {
   const [price, setPrice] = useState(null);
   const [quantity, setQuantity] = useState(null);
   const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   const [picture1, setPicture1] = useState({ preview: '', raw: '' });
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
@@ -58,6 +72,9 @@ export default function ProductEdit() {
       setUrl1(data[0].picture2);
       setUrl2(data[0].picture3);
       setUrl3(data[0].picture4);
+    });
+    getCategories().then((data) => {
+      setCategories(data);
     });
   }, []);
 
@@ -234,6 +251,10 @@ export default function ProductEdit() {
     }
   };
 
+  function handleChangeCategory(e) {
+    setCategory(e.target.value);
+  }
+
   return (
     <div>
       <ToastContainer />
@@ -289,14 +310,21 @@ export default function ProductEdit() {
             <Grid item xs={4}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="category">{inputLabels.category + ' *'}</InputLabel>
-                <OutlinedInput
+                <Select
+                  labelId="category-select-label"
                   id="category"
-                  type="text"
-                  name="category"
                   value={category || ''}
-                  inputProps={{}}
-                  onChange={(ev) => setCategory(ev.target.value)}
-                />
+                  label="Categoría"
+                  onChange={handleChangeCategory}
+                  fullWidth
+                  defaultValue={'CLA'}
+                >
+                  {categories.map((p) => (
+                    <MenuItem key={p.id} value={p.value} style={{ textAlign: 'left' }}>
+                      {p.name}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
             </Grid>
             <Grid item xs={4}>

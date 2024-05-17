@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 // material-ui
@@ -59,11 +59,11 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 const ProfileData = () => {
   const theme = useTheme();
-  const [id, setId] = React.useState(null);
-  const [name, setName] = React.useState(null);
-  const [lastName, setLastName] = React.useState(null);
-  const [email, setEmail] = React.useState(null);
-  const [description, setDescription] = React.useState(null);
+  const [id, setId] = useState(null);
+  const [name, setName] = useState(null);
+  const [lastName, setLastName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState(null);
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -75,7 +75,7 @@ const ProfileData = () => {
         querySnapshot.forEach((doc) => {
           setName(doc.data().name);
           setLastName(doc.data().lastName);
-          setDescription(doc.data().description);
+          setPhone(doc.data().phone);
         });
       }
     });
@@ -92,7 +92,7 @@ const ProfileData = () => {
         name: name,
         lastName: lastName,
         fullName: name + ' ' + lastName,
-        description: description,
+        phone: phone,
         updateAt: Date.now()
       });
       toast.success('Perfil actualizado correctamente!', { position: toast.POSITION.TOP_RIGHT });
@@ -151,13 +151,13 @@ const ProfileData = () => {
             <Grid container>
               <Grid item xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0.2 }}>
-                  <InputLabel htmlFor="outlined-adornment-description-register">Descripción</InputLabel>
+                  <InputLabel htmlFor="outlined-adornment-phone-register">Teléfono</InputLabel>
                   <OutlinedInput
-                    id="outlined-adornment-description-register"
-                    type="description"
-                    value={description || ''}
-                    name="description"
-                    onChange={(ev) => setDescription(ev.target.value)}
+                    id="outlined-adornment-phone-register"
+                    type="number"
+                    value={phone || ''}
+                    name="phone"
+                    onChange={(ev) => setPhone(ev.target.value)}
                   />
                 </FormControl>
               </Grid>

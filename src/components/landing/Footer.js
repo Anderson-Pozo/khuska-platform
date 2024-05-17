@@ -7,7 +7,7 @@ const Footer = () => (
     justifyContent="space-between"
     style={{ background: '#000', bottom: 0, display: 'flex', padding: 20, paddingLeft: 30 }}
   >
-    <Typography variant="subtitle1" underline="hover" style={{ color: 'white' }}>
+    <Typography variant="subtitle1" underline="hover" style={{ color: 'white', fontSize: 12 }}>
       Alcorp Tech 2024
     </Typography>
     <Typography
@@ -16,7 +16,7 @@ const Footer = () => (
       href="https://alcorp.tech"
       target="_blank"
       underline="hover"
-      style={{ marginLeft: 20, color: 'white', paddingRight: 30 }}
+      style={{ marginLeft: 20, color: 'white', paddingRight: 30, fontSize: 12, textAlign: 'right' }}
     >
       Powered by &copy; alcorp.tech
     </Typography>

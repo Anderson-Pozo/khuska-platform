@@ -48,6 +48,7 @@ export default function Products() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idBusiness = searchParams.get('id');
+  const nameBusiness = searchParams.get('name');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDelete, setOpenDelete] = useState(false);
@@ -113,7 +114,7 @@ export default function Products() {
               onClick={() => {
                 navigate({
                   pathname: '/app/add-product',
-                  search: `?id=${idBusiness}`
+                  search: `?id=${idBusiness}&name=${nameBusiness}`
                 });
               }}
             />

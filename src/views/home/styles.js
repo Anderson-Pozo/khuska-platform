@@ -37,6 +37,20 @@ export const uiStyles = {
     boxShadow: 0,
     p: 4
   },
+  styleDelete: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    '@media (min-width: 718px)': {
+      width: 400
+    },
+    bgcolor: 'background.paper',
+    border: 'none',
+    borderRadius: 6,
+    boxShadow: 24,
+    p: 4
+  },
   layout: {
     //height: '100%',
     display: 'flex',
@@ -146,5 +160,6 @@ export const uiStyles = {
     position: 'absolute',
     bottom: 0,
     background: '#FFF'
-  }
+  },
+  modalDeleteTitle: { marginTop: 20, fontSize: 16 }
 };

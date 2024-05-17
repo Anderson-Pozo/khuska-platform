@@ -20,6 +20,7 @@ import CreditCard from 'components/creditCard/CreditCard';
 // project imports
 import { genConst } from 'store/constant';
 import { endDateWithParam, initDate } from 'utils/validations';
+import Deposit from './Deposit';
 
 const Subscription = () => {
   //const [searchParams] = useSearchParams();
@@ -133,7 +134,7 @@ const Subscription = () => {
                             </Grid>
                             <Grid xs={6}>
                               <Typography variant={'h5'} style={{ textAlign: 'left', marginLeft: 20 }}>
-                                $ {subtotal}
+                                $ {Number.parseFloat(subtotal).toFixed(2)}
                               </Typography>
                             </Grid>
                             <Grid xs={6}>
@@ -143,7 +144,7 @@ const Subscription = () => {
                             </Grid>
                             <Grid xs={6}>
                               <Typography variant={'h5'} style={{ textAlign: 'left', marginLeft: 20 }}>
-                                $ {iva}
+                                $ {Number.parseFloat(iva).toFixed(2)}
                               </Typography>
                             </Grid>
                             <Grid xs={6}>
@@ -153,7 +154,7 @@ const Subscription = () => {
                             </Grid>
                             <Grid xs={6}>
                               <Typography variant={'h5'} style={{ textAlign: 'left', marginLeft: 20 }}>
-                                $ {total}
+                                $ {Number.parseFloat(total).toFixed(2)}
                               </Typography>
                             </Grid>
                           </Grid>
@@ -183,8 +184,7 @@ const Subscription = () => {
                           >
                             <FormControlLabel value={1} control={<Radio />} label="Tarjeta de Crédito" />
                             <FormControlLabel value={2} control={<Radio />} label="Deposito o Transferencia" />
-                            <FormControlLabel value={3} control={<Radio />} label="Paypal" />
-                            <FormControlLabel value={4} control={<Radio />} label="Realizar el pago despúes" />
+                            <FormControlLabel value={3} control={<Radio />} label="Realizar el pago despúes" />
                           </RadioGroup>
                         </FormControl>
                         <Box sx={{ mb: 2 }}>
@@ -216,14 +216,15 @@ const Subscription = () => {
                       {method == 1 ? (
                         <CreditCard total={total} type={type} />
                       ) : method == 2 ? (
-                        <h4>Deposito</h4>
+                        <Deposit total={total} type={type} />
                       ) : method == 3 ? (
-                        <h4>Paypal</h4>
-                      ) : (
                         <h4>Pago despues</h4>
+                      ) : (
+                        <></>
                       )}
                       <Box sx={{ mb: 2, mt: 3 }}>
                         <center>
+                          <Typography variant={'h5'}>{'La activación puede tomar hasta 24 horas.'}</Typography>
                           <Button disabled={0} onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
                             Regresar
                           </Button>

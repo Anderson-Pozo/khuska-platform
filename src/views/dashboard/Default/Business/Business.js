@@ -36,9 +36,9 @@ import { genConst, gridSpacing } from 'store/constant';
 import { searchingBusinessData } from 'utils/search';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
-//Custom Hook
-import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 import { msgSubState } from 'store/message';
+//Custom Hook
+import { useGetSubscriptionEndDate } from 'hooks/useGetSubscriptionEndDate';
 
 export default function Business() {
   let navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function Business() {
   const [countBusiness, setCountBusiness] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [openLoader, setOpenLoader] = useState(false);
-  const stateSub = useGetSubscriptionState();
+  const newStateSub = useGetSubscriptionEndDate();
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
@@ -84,206 +84,158 @@ export default function Business() {
     setOpenDelete(false);
   };
 
-  return (
-    <div>
-      {stateSub == genConst.CONST_SUB_STATE_ACTIVE ? (
-        <>
-          <ToastContainer />
-          <AppBar position="static" style={uiStyles.appbarSearch}>
-            <Container maxWidth="xl" style={uiStyles.container}>
-              <Toolbar disableGutters>
-                <Box sx={uiStyles.box}>
-                  <OutlinedInput
-                    id="searchField"
-                    type="text"
-                    name="searchField"
-                    value={search || ''}
-                    onChange={(ev) => setSearch(ev.target.value)}
-                    placeholder={inputLabels.search}
-                    style={{ width: '95%', border: 'none' }}
-                    endAdornment={<IconSearch />}
-                  />
+  const MainComponent = () => {
+    return (
+      <>
+        <AppBar position="static" style={uiStyles.appbarSearch}>
+          <Container maxWidth="xl" style={uiStyles.container}>
+            <Toolbar disableGutters>
+              <Box sx={uiStyles.box}>
+                <OutlinedInput
+                  id="searchField"
+                  type="text"
+                  name="searchField"
+                  value={search || ''}
+                  onChange={(ev) => setSearch(ev.target.value)}
+                  placeholder={inputLabels.search}
+                  style={{ width: '95%', border: 'none' }}
+                  endAdornment={<IconSearch />}
+                />
+              </Box>
+              <Box sx={uiStyles.box2}>
+                <OutlinedInput
+                  id="searchField"
+                  type="text"
+                  name="searchField"
+                  value={search || ''}
+                  onChange={(ev) => setSearch(ev.target.value)}
+                  placeholder={inputLabels.search}
+                  style={{ width: '95%', border: 'none' }}
+                  endAdornment={<IconSearch />}
+                />
+              </Box>
+              {countBusiness <= genConst.CONST_MAX_BUSINESS ? (
+                <Box sx={{ flexGrow: 0 }}>
+                  <Button
+                    variant="contained"
+                    startIcon={<IconPlus />}
+                    size="large"
+                    style={uiStyles.appbarUpdateButton}
+                    onClick={() => {
+                      navigate('/app/add-business');
+                    }}
+                  >
+                    {titles.buttonCreate}
+                  </Button>
                 </Box>
-                <Box sx={uiStyles.box2}>
-                  <OutlinedInput
-                    id="searchField"
-                    type="text"
-                    name="searchField"
-                    value={search || ''}
-                    onChange={(ev) => setSearch(ev.target.value)}
-                    placeholder={inputLabels.search}
-                    style={{ width: '95%', border: 'none' }}
-                    endAdornment={<IconSearch />}
-                  />
-                </Box>
-                {countBusiness <= genConst.CONST_MAX_BUSINESS ? (
-                  <Box sx={{ flexGrow: 0 }}>
-                    <Button
-                      variant="contained"
-                      startIcon={<IconPlus />}
-                      size="large"
-                      style={uiStyles.appbarUpdateButton}
-                      onClick={() => {
-                        navigate('/app/add-business');
-                      }}
-                    >
-                      {titles.buttonCreate}
-                    </Button>
-                  </Box>
-                ) : (
-                  <></>
-                )}
-              </Toolbar>
-            </Container>
-          </AppBar>
-          {dataList.length > 0 ? (
-            <Paper sx={uiStyles.paper}>
-              <TableContainer sx={{ maxHeight: '100%' }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
-                        {inputLabels.name}
+              ) : (
+                <></>
+              )}
+            </Toolbar>
+          </Container>
+        </AppBar>
+        {dataList.length > 0 ? (
+          <Paper sx={uiStyles.paper}>
+            <TableContainer sx={{ maxHeight: '100%' }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                      {inputLabels.name}
+                    </TableCell>
+                    <TableCell key="id-owner" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                      {inputLabels.owner}
+                    </TableCell>
+                    <TableCell key="id-phone" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                      {inputLabels.phone}
+                    </TableCell>
+                    <TableCell key="id-mail" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                      {inputLabels.email}
+                    </TableCell>
+                    <TableCell key="id-actions" align="center" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                      {titles.actions}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dataList.filter(searchingBusinessData(search)).map((item) => (
+                    <TableRow hover key={item.id}>
+                      <TableCell align="left">
+                        <strong>{item.name}</strong>
                       </TableCell>
-                      <TableCell key="id-owner" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {inputLabels.owner}
-                      </TableCell>
-                      <TableCell key="id-phone" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {inputLabels.phone}
-                      </TableCell>
-                      <TableCell key="id-mail" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {inputLabels.email}
-                      </TableCell>
-                      <TableCell key="id-actions" align="center" style={{ minWidth: 170, fontWeight: 'bold' }}>
-                        {titles.actions}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {dataList.filter(searchingBusinessData(search)).map((item) => (
-                      <TableRow hover key={item.id}>
-                        <TableCell align="left">
-                          <strong>{item.name}</strong>
-                        </TableCell>
-                        <TableCell align="left">{item.owner}</TableCell>
-                        <TableCell align="left">{item.phone}</TableCell>
-                        <TableCell align="left">{item.email}</TableCell>
-                        <TableCell align="center">
-                          <ButtonGroup variant="contained">
-                            <Button
-                              style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                              onClick={() => {
-                                navigate({
-                                  pathname: '/app/products',
-                                  search: `?id=${item.id}`
-                                });
-                              }}
-                            >
-                              <IconArchive />
-                            </Button>
-                            <Button
-                              style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
-                              onClick={() => {
-                                navigate({
-                                  pathname: '/app/info-business',
-                                  search: `?id=${item.id}`
-                                });
-                              }}
-                            >
-                              <IconEye />
-                            </Button>
-                            <Button
-                              style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                              onClick={() => {
-                                navigate({
-                                  pathname: '/app/edit-business',
-                                  search: `?id=${item.id}`
-                                });
-                              }}
-                            >
-                              <IconEdit />
-                            </Button>
-                            <Button
-                              style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
-                              onClick={() => {
-                                setId(item.id);
-                                setName(item.name);
-                                setOpenDelete(true);
-                              }}
-                            >
-                              <IconTrash />
-                            </Button>
-                          </ButtonGroup>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          ) : (
-            <Grid container style={{ marginTop: 20 }}>
-              <Grid item xs={12}>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <MessageDark message={titles.noRecordsYet} submessage="" />
-                </Grid>
-              </Grid>
-            </Grid>
-          )}
-          <Modal
-            open={openDelete}
-            onClose={handleCloseDelete}
-            aria-labelledby="parent-modal-title"
-            aria-describedby="parent-modal-description"
-          >
-            <Box sx={uiStyles.styleDelete}>
-              <Typography id="modal-modal-title" variant="h2" component="h2">
-                {titles.modalDelete}
-              </Typography>
-              <Typography id="modal-modal-title" variant="p" component="p" style={uiStyles.modalDeleteTitle}>
-                {titles.modaleDeleteDetail} <strong>{name}</strong>
-              </Typography>
-              <Grid container style={{ marginTop: 10 }}>
-                <Grid item xs={12}>
-                  <Grid container spacing={1}>
-                    <Grid item lg={12} md={12} sm={12} xs={12}>
-                      <center>
-                        <ButtonGroup>
+                      <TableCell align="left">{item.owner}</TableCell>
+                      <TableCell align="left">{item.phone}</TableCell>
+                      <TableCell align="left">{item.email}</TableCell>
+                      <TableCell align="center">
+                        <ButtonGroup variant="contained">
                           <Button
-                            variant="contained"
-                            startIcon={<IconTrash />}
-                            size="large"
-                            style={uiStyles.deleteButton}
-                            onClick={handleDelete}
+                            style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
+                            onClick={() => {
+                              navigate({
+                                pathname: '/app/products',
+                                search: `?id=${item.id}&name=${item.name}`
+                              });
+                            }}
                           >
-                            {titles.buttonDelete}
+                            <IconArchive />
                           </Button>
                           <Button
-                            variant="contained"
-                            startIcon={<IconCircleX />}
-                            size="large"
-                            style={uiStyles.cancelButton}
-                            onClick={handleCloseDelete}
+                            style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
+                            onClick={() => {
+                              navigate({
+                                pathname: '/app/info-business',
+                                search: `?id=${item.id}`
+                              });
+                            }}
                           >
-                            {titles.buttonCancel}
+                            <IconEye />
+                          </Button>
+                          <Button
+                            style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
+                            onClick={() => {
+                              navigate({
+                                pathname: '/app/edit-business',
+                                search: `?id=${item.id}`
+                              });
+                            }}
+                          >
+                            <IconEdit />
+                          </Button>
+                          <Button
+                            style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
+                            onClick={() => {
+                              setId(item.id);
+                              setName(item.name);
+                              setOpenDelete(true);
+                            }}
+                          >
+                            <IconTrash />
                           </Button>
                         </ButtonGroup>
-                      </center>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        ) : (
+          <Grid container style={{ marginTop: 20 }}>
+            <Grid item xs={12}>
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <MessageDark message={titles.noRecordsYet} submessage="" />
               </Grid>
-            </Box>
-          </Modal>
-          <Modal open={openLoader} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-            <center>
-              <Box sx={uiStyles.styleLoader}>
-                <CircularProgress color="info" size={100} />
-              </Box>
-            </center>
-          </Modal>
-        </>
-      ) : (
+            </Grid>
+          </Grid>
+        )}
+      </>
+    );
+  };
+
+  return (
+    <div>
+      <ToastContainer />
+      {newStateSub == genConst.CONST_SUB_S_I ? (
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12}>
             <Grid item lg={12} md={12} sm={12} xs={12}>
@@ -291,7 +243,63 @@ export default function Business() {
             </Grid>
           </Grid>
         </Grid>
+      ) : newStateSub == genConst.CONST_SUB_S_U ? (
+        <>
+          <Typography variant="h5">{titles.lastday}</Typography>
+          <MainComponent />
+        </>
+      ) : (
+        <>
+          <MainComponent />
+        </>
       )}
+      <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
+        <Box sx={uiStyles.styleDelete}>
+          <Typography id="modal-modal-title" variant="h2" component="h2">
+            {titles.modalDelete}
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={uiStyles.modalDeleteTitle}>
+            {titles.modaleDeleteDetail} <strong>{name}</strong>
+          </Typography>
+          <Grid container style={{ marginTop: 10 }}>
+            <Grid item xs={12}>
+              <Grid container spacing={1}>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <center>
+                    <ButtonGroup>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconTrash />}
+                        size="large"
+                        style={uiStyles.deleteButton}
+                        onClick={handleDelete}
+                      >
+                        {titles.buttonDelete}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconCircleX />}
+                        size="large"
+                        style={uiStyles.cancelButton}
+                        onClick={handleCloseDelete}
+                      >
+                        {titles.buttonCancel}
+                      </Button>
+                    </ButtonGroup>
+                  </center>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Modal>
+      <Modal open={openLoader} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <center>
+          <Box sx={uiStyles.styleLoader}>
+            <CircularProgress color="info" size={100} />
+          </Box>
+        </center>
+      </Modal>
     </div>
   );
 }

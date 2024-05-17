@@ -1,8 +1,18 @@
 // assets
-import { IconDashboard, IconUsers, IconFriends, IconBell, IconShare, IconBuilding, IconNetwork, IconMoneybag } from '@tabler/icons';
+import {
+  IconDashboard,
+  IconUsers,
+  IconFriends,
+  IconBell,
+  IconShare,
+  IconBuilding,
+  IconNetwork,
+  IconMoneybag,
+  IconTicket
+} from '@tabler/icons';
 
 // constant
-const icons = { IconDashboard, IconUsers, IconFriends, IconBell, IconShare, IconBuilding, IconNetwork, IconMoneybag };
+const icons = { IconDashboard, IconUsers, IconFriends, IconBell, IconShare, IconBuilding, IconNetwork, IconMoneybag, IconTicket };
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -48,6 +58,13 @@ const dashboard = {
       type: 'item',
       url: '/main/business',
       icon: icons.IconBuilding
+    },
+    {
+      id: 'voucher',
+      title: 'Comprobantes',
+      type: 'item',
+      url: '/main/vouchers',
+      icon: icons.IconTicket
     }
   ]
 };

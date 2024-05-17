@@ -23,7 +23,6 @@ export default function CreateProduct() {
   }, []);
 
   const CustomButton = styled(Button)({
-    width: 210,
     minHeight: 220,
     justifyContent: 'center',
     color: '#FFF',
@@ -52,12 +51,13 @@ export default function CreateProduct() {
               <Grid item xs={12}>
                 <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                   <Grid item>
-                    <h3 style={{ color: '#FFF' }}>Crear Producto</h3>
+                    <h2 style={{ color: '#3a3b3c' }}>Crear Producto</h2>
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={12} xs={12}>
                 <CustomButton
+                  fullWidth
                   onClick={() => {
                     navigate({
                       pathname: '/market/create/item',
@@ -66,19 +66,19 @@ export default function CreateProduct() {
                   }}
                 >
                   <Grid container spacing={2} alignItems="center" justifyContent="center">
-                    <Grid item xs={12}>
+                    <Grid item lg={12} md={12} sm={12} xs={12}>
                       <img src={pic} width={100} alt="icon category" />
                     </Grid>
-                    <Grid item xs={12} sx={{ mt: -3 }}>
+                    <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -3 }}>
                       <span style={{ fontWeight: 'bold', fontSize: 15 }}>Artículo en venta</span>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item lg={12} md={12} sm={12} xs={12}>
                       <span style={{ fontSize: 12 }}>Crea una sola publicación para vender uno o más artículos.</span>
                     </Grid>
                   </Grid>
                 </CustomButton>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={12} xs={12}>
                 <CustomButton
                   onClick={() => {
                     navigate({
@@ -100,7 +100,7 @@ export default function CreateProduct() {
                   </Grid>
                 </CustomButton>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={12} xs={12}>
                 <CustomButton
                   onClick={() => {
                     navigate({

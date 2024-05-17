@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import avatarImg from 'assets/images/profile/profile-picture-6.jpg';
-import defaultImage from 'assets/images/addImg.png';
+import defaultImage from 'assets/images/addImgB.png';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -105,6 +105,8 @@ export default function Item() {
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
   const [picture4, setPicture4] = useState({ preview: '', raw: '' });
+  const [picture5, setPicture5] = useState({ preview: '', raw: '' });
+  const [picture6, setPicture6] = useState({ preview: '', raw: '' });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -138,13 +140,18 @@ export default function Item() {
       toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else if (!picture4.preview) {
       toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
+    } else if (!picture5.preview) {
+      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
+    } else if (!picture6.preview) {
+      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpenLoader(true);
       const ide = generateId(10);
       const object = {
         id: ide,
         type: parseInt(id),
-        idBusiness: userId,
+        idBusiness: null,
+        nameBusiness: null,
         userId: userId,
         userName: user,
         name: name,
@@ -156,6 +163,8 @@ export default function Item() {
         picture2: null,
         picture3: null,
         picture4: null,
+        picture5: null,
+        picture6: null,
         createAt: fullDate(),
         updateAt: null,
         deleteAt: null,
@@ -210,6 +219,32 @@ export default function Item() {
             getDownloadURL(snap.ref).then((url) => {
               const obj = {
                 picture4: url
+              };
+              updateDocument(collProducts, ide, obj);
+            });
+          });
+        }
+        //Picture5
+        if (picture5.raw !== null) {
+          const imageName = ide + 'p5.jpg';
+          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          uploadBytes(imageRef, picture5.raw).then((snap) => {
+            getDownloadURL(snap.ref).then((url) => {
+              const obj = {
+                picture5: url
+              };
+              updateDocument(collProducts, ide, obj);
+            });
+          });
+        }
+        //Picture6
+        if (picture6.raw !== null) {
+          const imageName = ide + 'p6.jpg';
+          const imageRef = ref(storage, `business/products/${ide}/${imageName}`);
+          uploadBytes(imageRef, picture6.raw).then((snap) => {
+            getDownloadURL(snap.ref).then((url) => {
+              const obj = {
+                picture6: url
               };
               updateDocument(collProducts, ide, obj);
             });
@@ -279,6 +314,34 @@ export default function Item() {
     }
   };
 
+  const handlePicture5Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture5({
+          preview: img.src,
+          raw: raw
+        });
+      };
+    }
+  };
+
+  const handlePicture6Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture6({
+          preview: img.src,
+          raw: raw
+        });
+      };
+    }
+  };
+
   const clearData = () => {
     setName('');
     setDescription('');
@@ -301,6 +364,14 @@ export default function Item() {
       preview: '',
       raw: ''
     });
+    setPicture5({
+      preview: '',
+      raw: ''
+    });
+    setPicture6({
+      preview: '',
+      raw: ''
+    });
   };
 
   return (
@@ -313,19 +384,28 @@ export default function Item() {
               variant="h3"
               noWrap
               component="div"
-              style={{ color: '#FFF', paddingBottom: 20, paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}
+              style={{ color: '#3a3b3c', paddingBottom: 20, paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}
             >
               Artículo en Venta
             </Typography>
-            <div style={{ width: '100%', height: 40, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center' }}>
+            <div
+              style={{
+                width: '100%',
+                height: 40,
+                backgroundColor: 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 20
+              }}
+            >
               <Chip
-                avatar={<img alt="User" src={photo || avatarImg} />}
-                label={<span style={{ color: '#FFF' }}>{user}</span>}
+                avatar={<img alt="User" src={photo || avatarImg} style={{ borderRadius: 50 }} />}
+                label={<span style={{ color: '#3a3b3c' }}>{user}</span>}
                 variant="outlined"
               />
             </div>
-            <span style={{ color: '#FFF' }}>Proporciona una descripción que sea lo más detallada posible.</span>
-            <div style={{ padding: 1, margin: 5 }}>
+            <span style={{ color: '#3a3b3c' }}>Proporciona una descripción que sea lo más detallada posible.</span>
+            <div style={{ padding: 1, margin: 5, marginTop: 20 }}>
               <TextField
                 variant="filled"
                 type="text"
@@ -416,7 +496,7 @@ export default function Item() {
               />
             </div>
           </Grid>
-          <Grid item sm={12} xs={12} md={6} lg={6} sx={uiStyles.layout}>
+          <Grid item sm={12} xs={12} md={6} lg={6}>
             <div style={uiStyles.main}>
               <div style={uiStyles.sidebar}>
                 <div style={{ width: '100%', height: 280, backgroundColor: 'transparent', marginTop: 0 }}>
@@ -424,16 +504,23 @@ export default function Item() {
                     variant="h4"
                     noWrap
                     component="div"
-                    style={{ color: '#FFF', paddingBottom: 0, paddingTop: 40, paddingLeft: 10, fontWeight: 'bold', textAlign: 'center' }}
+                    style={{
+                      color: '#3a3b3c',
+                      paddingBottom: 0,
+                      paddingTop: 20,
+                      paddingLeft: 10,
+                      fontWeight: 'bold',
+                      textAlign: 'center'
+                    }}
                   >
-                    Puedes agregar un máximo de 4 fotos.
+                    Puedes agregar un máximo de 6 fotos.
                   </Typography>
                   <div
                     style={{
                       flex: 1,
                       justifyContent: 'center',
                       alignItems: 'center',
-                      height: 350,
+                      height: 520,
                       borderWidth: 0.1,
                       borderStyle: 'groove',
                       borderColor: '#3a3b3c',
@@ -476,7 +563,11 @@ export default function Item() {
                                         height={picture1.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
-                                      {picture1.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
+                                      {picture1.preview ? (
+                                        ''
+                                      ) : (
+                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                      )}
                                     </label>
                                   </div>
                                 </center>
@@ -512,7 +603,11 @@ export default function Item() {
                                         height={picture2.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
-                                      {picture2.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
+                                      {picture2.preview ? (
+                                        ''
+                                      ) : (
+                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                      )}
                                     </label>
                                   </div>
                                 </center>
@@ -548,7 +643,11 @@ export default function Item() {
                                         height={picture3.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
-                                      {picture3.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
+                                      {picture3.preview ? (
+                                        ''
+                                      ) : (
+                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                      )}
                                     </label>
                                   </div>
                                 </center>
@@ -584,7 +683,91 @@ export default function Item() {
                                         height={picture4.preview ? 150 : 80}
                                         style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
                                       />
-                                      {picture4.preview ? '' : <p style={{ fontSize: 10 }}>Imagen 300 x 500</p>}
+                                      {picture4.preview ? (
+                                        ''
+                                      ) : (
+                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                      )}
+                                    </label>
+                                  </div>
+                                </center>
+                              </div>
+                            </center>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <center>
+                              <div
+                                style={{
+                                  border: 'dashed gray',
+                                  borderRadius: 10,
+                                  borderWidth: 0.2,
+                                  width: 140,
+                                  height: 160,
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <center>
+                                  <input
+                                    type="file"
+                                    id="picture5"
+                                    style={{ display: 'none' }}
+                                    onChange={handlePicture5Change}
+                                    accept="image/*"
+                                  />
+                                  <div htmlFor="picture5" id="picture5">
+                                    <label htmlFor="picture5">
+                                      <img
+                                        src={picture5.preview || defaultImage}
+                                        alt="Picture5"
+                                        width={picture5.preview ? 130 : 80}
+                                        height={picture5.preview ? 150 : 80}
+                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                                      />
+                                      {picture5.preview ? (
+                                        ''
+                                      ) : (
+                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                      )}
+                                    </label>
+                                  </div>
+                                </center>
+                              </div>
+                            </center>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <center>
+                              <div
+                                style={{
+                                  border: 'dashed gray',
+                                  borderRadius: 10,
+                                  borderWidth: 0.2,
+                                  width: 140,
+                                  height: 160,
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                <center>
+                                  <input
+                                    type="file"
+                                    id="picture6"
+                                    style={{ display: 'none' }}
+                                    onChange={handlePicture6Change}
+                                    accept="image/*"
+                                  />
+                                  <div htmlFor="picture6" id="picture6">
+                                    <label htmlFor="picture6">
+                                      <img
+                                        src={picture6.preview || defaultImage}
+                                        alt="Picture6"
+                                        width={picture6.preview ? 130 : 80}
+                                        height={picture6.preview ? 150 : 80}
+                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                                      />
+                                      {picture6.preview ? (
+                                        ''
+                                      ) : (
+                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                      )}
                                     </label>
                                   </div>
                                 </center>
@@ -610,7 +793,7 @@ export default function Item() {
                         Crear
                       </Button>
                     </center>
-                    <h5 style={{ textAlign: 'justify', textJustify: 'inter-word' }}>
+                    <h5 style={{ textAlign: 'justify', textJustify: 'inter-word', color: '#3a3b3c' }}>
                       Los artículos de KhuskaMarket son públicos, por lo que cualquier persona dentro y fuera de KhuskaMarket puede verlos.
                       Los artículos como animales, drogas, armas, falsificaciones y otros que infringen derechos de propiedad intelectual no
                       están permitidos en KhuskaMarket. Consulta nuestras Políticas de comercio.

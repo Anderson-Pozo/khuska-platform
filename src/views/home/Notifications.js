@@ -24,7 +24,7 @@ export default function Notifications() {
   }, []);
 
   return (
-    <Grid container style={{ marginTop: 20 }}>
+    <Grid container style={{ marginTop: 0 }}>
       <Grid item xs={12}>
         {dataList > 0 ? (
           dataList.map((n) => (

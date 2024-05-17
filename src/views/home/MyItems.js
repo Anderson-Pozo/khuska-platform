@@ -17,18 +17,27 @@ import {
   Button,
   Modal
 } from '@mui/material';
+import * as Msg from 'store/message';
+import { uiStyles } from './styles';
 import CircularProgress from '@mui/material/CircularProgress';
 import { searchingProductsByNameOrCategory } from 'utils/search';
-import { IconEdit, IconEye, IconTrash } from '@tabler/icons';
+import { IconCircleX, IconEdit, IconEye, IconTrash } from '@tabler/icons';
 import MessageDark from 'components/message/MessageDark';
 import { collProducts } from 'store/collections';
-import { uiStyles } from './styles';
+//Notifications
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { titles } from './titles';
+import { genConst } from 'store/constant';
 
 export default function MyItems() {
   let navigate = useNavigate();
   const [dataList, setDataList] = useState([]);
   const [search, setSearch] = useState('');
   const [openLoader, setOpenLoader] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [id, setId] = useState(null);
+  const [name, setName] = useState(null);
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -42,6 +51,13 @@ export default function MyItems() {
     });
   }, []);
 
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
   const reloadData = () => {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
@@ -54,18 +70,34 @@ export default function MyItems() {
     });
   };
 
+  const handleDelete = () => {
+    setOpenLoader(true);
+    deleteDocument(collProducts, id);
+    setTimeout(() => {
+      setOpenLoader(false);
+      setOpenDelete(false);
+      reloadData();
+      toast.success(Msg.prodelsucc, { position: toast.POSITION.TOP_RIGHT });
+    }, 2000);
+  };
+
   return (
     <Box>
-      <Box sx={{ flexGrow: 0, mt: 1 }}>
-        <OutlinedInput
-          id={'search'}
-          type="text"
-          name={'search'}
-          onChange={(ev) => setSearch(ev.target.value)}
-          placeholder={'Buscar por nombre o categoría'}
-          style={{ width: '100%' }}
-        />
-      </Box>
+      <ToastContainer />
+      {dataList.length > 0 ? (
+        <Box sx={{ flexGrow: 0, mt: 1 }}>
+          <OutlinedInput
+            id={'search'}
+            type="text"
+            name={'search'}
+            onChange={(ev) => setSearch(ev.target.value)}
+            placeholder={'Buscar por nombre o categoría'}
+            style={{ width: '100%' }}
+          />
+        </Box>
+      ) : (
+        <></>
+      )}
       {dataList.length > 0 ? (
         <Grid container spacing={0} sx={{ mt: 2 }}>
           <Grid item xs={12}>
@@ -128,12 +160,9 @@ export default function MyItems() {
                             <div
                               aria-hidden="true"
                               onClick={() => {
-                                setOpenLoader(true);
-                                deleteDocument(collProducts, item.id);
-                                setTimeout(() => {
-                                  setOpenLoader(false);
-                                  reloadData();
-                                }, 1000);
+                                setId(item.id);
+                                setName(item.name);
+                                handleOpenDelete();
                               }}
                               style={{ marginRight: 20 }}
                             >
@@ -163,7 +192,7 @@ export default function MyItems() {
                   type="submit"
                   variant="outlined"
                   color="primary"
-                  style={{ borderRadius: 10, height: 40, marginTop: 10, fontSize: 12, color: '#FFF' }}
+                  style={{ borderRadius: 10, height: 40, marginTop: 10, fontSize: 12, color: '#3a3b3c' }}
                   onClick={() => navigate('/market/create')}
                 >
                   Crear Producto
@@ -173,6 +202,46 @@ export default function MyItems() {
           </Grid>
         </Grid>
       )}
+      <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
+        <Box sx={uiStyles.styleDelete}>
+          <Typography id="modal-modal-title" variant="h2" component="h2">
+            {titles.modalDelete}
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={uiStyles.modalDeleteTitle}>
+            {titles.modaleDeleteDetail} <strong>{name}</strong>
+          </Typography>
+          <Grid container style={{ marginTop: 10 }}>
+            <Grid item xs={12}>
+              <Grid container spacing={1}>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <center>
+                    <ButtonGroup>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconTrash />}
+                        size="large"
+                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_DELETE_COLOR }}
+                        onClick={handleDelete}
+                      >
+                        {titles.buttonDelete}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconCircleX />}
+                        size="large"
+                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                        onClick={handleCloseDelete}
+                      >
+                        {titles.buttonCancel}
+                      </Button>
+                    </ButtonGroup>
+                  </center>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Modal>
       <Modal open={openLoader} aria-labelledby="modal-loader" aria-describedby="modal-loader">
         <center>
           <Box sx={uiStyles.modalLoader}>

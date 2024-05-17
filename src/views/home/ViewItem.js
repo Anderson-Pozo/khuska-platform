@@ -93,25 +93,38 @@ export default function ViewItem() {
           originalHeight: 500,
           thumbnailWidth: 40,
           thumbnailHeight: 50
+        },
+        {
+          original: data[0].picture5,
+          thumbnail: data[0].picture5,
+          originalHeight: 500,
+          thumbnailWidth: 40,
+          thumbnailHeight: 50
+        },
+        {
+          original: data[0].picture6,
+          thumbnail: data[0].picture6,
+          originalHeight: 500,
+          thumbnailWidth: 40,
+          thumbnailHeight: 50
         }
       ]);
       setBusinessId(data[0].idBusiness);
-      if (data[0].type !== 0) {
-        getUserById(data[0].userId).then((dat) => {
-          setUserIdd(dat[0].id);
-          setUserName(dat[0].fullName);
-          setUserLogo(dat[0].avatar);
-          setUserCreateAt(dat[0].createAt);
-        });
-      } else {
+      getUserById(data[0].userId).then((dat) => {
+        setUserIdd(dat[0].id);
+        setUserName(dat[0].fullName);
+        setUserLogo(dat[0].avatar);
+        setUserCreateAt(dat[0].createAt);
         getBusinessById(data[0].idBusiness).then((dataa) => {
-          setBusinessName(dataa[0].name);
-          setBusinessLogo(dataa[0].logo);
-          setBusinessCreateAt(dataa[0].createAt);
-          setBusinessCity(dataa[0].city);
-          setBusinessUserId(dataa[0].userId);
+          if (dataa.length > 0) {
+            setBusinessName(dataa[0].name);
+            setBusinessLogo(dataa[0].logo);
+            setBusinessCreateAt(dataa[0].createAt);
+            setBusinessCity(dataa[0].city);
+            setBusinessUserId(dataa[0].userId);
+          }
         });
-      }
+      });
     });
     document.getElementsByClassName('image-gallery-thumbnail-image').style = 'width: 30px';
   }, []);
@@ -151,9 +164,17 @@ export default function ViewItem() {
   return (
     <Box>
       <ToastContainer />
-      <Grid container spacing={1} style={{ marginTop: 5 }}>
+      <Grid container spacing={1} style={{ marginTop: 2 }}>
         <Grid item lg={12} xs={12}>
-          <Grid container spacing={0} style={{ paddingLeft: 20 }}>
+          <Grid container spacing={0} style={{ padding: 10 }}>
+            <Grid item lg={12} xs={12} sx={{ mt: 2 }}>
+              <Typography component={Link} to="/market/main" variant="h6" sx={{ textDecoration: 'none', color: '#3a3b3c' }}>
+                Regresar
+              </Typography>
+              <Typography variant="h3" textAlign="left" sx={{ color: '#3a3b3c', marginTop: 1 }}>
+                {name}
+              </Typography>
+            </Grid>
             <Grid item lg={8} xs={12} sx={{ mt: 4 }}>
               <center>
                 <ImageGallery
@@ -166,45 +187,49 @@ export default function ViewItem() {
                 />
               </center>
             </Grid>
-            <Grid item lg={4} xs={12} sx={uiStyles.layoutItem}>
-              <div style={uiStyles.main}>
-                <Typography component={Link} to="/market/main" variant="h6" sx={{ textDecoration: 'none', color: '#FFF', pb: 2 }}>
-                  Regresar
-                </Typography>
-                <Typography variant="h3" textAlign="left" sx={{ color: '#FFF' }}>
+            <Grid item lg={4} xs={12} style={{ marginTop: 20 }}>
+              <div>
+                <Typography variant="h3" textAlign="left" sx={{ color: '#3a3b3c' }}>
                   {name}
                 </Typography>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 1, fontSize: 16 }}>
-                  $ {price} - {quantity} Disponibles
+                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 1, fontSize: 16 }}>
+                  $ {Number.parseFloat(price).toFixed(2)} - {quantity} Disponibles
                 </Typography>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#E4E6EB', pt: 1, pb: 2, fontSize: 14 }}>
+                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 1, pb: 2, fontSize: 14 }}>
                   Publicado en: {businessCity || ' sin información'}
                 </Typography>
                 <Divider sx={{ borderColor: '#3E4042' }} />
-                <Typography variant="h2" textAlign="left" sx={{ color: '#FFF', pt: 2, fontSize: 18 }}>
+                <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, fontSize: 18 }}>
                   Detalles
                 </Typography>
-                <Typography variant="h5" textAlign="justify" sx={{ color: '#E4E6EB', pt: 2, pb: 2, fontSize: 12 }}>
+                <Typography variant="h5" textAlign="justify" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 12 }}>
                   {description}
                 </Typography>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 16 }}>
+                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 16 }}>
                   <strong>Categoría: </strong>
                   {category}
                 </Typography>
                 <Divider sx={{ borderColor: '#3E4042' }} />
-                <Typography variant="h2" textAlign="left" sx={{ color: '#FFF', pt: 2, fontSize: 18 }}>
+                <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, fontSize: 18 }}>
                   Información del vendedor
                 </Typography>
-                <ButtonGroup sx={{ mt: 2 }}>
-                  <Avatar src={businessLogo || userLogo} color="inherit" style={{ width: 32, height: 32 }} />
-                  <span style={{ margin: 6, color: '#E4E6EB', fontSize: 16 }}>{businessName || userName}</span>
-                </ButtonGroup>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 12 }}>
+                {businessName ? (
+                  <ButtonGroup sx={{ mt: 1 }}>
+                    <Avatar src={businessLogo} color="inherit" style={{ width: 32, height: 32 }} />
+                    <span style={{ margin: 6, color: '#3a3b3c', fontSize: 16 }}>{businessName}</span>
+                  </ButtonGroup>
+                ) : (
+                  <ButtonGroup sx={{ mt: 1 }}>
+                    <Avatar src={userLogo} color="inherit" style={{ width: 32, height: 32 }} />
+                    <span style={{ margin: 6, color: '#3a3b3c', fontSize: 16 }}>{userName}</span>
+                  </ButtonGroup>
+                )}
+                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 12 }}>
                   <strong>Se unió a Khuska Market en </strong>
                   <p>{businessCreateAt || userCreateAt}</p>
                 </Typography>
                 <Divider sx={{ borderColor: '#3E4042' }} />
-                <Typography variant="h2" textAlign="left" sx={{ color: '#FFF', pt: 2, pb: 2, fontSize: 18 }}>
+                <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 18 }}>
                   Envía un mensaje al vendedor
                 </Typography>
                 {fromId ? (
@@ -238,7 +263,7 @@ export default function ViewItem() {
                       component={Link}
                       to="/market/login"
                       variant="h6"
-                      sx={{ textDecoration: 'none', color: '#FFF', pb: 2, textAlign: 'left' }}
+                      sx={{ textDecoration: 'none', color: '#3a3b3c', pb: 2, textAlign: 'left' }}
                     >
                       Inicia sesión para escribir al vendedor del producto! Clic aquí
                     </Typography>

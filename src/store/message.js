@@ -1,5 +1,6 @@
 export const requiered = 'Todos los campos marcados con * son obligatorios.!';
 export const imgreq = 'Debe seleccionar una imagen para la portada del curso!.';
+export const compreq = 'Debe seleccionar la imagen del comprobante para validar su pago!.';
 
 export const clicresucc = 'Cliente creado correctamente!.';
 export const cliupdsucc = 'Cliente actualizado correctamente!.';
@@ -14,6 +15,8 @@ export const settvalreq = 'Todos los campos marcados con * son obligatorios.!';
 export const coucresucc = 'Curso creado correctamente!.';
 export const couupdsucc = 'Curso actualizado correctamente!.';
 export const coudelsucc = 'Curso eliminado correctamente!.';
+
+export const voucresucc = 'Comprobante enviado correctamente!.';
 
 export const procresucc = 'Producto creado correctamente!.';
 export const proupdsucc = 'Producto actualizado correctamente!.';

@@ -21,6 +21,10 @@ export const genConst = {
   CONST_NOTIF_LE: 1,
   CONST_SUB_STATE_INACTIVE: 0,
   CONST_SUB_STATE_ACTIVE: 1,
+  CONST_SUB_STATE_0: 0,
+  CONST_SUB_S_I: 0,
+  CONST_SUB_S_U: 1,
+  CONST_SUB_S_A: 2,
   CONST_SUB_STATE_ACT_TEXT: 'ACTIVA',
   CONST_SUB_STATE_INA_TEXT: 'INACTIVA',
   CONST_STA_ACT_TXT: 'Activo',
@@ -66,6 +70,8 @@ export const genConst = {
   CONST_YEAR_DAYS: 365,
   CONST_MONTH_CHAR: 1,
   CONST_YEAR_CHAR: 2,
+  CONST_MONTH_TXT: 'MENSUAL',
+  CONST_YEAR_TXT: 'ANUAL',
   CONST_IVA: 1.12,
   CONST_400: 400,
   CONST_200: 200,
@@ -77,4 +83,8 @@ export const genConst = {
   CONST_BEN_PAI: 1,
   CONST_BEN_PEN: 2,
   CONST_MAX_BUSINESS: 3
+};
+
+export const Messages = {
+  lastDay: 'Es tu último día de membresía, renueva tu subscripción!'
 };
