@@ -8,15 +8,21 @@ import {
   collChat,
   collCourses,
   collGenNoti,
+  collInbox,
   collIncomes,
   collKhuskaBenefit,
   collLog,
   collMail,
   collMessage,
+  collNotifications,
   collProducts,
   collSettings,
   collSubscription,
+  collUserAddress,
   collUserBenefit,
+  collUserBillData,
+  collUserPaymentMethod,
+  collUserPhone,
   collUsers,
   collUsrNoti,
   collVoucher
@@ -24,7 +30,7 @@ import {
 import { genConst } from 'store/constant';
 import { labels } from 'store/labels';
 import { generateId } from 'utils/idGenerator';
-import { generateDate } from 'utils/validations';
+import { fullDate, generateDate, shortDate } from 'utils/validations';
 
 //Encontrar Sesión activa
 export function isSessionActive(navigate) {
@@ -53,6 +59,25 @@ export function getUserId() {
     }
   });
   return userId;
+}
+//Buscar si existe Referido
+export async function isExistUserReferalEmail(value) {
+  let result = null;
+  const q = query(collection(db, collUsers), where('email', '==', value));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    result = doc.data().ownReferal;
+  });
+  return result;
+}
+export async function isExistUserReferalCode(value) {
+  let result = null;
+  const q = query(collection(db, collUsers), where('ownReferal', '==', value));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    result = doc.data().ownReferal;
+  });
+  return result;
 }
 //Buscar si existe Usuario
 export async function isExistUser(id) {
@@ -273,7 +298,7 @@ export const getGeneralNotifications = async () => {
 };
 export async function getUserNotifications(id) {
   const list = [];
-  const q = query(collection(db, collUsrNoti), where('idUser', '==', id));
+  const q = query(collection(db, collNotifications), where('idUser', '==', id));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     list.push(doc.data());
@@ -574,6 +599,16 @@ export async function getUserState(id) {
   return state;
 }
 
+export async function getUserReferalDad(id) {
+  let code = null;
+  const q = query(collection(db, collUsers), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    code = doc.data().refer;
+  });
+  return code;
+}
+
 export async function getUserReferalCode(id) {
   let code = null;
   const q = query(collection(db, collUsers), where('id', '==', id));
@@ -671,3 +706,96 @@ export async function getChatByMessageId(id) {
   });
   return data;
 }
+
+//Crear Datos adicionales
+export const createUserAditionalData = (uid, email) => {
+  //Subscription
+  const objSubscription = {
+    idUser: uid,
+    startDate: null,
+    endDate: null,
+    cancelDate: null,
+    state: genConst.CONST_STATE_IN
+  };
+  createDocument(collSubscription, uid, objSubscription);
+  //Log
+  const idLog = generateId(10);
+  const log = {
+    id: idLog,
+    idUser: uid,
+    createAt: fullDate(),
+    lastLogin: fullDate(),
+    email: email,
+    state: genConst.CONST_STATE_IN,
+    message: 'Registro de nuevo usuario.'
+  };
+  createDocument(collLog, idLog, log);
+  //Address
+  const userAddress = {
+    idUser: uid,
+    principal: '',
+    secondary: '',
+    number: '',
+    city: '',
+    province: '',
+    reference: ''
+  };
+  createDocument(collUserAddress, uid, userAddress);
+  //Phone
+  const userPhone = {
+    idUser: uid,
+    phone: ''
+  };
+  createDocument(collUserPhone, uid, userPhone);
+  //BillData
+  const userBillData = {
+    idUser: uid,
+    name: '',
+    ci: '',
+    address: '',
+    email: '',
+    city: '',
+    phone: '',
+    postal: ''
+  };
+  createDocument(collUserBillData, uid, userBillData);
+  //Payment Data
+  const userPaymentData = {
+    idUser: uid,
+    email: email,
+    name: '',
+    number: '',
+    numberMask: null,
+    date: '',
+    cvc: '',
+    cvcmd5: null
+  };
+  createDocument(collUserPaymentMethod, uid, userPaymentData);
+  //Inbox
+  const idMail = generateId(10);
+  const inbox = {
+    id: idMail,
+    idUser: uid,
+    to: email,
+    from: 'Khuska',
+    date: generateDate(),
+    shortDate: shortDate(),
+    message: 'Bienvenido a Khuska',
+    subject: 'Bienvenida'
+  };
+  createDocument(collInbox, idMail, inbox);
+  //Notifications
+  const idNot = generateId(10);
+  const notifications = {
+    id: idNot,
+    idUser: uid,
+    to: email,
+    from: 'Khuska',
+    date: generateDate(),
+    shortDate: shortDate(),
+    message: 'No olvides actualizar tu información de perfil.',
+    subject: 'Recuerda',
+    state: genConst.CONST_NOTIF_NL
+  };
+  createDocument(collNotifications, idNot, notifications);
+};

@@ -23,7 +23,7 @@ import MainCard from 'components/cards/MainCard';
 import Transitions from 'components/extended/Transitions';
 import NotificationList from './NotificationList';
 
-import { collUsrNoti } from 'store/collections';
+import { collNotifications } from 'store/collections';
 
 import { db, authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -63,7 +63,7 @@ const NotificationSection = () => {
 
   const getData = async (id) => {
     const list = [];
-    const q = query(collection(db, collUsrNoti), where('idUser', '==', id), where('state', '==', 1));
+    const q = query(collection(db, collNotifications), where('idUser', '==', id), where('state', '==', 0));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       list.push(doc.data());
@@ -141,14 +141,7 @@ const NotificationSection = () => {
                     <Grid item xs={12}>
                       {dataList.length > 0 ? (
                         dataList.map((n) => (
-                          <NotificationList
-                            key={n.id}
-                            id={n.id}
-                            avatar={n.avatar}
-                            createAt={n.createAt}
-                            message={n.message}
-                            name={n.name}
-                          />
+                          <NotificationList key={n.id} id={n.id} avatar={n.avatar} createAt={n.date} message={n.message} name={n.from} />
                         ))
                       ) : (
                         <div style={{ margin: 10 }}>

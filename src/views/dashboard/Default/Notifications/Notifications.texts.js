@@ -18,10 +18,10 @@ export const titles = {
 
 export const inputLabels = {
   tableCol1: '',
-  tableCol2: 'Mensaje',
+  tableCol2: 'Notificación',
   tableCol3: 'Usuario',
   tableCol4: 'Fecha',
-  actions: 'Acciones',
+  actions: 'Marcar como leídas',
   message: 'message',
   labelMessage: 'Mensaje'
 };

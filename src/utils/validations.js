@@ -94,6 +94,42 @@ export function fullDate() {
   return str;
 }
 
+export function fullDateFormat() {
+  var date = new Date();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  var hour = date.getHours();
+  var min = date.getMinutes();
+  var sec = date.getSeconds();
+  month = (month < 10 ? '0' : '') + month;
+  day = (day < 10 ? '0' : '') + day;
+  hour = (hour < 10 ? '0' : '') + hour;
+  min = (min < 10 ? '0' : '') + min;
+  sec = (sec < 10 ? '0' : '') + sec;
+  var str = day + '/' + month + '/' + date.getFullYear() + ' ' + hour + ':' + min + ':' + sec;
+  return str;
+}
+
+export function shortDate() {
+  var date = new Date();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  month = (month < 10 ? '0' : '') + month;
+  day = (day < 10 ? '0' : '') + day;
+  var str = date.getFullYear() + '/' + month + '/' + day;
+  return str;
+}
+
+export function shortDateFormat() {
+  var date = new Date();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  month = (month < 10 ? '0' : '') + month;
+  day = (day < 10 ? '0' : '') + day;
+  var str = day + '/' + month + '/' + date.getFullYear();
+  return str;
+}
+
 export const getCurrentHour = () => {
   const now = new Date();
   const currentHour = now.getHours();

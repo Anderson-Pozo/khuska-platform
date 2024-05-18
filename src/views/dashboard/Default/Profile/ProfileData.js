@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
 import { Box, Grid, Typography, FormControl, Button, InputLabel, OutlinedInput } from '@mui/material';
@@ -20,6 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // project imports
 import AnimateButton from 'components/extended/AnimateButton';
 import { collUsers } from 'store/collections';
+import { IconDeviceMobile, IconUser } from '@tabler/icons';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
   backgroundColor: '#414551',
@@ -63,7 +62,7 @@ const ProfileData = () => {
   const [name, setName] = React.useState(null);
   const [lastName, setLastName] = React.useState(null);
   const [email, setEmail] = React.useState(null);
-  const [description, setDescription] = React.useState(null);
+  const [phone, setPhone] = React.useState(null);
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -75,7 +74,7 @@ const ProfileData = () => {
         querySnapshot.forEach((doc) => {
           setName(doc.data().name);
           setLastName(doc.data().lastName);
-          setDescription(doc.data().description);
+          setPhone(doc.data().phone);
         });
       }
     });
@@ -92,7 +91,7 @@ const ProfileData = () => {
         name: name,
         lastName: lastName,
         fullName: name + ' ' + lastName,
-        description: description,
+        phone: phone,
         updateAt: Date.now()
       });
       toast.success('Perfil actualizado correctamente!', { position: toast.POSITION.TOP_RIGHT });
@@ -123,7 +122,7 @@ const ProfileData = () => {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0.2, paddingRight: 1 }}>
                   <InputLabel htmlFor="outlined-adornment-name-register">Nombre</InputLabel>
                   <OutlinedInput
@@ -131,11 +130,12 @@ const ProfileData = () => {
                     type="text"
                     value={name || ''}
                     name="name"
+                    endAdornment={<IconUser />}
                     onChange={(ev) => setName(ev.target.value)}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0.2, paddingRight: 1 }}>
                   <InputLabel htmlFor="outlined-adornment-name-register">Apellido</InputLabel>
                   <OutlinedInput
@@ -143,6 +143,7 @@ const ProfileData = () => {
                     type="text"
                     value={lastName || ''}
                     name="lastName"
+                    endAdornment={<IconUser />}
                     onChange={(ev) => setLastName(ev.target.value)}
                   />
                 </FormControl>
@@ -151,13 +152,14 @@ const ProfileData = () => {
             <Grid container>
               <Grid item xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0.2 }}>
-                  <InputLabel htmlFor="outlined-adornment-description-register">Descripción</InputLabel>
+                  <InputLabel htmlFor="outlined-adornment-phone-register">Teléfono</InputLabel>
                   <OutlinedInput
-                    id="outlined-adornment-description-register"
-                    type="description"
-                    value={description || ''}
-                    name="description"
-                    onChange={(ev) => setDescription(ev.target.value)}
+                    id="outlined-adornment-phone-register"
+                    type="number"
+                    value={phone || ''}
+                    name="phone"
+                    endAdornment={<IconDeviceMobile />}
+                    onChange={(ev) => setPhone(ev.target.value)}
                     inputProps={{}}
                     maxRows={5}
                   />
@@ -176,10 +178,6 @@ const ProfileData = () => {
       </CardWrapper>
     </>
   );
-};
-
-ProfileData.propTypes = {
-  isLoading: PropTypes.bool
 };
 
 export default ProfileData;

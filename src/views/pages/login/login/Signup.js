@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom';
-
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import { Divider, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
-
 // project imports
 import AuthWrapper1 from '../AuthWrapper';
 import AuthCardWrapper from '../AuthCardWrapper';
 import Logo from 'components/Logo-md';
 import AuthRegister from '../auth-forms/AuthRegister';
 import AuthFooter from 'components/cards/AuthFooter';
-
 // assets
 import bg01 from 'assets/images/05.webp';
 

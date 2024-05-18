@@ -73,6 +73,7 @@ export const genConst = {
   CONST_MONTH_TXT: 'MENSUAL',
   CONST_YEAR_TXT: 'ANUAL',
   CONST_IVA: 1.12,
+  CONST_IVA_VAL: 0.12,
   CONST_400: 400,
   CONST_200: 200,
   CONST_LVL1: 0.2,

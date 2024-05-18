@@ -61,9 +61,6 @@ const Notifications = () => {
                   <TableCell key="id-col2" align="left" style={{ minWidth: 160, fontWeight: 'bold' }}>
                     {inputLabels.tableCol2}
                   </TableCell>
-                  <TableCell key="id-col3" align="left" style={{ minWidth: 140, fontWeight: 'bold' }}>
-                    {inputLabels.tableCol3}
-                  </TableCell>
                   <TableCell key="id-col4" align="left" style={{ minWidth: 120, fontWeight: 'bold' }}>
                     {inputLabels.tableCol4}
                   </TableCell>
@@ -76,8 +73,7 @@ const Notifications = () => {
                 {dataList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((r) => (
                   <TableRow hover key={r.id}>
                     <TableCell align="left">{r.message}</TableCell>
-                    <TableCell align="left">{r.userName}</TableCell>
-                    <TableCell align="left">{r.createAt}</TableCell>
+                    <TableCell align="left">{r.date}</TableCell>
                     <TableCell align="center">
                       {r.state === 1 ? (
                         <Tooltip title="Marcar como leido">

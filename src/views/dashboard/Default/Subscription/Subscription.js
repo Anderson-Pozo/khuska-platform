@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 // material-ui
 import {
   Box,
@@ -14,17 +15,41 @@ import {
   Radio,
   Button,
   CardContent,
-  Card
+  Card,
+  Tabs,
+  Tab
 } from '@mui/material';
 import CreditCard from 'components/creditCard/CreditCard';
 // project imports
 import { genConst } from 'store/constant';
-import { endDateWithParam, initDate } from 'utils/validations';
+import { endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
 import Deposit from './Deposit';
+import { IconBrandPaypal, IconCreditCard } from '@tabler/icons';
+import { onAuthStateChanged } from 'firebase/auth';
+import { authentication } from 'config/firebase';
+import { getDad, getUserReferalDad } from 'config/firebaseEvents';
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div role="tabpanel" hidden={value !== index} id={`vertical-tabpanel-${index}`} aria-labelledby={`vertical-tab-${index}`} {...other}>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired
+};
 
 const Subscription = () => {
-  //const [searchParams] = useSearchParams();
-  //const id = searchParams.get('id');
   const [type, setType] = useState(null);
   const [method, setMethod] = useState(null);
   const [isType, setIsType] = useState(false);
@@ -38,6 +63,12 @@ const Subscription = () => {
   const [endDate, setEndDate] = useState(null);
 
   const [activeStep, setActiveStep] = useState(0);
+
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -55,7 +86,6 @@ const Subscription = () => {
       let subtotal = Math.round((genConst.CONST_MONTH_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
       let ivaValue = genConst.CONST_MONTH_VALUE - subtotal;
       let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
-      //let totalValue = genConst.CONST_MONTH_VALUE - ivaRound;
       setIva(ivaRound);
       setSubtotal(subtotal);
       setTotal(genConst.CONST_MONTH_VALUE);
@@ -66,7 +96,6 @@ const Subscription = () => {
       let subtotal = Math.round((genConst.CONST_YEAR_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
       let ivaValue = genConst.CONST_YEAR_VALUE - subtotal;
       let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
-      //let totalValue = genConst.CONST_YEAR_VALUE - ivaValue;
       setIva(ivaRound);
       setSubtotal(subtotal);
       setTotal(genConst.CONST_YEAR_VALUE);
@@ -76,6 +105,66 @@ const Subscription = () => {
 
   const handleMethodChange = (event) => {
     setMethod(event.target.value);
+  };
+
+  const handlePayPal = () => {
+    onAuthStateChanged(authentication, (user) => {
+      if (user) {
+        getUserReferalDad(user.uid).then((code) => {
+          if (code !== null) {
+            subscribeUser(user.uid, code, type, 200);
+          } else {
+            subscribeUser(user.uid, code, type, 200);
+          }
+        });
+      }
+    });
+  };
+
+  const subscribeUser = (id, ref, type, result) => {
+    const subObject = {
+      idUser: id,
+      refCode: ref ? ref : null,
+      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
+      startDate: shortDateFormat(),
+      endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
+      date: fullDate(),
+      dateFormat: fullDateFormat(),
+      price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,
+      description: type == 1 ? 'Estandar (30 días)' : 'Plus (365 días)',
+      totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : genConst.CONST_YEAR_DAYS
+    };
+    const usrObject = {
+      subState: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
+      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN
+    };
+    console.log(subObject);
+    console.log(usrObject);
+    if (result === 200) {
+      //createDocuments
+      paymentDistribution(ref, result);
+    } else {
+      console.log('Algo salio mal!');
+    }
+  };
+
+  const paymentDistribution = async (ref) => {
+    let total = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
+    let IVA = Number.parseFloat(total).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
+    let SUB = Number.parseFloat(total).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
+    console.log('SUBTOTAL: ', SUB);
+    console.log('IVA: ', IVA);
+    console.log('TOTAL: ', total);
+    for (let i = 0; i < 4; i++) {
+      //PAGAR BENEFICIOS
+      await getDad(ref).then((res) => {
+        console.log(i, res.refer);
+        //generatePaymentDistribution(total, i, res.id, res.email);
+        if (res.refer === null) {
+          i = 4;
+        }
+      });
+    }
   };
 
   return (
@@ -182,9 +271,8 @@ const Subscription = () => {
                             onChange={handleMethodChange}
                             values={type}
                           >
-                            <FormControlLabel value={1} control={<Radio />} label="Tarjeta de Crédito" />
+                            <FormControlLabel value={1} control={<Radio />} label="Pago en línea" />
                             <FormControlLabel value={2} control={<Radio />} label="Deposito o Transferencia" />
-                            <FormControlLabel value={3} control={<Radio />} label="Realizar el pago despúes" />
                           </RadioGroup>
                         </FormControl>
                         <Box sx={{ mb: 2 }}>
@@ -214,11 +302,43 @@ const Subscription = () => {
                         {'IVA: ' + iva}
                       </Typography>
                       {method == 1 ? (
-                        <CreditCard total={total} type={type} />
+                        <Box>
+                          <Tabs value={value} onChange={handleChange} aria-label="icon tabs example">
+                            <Tab icon={<IconBrandPaypal />} aria-label="paypal" />
+                            <Tab icon={<IconCreditCard />} aria-label="creditcard" />
+                          </Tabs>
+                          <TabPanel value={value} index={0}>
+                            <center>
+                              <Typography variant="h4" sx={{ mt: 2 }}>
+                                {'Suscripción: '}
+                                {type == 1 ? (
+                                  <span style={{ fontWeight: 'normal' }}>Mensual</span>
+                                ) : (
+                                  <span style={{ fontWeight: 'normal' }}>Anual</span>
+                                )}
+                              </Typography>
+                              <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
+                                {'Total a Pagar: '}
+                                <span style={{ fontWeight: 'normal' }}>$ {total}</span>
+                              </Typography>
+                            </center>
+                            <Button
+                              variant="contained"
+                              sx={{ mt: 1, mr: 1 }}
+                              startIcon={<IconBrandPaypal />}
+                              style={{ color: '#FFF', height: 60, borderRadius: 10, width: 280, backgroundColor: '#FFC439' }}
+                              onClick={handlePayPal}
+                            >
+                              <span style={{ color: '#003087', fontWeight: 'bold', fontSize: 15 }}>Pay</span>
+                              <span style={{ color: '#009CDE', fontWeight: 'bold', fontSize: 15 }}>Pal</span>
+                            </Button>
+                          </TabPanel>
+                          <TabPanel value={value} index={1}>
+                            <CreditCard total={total} type={type} />
+                          </TabPanel>
+                        </Box>
                       ) : method == 2 ? (
                         <Deposit total={total} type={type} />
-                      ) : method == 3 ? (
-                        <h4>Pago despues</h4>
                       ) : (
                         <></>
                       )}
