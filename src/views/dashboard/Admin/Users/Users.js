@@ -596,6 +596,19 @@ export default function Users() {
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
+                {isEdit ? (
+                  <Grid item lg={12} md={12} sm={12} xs={12}>
+                    <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 10 }}>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <strong style={{ fontSize: 14 }}>ID: {id}</strong>
+                        </InputLabel>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                ) : (
+                  <></>
+                )}
                 <Grid item lg={6} md={6} sm={6} xs={6}>
                   <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                     <InputLabel htmlFor="name">
@@ -752,7 +765,7 @@ export default function Users() {
                     </ButtonGroup>
                   </center>
                 </Grid>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
+                <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
                   <center>
                     <ButtonGroup>
                       {!isEdit ? (
@@ -760,7 +773,7 @@ export default function Users() {
                           variant="contained"
                           startIcon={<IconDeviceFloppy />}
                           size="large"
-                          style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CREATE_COLOR }}
+                          style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
                           onClick={handleCreateUser}
                         >
                           {titles.buttonCreate}
@@ -770,7 +783,7 @@ export default function Users() {
                           variant="contained"
                           startIcon={<IconPencil />}
                           size="large"
-                          style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_UPDATE_COLOR }}
+                          style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                           onClick={handleEditUser}
                         >
                           {titles.buttonUpdate}
@@ -780,7 +793,7 @@ export default function Users() {
                         variant="contained"
                         startIcon={<IconCircleX />}
                         size="large"
-                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
                         onClick={handleCloseCreate}
                       >
                         {titles.buttonCancel}

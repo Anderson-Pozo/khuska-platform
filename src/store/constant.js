@@ -81,8 +81,8 @@ export const genConst = {
   CONST_LVL3: 0.1,
   CONST_LVL4: 0.05,
   CONST_BEN_CAN: 0,
-  CONST_BEN_PAI: 1,
-  CONST_BEN_PEN: 2,
+  CONST_BEN_PAI: 2,
+  CONST_BEN_PEN: 1,
   CONST_MAX_BUSINESS: 3
 };
 

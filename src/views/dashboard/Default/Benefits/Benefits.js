@@ -58,13 +58,13 @@ export default function Benefits() {
           setDataList(res);
         });
         getTotalCancelBenefitByUserId(user.uid).then((res) => {
-          setTotalC(res);
+          setTotalC(Number.parseFloat(res).toFixed(2));
         });
         getTotalPendinBenefitByUserId(user.uid).then((res) => {
-          setTotalPN(res);
+          setTotalPN(Number.parseFloat(res).toFixed(2));
         });
         getTotalPaidBenefitByUserId(user.uid).then((res) => {
-          setTotalP(res);
+          setTotalP(Number.parseFloat(res).toFixed(2));
         });
       }
       setTimeout(() => {
@@ -107,33 +107,37 @@ export default function Benefits() {
                 <Table stickyHeader aria-label="sticky table">
                   <TableHead>
                     <TableRow>
-                      <TableCell key="id-createAt" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                      <TableCell key="id-from" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'De'}
+                      </TableCell>
+                      <TableCell key="id-to" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'Para'}
+                      </TableCell>
+                      <TableCell key="id-level" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'Level'}
+                      </TableCell>
+                      <TableCell key="id-createAt" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Fecha'}
-                      </TableCell>
-                      <TableCell key="id-name" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
-                        {'Usuario'}
-                      </TableCell>
-                      <TableCell key="id-email" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
-                        {'Email'}
-                      </TableCell>
-                      <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Total'}
                       </TableCell>
                       <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Estado'}
+                      </TableCell>
+                      <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                        {'Total'}
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {dataList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((r) => (
                       <TableRow hover key={r.id}>
-                        <TableCell align="left">{r.date}</TableCell>
-                        <TableCell align="left">{r.name + ' ' + r.lastName}</TableCell>
-                        <TableCell align="left">{r.email}</TableCell>
-                        <TableCell align="left">${r.total}</TableCell>
+                        <TableCell align="left">{r.nameUser}</TableCell>
+                        <TableCell align="left">{r.nameRefer}</TableCell>
+                        <TableCell align="left">{r.level}</TableCell>
+                        <TableCell align="left">{r.createAt}</TableCell>
                         <TableCell align="left">
                           {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
                         </TableCell>
+                        <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

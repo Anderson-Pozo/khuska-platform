@@ -129,7 +129,6 @@ const AuthRegister = () => {
           subState: genConst.CONST_STATE_IN,
           url: null
         };
-        console.log(userObject);
         createDocument(collUsers, credentials.user.uid, userObject);
         updateProfile(authentication.currentUser, {
           displayName: name + ' ' + lastname

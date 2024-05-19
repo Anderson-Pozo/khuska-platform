@@ -6,7 +6,6 @@ import {
   collAdminUsers,
   collBusiness,
   collChat,
-  collCourses,
   collGenNoti,
   collInbox,
   collIncomes,
@@ -15,6 +14,7 @@ import {
   collMail,
   collMessage,
   collNotifications,
+  collPayment,
   collProducts,
   collSettings,
   collSubscription,
@@ -192,7 +192,7 @@ export async function getUserSubscriptionEndDate(id) {
   const q = query(collection(db, collSubscription), where('idUser', '==', id));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
-    date = doc.data().endDate;
+    date = doc.data().endDateFormat;
   });
   return date;
 }
@@ -321,6 +321,14 @@ export const getAllUserBenefits = async () => {
   });
   return list;
 };
+export const getAllPayments = async () => {
+  const list = [];
+  const querySnapshot = await getDocuments(collPayment);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
 export const getUserBenefits = async (id) => {
   const list = [];
   const q = query(collection(db, collUserBenefit), where('idRefer', '==', id));
@@ -388,16 +396,6 @@ export async function getProductsByBusiness(id) {
   });
   return list;
 }
-//Obtenemos la Lista de Cursos
-export const getCoursesList = async () => {
-  const list = [];
-  const querySnapshot = await getDocuments(collCourses);
-  querySnapshot.forEach((doc) => {
-    list.push(doc.data());
-    list.sort((a, b) => a.name.localeCompare(b.name));
-  });
-  return list;
-};
 //Obtenemos la Lista de Comprobantes
 export const getVouchers = async () => {
   const list = [];
@@ -407,16 +405,6 @@ export const getVouchers = async () => {
   });
   return list;
 };
-//Obtenemos los Datos de un Curso por ID
-export async function getCourseData(id) {
-  let data = [];
-  const q = query(collection(db, collCourses), where('id', '==', id));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    data.push(doc.data());
-  });
-  return data;
-}
 //Obtenemos el nombre y apellido de Usuario por ID
 export async function getUserName(id) {
   let name = null;
@@ -477,6 +465,39 @@ export async function getTotalPendinBenefitByUserId(id) {
 export async function getTotalBenefit() {
   let total = 0;
   const querySnapshot = await getDocuments(collKhuskaBenefit);
+  querySnapshot.forEach((doc) => {
+    total = total + doc.data().total;
+  });
+  return total;
+}
+//Total Pendiente
+export async function getTotalBenefitPending() {
+  let total = 0;
+  const q = query(collection(db, collUserBenefit), where('state', '==', genConst.CONST_BEN_PEN));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
+  return total;
+}
+//Total Pagado
+export async function getTotalBenefitPay() {
+  let total = 0;
+  const q = query(collection(db, collUserBenefit), where('state', '==', genConst.CONST_BEN_PAI));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
+  return total;
+}
+//Total Ingresos
+export async function getTotalPayments() {
+  let total = 0;
+  const querySnapshot = await getDocuments(collPayment);
   querySnapshot.forEach((doc) => {
     total = total + doc.data().total;
   });
@@ -548,13 +569,6 @@ export async function countBusinessByUserId(id) {
   const querySnapshot = await getDocs(q);
   return querySnapshot.size;
 }
-//Obtenemos cantidad de Cursos Registrados
-export const countCourses = async () => {
-  const coursesCollection = collection(db, collCourses);
-  const querySnapshot = await getDocs(coursesCollection);
-  const courseCount = querySnapshot.size;
-  return courseCount;
-};
 //Obtenemos cantidad de Subscripciones Registradas
 export const countSubscriptions = async () => {
   const subsCollection = collection(db, collSubscription);
@@ -638,32 +652,6 @@ export async function getUserChilds(refer) {
   });
   return data;
 }
-
-export async function getUserCourses(id) {
-  let courses = [];
-  const q = query(collection(db, collRegUsr), where('idIUser', '==', id));
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    courses.push(doc.data());
-  });
-  return courses;
-}
-
-export const getUserDataObject = () => {
-  return new Promise((resolve, reject) => {
-    onAuthStateChanged(
-      authentication,
-      (user) => {
-        if (user) {
-          resolve(user);
-        } else {
-          resolve(null);
-        }
-      },
-      reject
-    );
-  });
-};
 //Message
 //Obtner Mensajes por Id Usuario
 export async function getMessageByUserId(id) {
@@ -798,4 +786,50 @@ export const createUserAditionalData = (uid, email) => {
     state: genConst.CONST_NOTIF_NL
   };
   createDocument(collNotifications, idNot, notifications);
+};
+//SAVE PAYMENT
+export const savePaymentRecord = (id, name, email, total, IVA, SUB) => {
+  const idPayment = generateId(10);
+  const obj = {
+    id: idPayment,
+    idUser: id,
+    nameUser: name,
+    emailUser: email,
+    total: total,
+    iva: IVA,
+    sub: SUB,
+    createAt: fullDate()
+  };
+  createDocument(collPayment, idPayment, obj);
+};
+//SAVE KHUSKA BENEFIT
+export const saveKhuskaBenefit = (id, name, email, total) => {
+  const idBenefit = generateId(10);
+  const obj = {
+    id: idBenefit,
+    idUser: id,
+    nameUser: name,
+    emailUser: email,
+    total: total,
+    createAt: fullDate()
+  };
+  createDocument(collKhuskaBenefit, idBenefit, obj);
+};
+//SAVE USER BENEFIT
+export const saveUserBenefit = (id, name, email, i, resid, resfullname, resemail, total) => {
+  const idBenefit = generateId(10);
+  const obj = {
+    id: idBenefit,
+    idUser: id,
+    nameUser: name,
+    emailUser: email,
+    idRefer: resid,
+    nameRefer: resfullname,
+    emailRefer: resemail,
+    total: total,
+    level: i + 1,
+    createAt: fullDate(),
+    state: genConst.CONST_BEN_PAI
+  };
+  createDocument(collUserBenefit, idBenefit, obj);
 };

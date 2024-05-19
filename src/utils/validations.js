@@ -46,6 +46,22 @@ export function endDateMonth() {
   return d + '/' + m + '/' + y;
 }
 
+export function endDateMonthFormat() {
+  var iniDate = new Date();
+  var priorDate = new Date().setDate(iniDate.getDate() + 30);
+  var endDate = new Date(priorDate);
+  var d = endDate.getDate();
+  var m = endDate.getMonth() + 1;
+  var y = endDate.getFullYear();
+  if (d < 10) {
+    d = '0' + d;
+  }
+  if (m < 10) {
+    m = '0' + m;
+  }
+  return y + '-' + m + '-' + d;
+}
+
 export function endDateYear() {
   var iniDate = new Date();
   var priorDate = new Date().setDate(iniDate.getDate() + 365);
@@ -60,6 +76,22 @@ export function endDateYear() {
     m = '0' + m;
   }
   return d + '/' + m + '/' + y;
+}
+
+export function endDateYearFormat() {
+  var iniDate = new Date();
+  var priorDate = new Date().setDate(iniDate.getDate() + 365);
+  var endDate = new Date(priorDate);
+  var d = endDate.getDate();
+  var m = endDate.getMonth() + 1;
+  var y = endDate.getFullYear();
+  if (d < 10) {
+    d = '0' + d;
+  }
+  if (m < 10) {
+    m = '0' + m;
+  }
+  return y + '-' + m + '-' + d;
 }
 
 export function endDateWithParam(days) {
@@ -120,6 +152,16 @@ export function shortDate() {
   return str;
 }
 
+export function shortDateSecondFormat() {
+  var date = new Date();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  month = (month < 10 ? '0' : '') + month;
+  day = (day < 10 ? '0' : '') + day;
+  var str = day + '-' + month + '-' + date.getFullYear();
+  return str;
+}
+
 export function shortDateFormat() {
   var date = new Date();
   var month = date.getMonth() + 1;
@@ -154,8 +196,8 @@ export const getCurrentHourFormatted = () => {
 };
 
 export const calcularDiferenciaFechas = (fecha1, fecha2) => {
-  const fechaInicio = new Date(fecha1);
-  const fechaFin = new Date(fecha2);
+  const fechaInicio = new Date(fecha1).getTime();
+  const fechaFin = new Date(fecha2).getTime();
   const diferenciaMilisegundos = fechaFin - fechaInicio;
   const diferenciaDias = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
   return diferenciaDias;

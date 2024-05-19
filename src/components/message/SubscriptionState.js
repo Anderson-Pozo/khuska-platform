@@ -47,12 +47,12 @@ const SubscreptionState = ({ message, submessage }) => {
                 mb: 0.45
               }}
               primary={
-                <Typography sx={{ fontSize: '1.255rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75, textAlign: 'center', color: '#FFF' }}>
+                <Typography sx={{ fontSize: '1rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75, textAlign: 'center', color: '#FFF' }}>
                   {message}
                 </Typography>
               }
               secondary={
-                <Typography sx={{ fontSize: '0.975rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75, textAlign: 'center', color: '#FFF' }}>
+                <Typography sx={{ fontSize: '0.9rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75, textAlign: 'center', color: '#FFF' }}>
                   {submessage}
                 </Typography>
               }
@@ -61,7 +61,7 @@ const SubscreptionState = ({ message, submessage }) => {
           <center>
             <Typography component={Link} to="/app/subscription">
               <Button variant="outlined" size="large">
-                <Typography sx={{ fontSize: '0.975rem', fontWeight: 500, textAlign: 'center', color: '#FFF' }}>EMPEZAR</Typography>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, textAlign: 'center', color: '#FFF' }}>EMPEZAR</Typography>
               </Button>
             </Typography>
           </center>

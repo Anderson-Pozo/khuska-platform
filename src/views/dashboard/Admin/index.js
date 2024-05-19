@@ -4,7 +4,14 @@ import { Grid } from '@mui/material';
 // data
 import { gridSpacing } from 'store/constant';
 //Firebase
-import { countActiveSubscriptions, countAdminUser, countBusiness, countUser, getTotalBenefit } from 'config/firebaseEvents';
+import {
+  countActiveSubscriptions,
+  countAdminUser,
+  countBusiness,
+  countUser,
+  getTotalBenefit,
+  getTotalPayments
+} from 'config/firebaseEvents';
 //Components
 import TotalCard from 'components/cards/TotalCard';
 import TotalYellowCard from 'components/cards/TotalYellowCard';
@@ -18,7 +25,8 @@ const Dashboard = () => {
   const [totalAdminUsers, setTotalAdminUsers] = useState(0);
   const [totalSubs, setTotalSubs] = useState(0);
   const [totalBusiness, setTotalBusiness] = useState(0);
-  const [totalIncomes, setTotalIncomes] = useState(0);
+  const [totalPayments, setTotalPayments] = useState(0);
+  const [totalBenefit, setTotalBenefit] = useState(0);
 
   useEffect(() => {
     countUser().then((count) => {
@@ -33,8 +41,11 @@ const Dashboard = () => {
     countBusiness().then((count) => {
       setTotalBusiness(Number.parseInt(count));
     });
+    getTotalPayments().then((res) => {
+      setTotalPayments(Number.parseFloat(res).toFixed(2));
+    });
     getTotalBenefit().then((res) => {
-      setTotalIncomes(Number.parseFloat(res).toFixed(2));
+      setTotalBenefit(Number.parseFloat(res).toFixed(2));
     });
   }, []);
 
@@ -55,16 +66,16 @@ const Dashboard = () => {
             <TotalYellowCard total={totalBusiness} detail="Negocios" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningCard total={totalIncomes} detail="Ingresos" />
+            <EarningCard total={totalPayments} detail="Ingresos" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningBlueCard total={totalIncomes} detail="Beneficio" />
+            <EarningBlueCard total={totalBenefit} detail="Beneficio" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningGreenCard total={totalIncomes} detail="Pagado" />
+            <EarningGreenCard total={0} detail="Pagado" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningRedCard total={totalIncomes} detail="Pendiente" />
+            <EarningRedCard total={0} detail="Pendiente" />
           </Grid>
         </Grid>
       </Grid>
