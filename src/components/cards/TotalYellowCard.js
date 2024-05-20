@@ -52,7 +52,7 @@ const TotalYellowCard = ({ total, detail }) => {
                 sx={{
                   ...theme.typography.commonAvatar,
                   ...theme.typography.largeAvatar,
-                  backgroundColor: theme.palette.primary[800],
+                  backgroundColor: theme.palette.primary.dark,
                   color: theme.palette.warning.dark
                 }}
               >

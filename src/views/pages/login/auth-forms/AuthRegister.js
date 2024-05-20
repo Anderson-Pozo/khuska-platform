@@ -28,6 +28,7 @@ import {
 import { genConst, process } from 'store/constant';
 import { generateId } from 'utils/idGenerator';
 import { collLog, collUsers } from 'store/collections';
+import { sendWelcomeEmail } from 'utils/sendEmail';
 
 const AuthRegister = () => {
   let navigate = useNavigate();
@@ -141,6 +142,7 @@ const AuthRegister = () => {
         });
         createUserAditionalData(credentials.user.uid, mail);
         createLogRecord(collLog, process.LOG_USER_REGISTER, userObject);
+        sendWelcomeEmail(mail, name + ' ' + lastname);
         handleCleanFields();
         toast.success('Usuario registrado correctamente!.', { position: toast.POSITION.TOP_RIGHT });
         setTimeout(() => {

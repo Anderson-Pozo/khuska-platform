@@ -17,7 +17,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   position: 'relative'
 }));
 
-const TitleButton = ({ message, submessage, avatar, route }) => {
+const TitleButton = ({ message, submessage, avatar }) => {
   let navigate = useNavigate();
   return (
     <CardWrapper border={false} content={false}>
@@ -25,7 +25,7 @@ const TitleButton = ({ message, submessage, avatar, route }) => {
         <List sx={{ py: 0 }}>
           <ListItem alignItems="center" disableGutters sx={{ py: 0 }}>
             <ListItemAvatar>
-              <Button onClick={() => navigate(route)}>
+              <Button onClick={() => navigate('/main/users')}>
                 <IconArrowLeft color="#FFF" size={30} />
               </Button>
             </ListItemAvatar>
@@ -72,8 +72,7 @@ const TitleButton = ({ message, submessage, avatar, route }) => {
 TitleButton.propTypes = {
   message: PropTypes.string,
   submessage: PropTypes.string,
-  avatar: PropTypes.string,
-  route: PropTypes.string
+  avatar: PropTypes.string
 };
 
 export default TitleButton;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -34,21 +34,44 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import CircularProgress from '@mui/material/CircularProgress';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
-import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconNetwork, IconUserCircle } from '@tabler/icons';
+import {
+  IconPlus,
+  IconDeviceFloppy,
+  IconTrash,
+  IconEdit,
+  IconCircleX,
+  IconPencil,
+  IconNetwork,
+  IconUserCircle,
+  IconCheck,
+  IconCalendar
+} from '@tabler/icons';
 //Firebase Events
-import { createDocument, createLogRecord, deleteDocument, getDad, getUserDataSubscription, updateDocument } from 'config/firebaseEvents';
+import {
+  createDocument,
+  createLogRecord,
+  deleteDocument,
+  getDad,
+  getUserDataSubscription,
+  getUserReferalDad,
+  getUsersList,
+  saveKhuskaBenefit,
+  savePaymentRecord,
+  saveUserBenefit,
+  updateDocument
+} from 'config/firebaseEvents';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { genConst, process } from 'store/constant';
-import { collKhuskaBenefit, collLog, collSubscription, collUserBenefit, collUsers } from 'store/collections';
+import { collLog, collSubscription, collUsers } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
 //Utils
-import { endDateWithParam, fullDate, initDate } from 'utils/validations';
+import { endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
 import { generateId } from 'utils/idGenerator';
 import { searchingData } from 'utils/search';
-import { useGetUsers } from 'hooks/useGetUsers';
+import defaultImage from 'assets/images/addImgB.png';
 
 let globalTotal = 0;
 
@@ -87,6 +110,7 @@ export default function Users() {
   const theme = useTheme();
   const [openCreate, setOpenCreate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openSub, setOpenSub] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState(null);
   const [expanded, setExpanded] = useState('panel1');
@@ -95,11 +119,22 @@ export default function Users() {
   const [lastName, setLastName] = useState(null);
   const [email, setEMail] = useState(null);
   const [code, setCode] = useState(null);
-  const [refer, setRefer] = useState(null);
+  //const [refer, setRefer] = useState(null);
   const [profile, setProfile] = useState(null);
   const [state, setState] = useState(null);
   const [createAt, setCreateAt] = useState(null);
   const [updateAt, setUpdateAt] = useState(null);
+  const [type, setType] = useState(0);
+  //TOTAL PARAMS
+  const [total, setTotal] = useState(0);
+  const [iva, setIva] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  //DATE PARAMS
+  const [startDate] = useState(initDate());
+  const [endDate, setEndDate] = useState(null);
+  //VOUCHER
+  const [picture, setPicture] = useState({ preview: '', raw: '' });
+
   const [subData, setSubData] = useState({
     cancelData: null,
     description: null,
@@ -114,8 +149,17 @@ export default function Users() {
   const [search, setSearch] = useState('');
   const [openLoader, setOpenLoader] = useState(false);
 
-  //Hook
-  const usersList = useGetUsers();
+  const [usersList, setUsersList] = useState([]);
+
+  useEffect(() => {
+    reloadData();
+  }, []);
+
+  const reloadData = () => {
+    getUsersList().then((data) => {
+      setUsersList(data);
+    });
+  };
 
   const handleOpenCreate = () => {
     setOpenCreate(true);
@@ -127,8 +171,17 @@ export default function Users() {
   const handleOpenDelete = () => {
     setOpenDelete(true);
   };
+
   const handleCloseDelete = () => {
     setOpenDelete(false);
+  };
+
+  const handleOpenSub = () => {
+    setOpenSub(true);
+  };
+
+  const handleCloseSub = () => {
+    setOpenSub(false);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -138,10 +191,6 @@ export default function Users() {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
-  };
-
-  const reloadData = () => {
-    window.location.reload();
   };
 
   const handleChange = (panel) => (event, newExpanded) => {
@@ -229,227 +278,103 @@ export default function Users() {
     }, 2000);
   };
 
-  const handleMonthSub = () => {
+  const handleActiveSubscription = () => {
     setOpenLoader(true);
-    const subObj = {
-      state: genConst.CONST_STATE_AC,
-      startDate: fullDate(),
-      endDate: endDateWithParam(genConst.CONST_MONTH_DAYS),
-      price: genConst.CONST_MONTH_VALUE,
-      description: 'Estandar (30 días)',
-      totalDays: genConst.CONST_MONTH_DAYS
-    };
-    const usrObj = {
-      subState: genConst.CONST_STATE_AC,
-      state: genConst.CONST_STATE_AC
-    };
-
-    updateDocument(collSubscription, id, subObj);
-    updateDocument(collUsers, id, usrObj);
-    setTimeout(function () {
-      setOpenLoader(false);
-      //sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
-      //history.push('/dashboard');
-      toast.success('Suscripción activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-    }, 2000);
-  };
-
-  const handleYearSub = () => {
-    setOpenLoader(true);
-    const subObj = {
-      state: genConst.CONST_STATE_AC,
-      startDate: fullDate(),
-      endDate: endDateWithParam(genConst.CONST_YEAR_DAYS),
-      price: genConst.CONST_YEAR_VALUE,
-      description: 'Estandar (365 días)',
-      totalDays: genConst.CONST_YEAR_DAYS
-    };
-    const usrObj = {
-      subState: genConst.CONST_STATE_AC
-    };
-
-    updateDocument(collSubscription, id, subObj);
-    updateDocument(collUsers, id, usrObj);
-    setTimeout(function () {
-      setOpenLoader(false);
-      //sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
-      toast.success('Suscripción activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-    }, 2000);
-  };
-
-  const handleActiveMonth = async () => {
-    setOpenLoader(true);
-    globalTotal = genConst.CONST_MONTH_VALUE;
-    let total = genConst.CONST_MONTH_VALUE;
-    let IVA = total * genConst.CONST_IVA;
-    let SUB = total - IVA;
-    console.log(total, SUB, IVA);
-    let responseService = genConst.CONST_200;
-    let referCode;
-    try {
-      if (responseService === 200) {
-        referCode = refer;
-        if (refer == null) {
-          //saveKhuskaBenefit(total id, email, initDate());
-        } else {
-          for (let i = 0; i < 4; i++) {
-            //PAGAR
-            await getDad(referCode).then((res) => {
-              referCode = res.refer;
-              generatePaymentDistribution(total, i, res.id, res.email);
-              if (res.refer == null) {
-                i = 4;
-              }
-            });
-          }
-        }
-        console.log('GG ' + globalTotal);
-        //SAVE KHUSKA BENEFIT
-        saveKhuskaBenefit(globalTotal, id, email, initDate());
-        //GENERATE KHUSKA BILL
-        //generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
-        //GENERATE PAYMENT
-        //generatePaymentData(userId, total, 'M', 1, date1); //1 = TCR
-
-        setTimeout(function () {
-          setOpenLoader(false);
-          //history.push('/dashboard');
-          toast.success('Suscripción ha sido activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-        }, 6000);
+    getUserReferalDad(id).then((code) => {
+      if (code !== null) {
+        subscribeUser(id, name + ' ' + lastName, email, code, type, 200);
       } else {
-        if (responseService === 400) {
-          //SERVICIO FUERA DE LINEA
-          setOpenLoader(false);
-        } else if (responseService === 500) {
-          //TARJETA NO VALIDA
-          setOpenLoader(false);
-        } else {
-          //INTENTE MAS TARDE
-          setOpenLoader(false);
-        }
+        subscribeUser(id, name + ' ' + lastName, email, code, type, 200);
       }
-    } catch (error) {
-      setOpenLoader(false);
-    }
+    });
   };
 
-  const handleActiveYear = async () => {
-    setOpenLoader(true);
-    globalTotal = genConst.CONST_YEAR_VALUE;
-    let total = genConst.CONST_YEAR_VALUE;
-    let IVA = total * genConst.CONST_IVA;
-    let SUB = total - IVA;
-    console.log(total, SUB, IVA);
-    let responseService = genConst.CONST_200;
-    let referCode;
-    try {
-      if (responseService === 200) {
-        referCode = refer;
-        if (refer == null) {
-          saveKhuskaBenefit(total, id, email, initDate());
-        } else {
-          for (let i = 0; i < 4; i++) {
-            //PAGAR
-            await getDad(referCode).then((res) => {
-              referCode = res.refer;
-              generatePaymentDistribution(total, i, res.id, res.email);
-              if (res.refer == null) {
-                i = 4;
-              }
-            });
-          }
-        }
-        console.log('GG ' + globalTotal);
-        //SAVE KHUSKA BENEFIT
-        saveKhuskaBenefit(globalTotal, id, email, initDate());
-        //GENERATE KHUSKA BILL
-        //generateKhuskaBill(userId, SUB, IVA, total, userName, userEmail);
-        //GENERATE PAYMENT
-        //generatePaymentData(userId, total, 'M', 1, date1); //1 = TCR
-
-        setTimeout(function () {
-          setOpenLoader(false);
-          //history.push('/dashboard');
-          toast.success('Suscripción ha sido activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-        }, 5000);
-      } else {
-        if (responseService === 400) {
-          //SERVICIO FUERA DE LINEA
-          setOpenLoader(false);
-        } else if (responseService === 500) {
-          //TARJETA NO VALIDA
-          setOpenLoader(false);
-        } else {
-          //INTENTE MAS TARDE
-          setOpenLoader(false);
-        }
-      }
-    } catch (error) {
-      setOpenLoader(false);
-    }
-  };
-
-  //SAVE KHUSKA BENEFIT
-  const saveKhuskaBenefit = (value1, value2, value3, value4) => {
-    const idBenefit = generateId(10);
-    const obj = {
-      id: idBenefit,
-      total: value1,
-      idUser: value2,
-      email: value3,
-      createAt: value4,
-      name: name,
-      lastName: lastName
-    };
-    createDocument(collKhuskaBenefit, idBenefit, obj);
-  };
-
-  const generatePaymentDistribution = (value1, value2, value3, value4) => {
-    //SE ENCARGA DE DISTRIBUIR LOS BENEFICIOS A LOS 4 MIEMBROS DE KHUSKA
-    var t = 0;
-    console.log('FLUJO DISTRIBUCION BENEFICIO RED PERSONAL: ' + globalTotal);
-    if (value2 === 0) {
-      //LEVEL 1
-      t = value1 * genConst.CONST_LVL1;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(t, value2, value3, value4);
-    } else if (value2 === 1) {
-      //LEVEL 2
-      t = value1 * genConst.CONST_LVL2;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(t, value2, value3, value4);
-    } else if (value2 === 2) {
-      //LEVEL 3
-      t = value1 * genConst.CONST_LVL3;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(t, value2, value3, value4);
-    } else if (value2 === 3) {
-      //LEVEL 4
-      t = value1 * genConst.CONST_LVL4;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(t, value2, value3, value4);
-    }
-  };
-
-  //SAVE USER BENFIT
-  const saveUserBenefit = (value1, value2, value3, value4) => {
-    console.log('FLUJO GENERAR BENEFICIO USUARIO');
-    const idTran = generateId(8);
-    const obj = {
-      total: value1,
-      level: value2 + 1,
-      idRefer: value3,
-      emailRefer: value4,
-      name: name,
-      lastName: lastName,
-      email: email,
+  const subscribeUser = (id, userName, userEmail, ref, type, result) => {
+    const subObject = {
       idUser: id,
-      id: idTran,
+      nameUser: userName,
+      emailUser: userEmail,
+      refCode: ref ? ref : null,
+      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
+      startDate: shortDateFormat(),
+      endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
       date: fullDate(),
-      state: genConst.CONST_BEN_PEN
+      dateFormat: fullDateFormat(),
+      price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,
+      description: type == 1 ? 'Estandar (30 días)' : 'Plus (365 días)',
+      totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : genConst.CONST_YEAR_DAYS
     };
-    createDocument(collUserBenefit, idTran, obj);
-    //sendBenefitEmail(value4, nameReferal, userEmail, value1);
+    const usrObject = {
+      subState: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
+      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN
+    };
+    if (result === 200) {
+      createDocument(collSubscription, id, subObject);
+      updateDocument(collUsers, id, usrObject);
+      paymentDistribution(id, userName, userEmail, ref);
+    } else {
+      toast.error('Algo salio mal!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+      setOpenLoader(false);
+    }
+  };
+
+  const paymentDistribution = async (id, name, email, ref) => {
+    globalTotal = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
+    let total = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
+    let IVA = Number.parseFloat(total).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
+    let SUB = Number.parseFloat(total).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
+    let referCode;
+    if (ref === null) {
+      savePaymentRecord(id, name, email, total, IVA, SUB);
+      saveKhuskaBenefit(id, name, email, total);
+    } else {
+      referCode = ref;
+      for (let i = 0; i < 4; i++) {
+        //PAGAR BENEFICIOS
+        await getDad(referCode).then((res) => {
+          referCode = res.refer;
+          generatePaymentDistribution(id, name, email, i, res.id, res.fullName, res.email, total);
+          if (res.refer === null) {
+            i = 4;
+          }
+        });
+      }
+      savePaymentRecord(id, name, email, total, IVA, SUB);
+      saveKhuskaBenefit(id, name, email, globalTotal);
+    }
+    setTimeout(function () {
+      setOpenLoader(false);
+      setOpenSub(false);
+      setOpenCreate(false);
+      reloadData();
+      toast.success('Suscripción ha sido activada!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
+      navigate('/main/dashboard');
+    }, 4000);
+  };
+
+  const generatePaymentDistribution = (id, name, email, i, resid, resfullname, resemail, total) => {
+    var t = 0;
+    if (i === 0) {
+      //LEVEL 1
+      t = total * genConst.CONST_LVL1;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+    } else if (i === 1) {
+      //LEVEL 2
+      t = total * genConst.CONST_LVL2;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+    } else if (i === 2) {
+      //LEVEL 3
+      t = total * genConst.CONST_LVL3;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+    } else if (i === 3) {
+      //LEVEL 4
+      t = total * genConst.CONST_LVL4;
+      globalTotal = globalTotal - t;
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+    }
   };
 
   const cleanData = () => {
@@ -459,6 +384,27 @@ export default function Users() {
     setEMail('');
     setProfile('');
     setState('');
+    setEndDate('');
+    setTotal(0);
+    setIva(0);
+    setSubtotal(0);
+    setType(0);
+    setPicture({ preview: '', raw: '' });
+  };
+
+  //console.log(refer);
+  const handleChangeVoucher = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture({
+          preview: img.src,
+          raw: raw
+        });
+      };
+    }
   };
 
   return (
@@ -554,10 +500,11 @@ export default function Users() {
                               setId(r.id);
                               setCode(r.ownReferal);
                               setName(r.name);
+                              setLastName(r.lastName);
                               setEMail(r.email);
                               navigate({
                                 pathname: '/main/network-users',
-                                search: `?code=${r.ownReferal}`
+                                search: `?code=${r.ownReferal}&name=${r.name + ' ' + r.lastName}`
                               });
                             }}
                           >
@@ -572,7 +519,7 @@ export default function Users() {
                               setLastName(r.lastName);
                               setEMail(r.email);
                               setCode(r.ownReferal);
-                              setRefer(r.refer);
+                              //setRefer(r.refer);
                               setProfile(r.profile);
                               setState(r.state);
                               setCreateAt(r.createAt);
@@ -673,7 +620,7 @@ export default function Users() {
                                 />
                               </FormControl>
                             </Grid>
-                            <Grid item lg={12} md={12} sm={12} xs={12}>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
                               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                                 <InputLabel htmlFor="email">
                                   <span>*</span> {inputLabels.labelEmail}
@@ -685,6 +632,23 @@ export default function Users() {
                                   value={email || ''}
                                   inputProps={{}}
                                   onChange={(ev) => setEMail(ev.target.value)}
+                                  readOnly
+                                />
+                              </FormControl>
+                            </Grid>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                <InputLabel htmlFor="code">
+                                  <span>*</span> {'Código'}
+                                </InputLabel>
+                                <OutlinedInput
+                                  id={'code'}
+                                  type="number"
+                                  name={'code'}
+                                  value={code || ''}
+                                  inputProps={{}}
+                                  onChange={(ev) => setCode(ev.target.value)}
+                                  readOnly
                                 />
                               </FormControl>
                             </Grid>
@@ -717,6 +681,42 @@ export default function Users() {
                                   <MenuItem value={genConst.CONST_STA_INACT}>{genConst.CONST_STA_INACT_TXT}</MenuItem>
                                 </Select>
                               </FormControl>
+                            </Grid>
+                            <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
+                              <center>
+                                <ButtonGroup>
+                                  {!isEdit ? (
+                                    <Button
+                                      variant="contained"
+                                      startIcon={<IconDeviceFloppy />}
+                                      size="large"
+                                      style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
+                                      onClick={handleCreateUser}
+                                    >
+                                      {titles.buttonCreate}
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="contained"
+                                      startIcon={<IconPencil />}
+                                      size="large"
+                                      style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
+                                      onClick={handleEditUser}
+                                    >
+                                      {titles.buttonUpdate}
+                                    </Button>
+                                  )}
+                                  <Button
+                                    variant="contained"
+                                    startIcon={<IconCircleX />}
+                                    size="large"
+                                    style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                                    onClick={handleCloseCreate}
+                                  >
+                                    {titles.buttonCancel}
+                                  </Button>
+                                </ButtonGroup>
+                              </center>
                             </Grid>
                           </Grid>
                         </Grid>
@@ -755,7 +755,7 @@ export default function Users() {
                                 <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
                                   <FormControl fullWidth>
                                     <InputLabel>
-                                      <strong style={{ fontSize: 16 }}>Suscripción</strong>
+                                      <strong style={{ fontSize: 16 }}>Suscripción Actual</strong>
                                     </InputLabel>
                                   </FormControl>
                                   {subData.state == genConst.CONST_STATE_AC ? (
@@ -794,21 +794,37 @@ export default function Users() {
                             ) : (
                               <></>
                             )}
-                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                            <Grid item lg={12} md={12} sm={12} xs={12}>
                               <center>
-                                <h5>Distribución Beneficios en Red personal</h5>
+                                <h5>Seleccione el periodo de suscripción</h5>
                                 <ButtonGroup variant="outlined" aria-label="outlined button group">
-                                  <Button onClick={handleActiveMonth}>Mensual</Button>
-                                  <Button onClick={handleActiveYear}>Anual</Button>
-                                </ButtonGroup>
-                              </center>
-                            </Grid>
-                            <Grid item lg={6} md={6} sm={6} xs={6}>
-                              <center>
-                                <h5>Acciones estado de suscripción</h5>
-                                <ButtonGroup variant="outlined" aria-label="outlined button group">
-                                  <Button onClick={handleMonthSub}>Mensual</Button>
-                                  <Button onClick={handleYearSub}>Anual</Button>
+                                  <Button
+                                    startIcon={<IconCalendar />}
+                                    onClick={() => {
+                                      setType(1);
+                                      let subtotal = Math.round((genConst.CONST_MONTH_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
+                                      let ivaValue = genConst.CONST_MONTH_VALUE - subtotal;
+                                      let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
+                                      setIva(ivaRound);
+                                      setSubtotal(subtotal);
+                                      setTotal(genConst.CONST_MONTH_VALUE);
+                                      setEndDate(endDateWithParam(genConst.CONST_MONTH_DAYS));
+                                      handleOpenSub();
+                                    }}
+                                    variant="contained"
+                                  >
+                                    MES
+                                  </Button>
+                                  <Button
+                                    endIcon={<IconCalendar />}
+                                    onClick={() => {
+                                      setType(2);
+                                      handleOpenSub();
+                                    }}
+                                    variant="outlined"
+                                  >
+                                    AÑO
+                                  </Button>
                                 </ButtonGroup>
                               </center>
                             </Grid>
@@ -818,42 +834,6 @@ export default function Users() {
                     </AccordionDetails>
                   </Accordion>
                 </div>
-                <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
-                  <center>
-                    <ButtonGroup>
-                      {!isEdit ? (
-                        <Button
-                          variant="contained"
-                          startIcon={<IconDeviceFloppy />}
-                          size="large"
-                          style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
-                          onClick={handleCreateUser}
-                        >
-                          {titles.buttonCreate}
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          startIcon={<IconPencil />}
-                          size="large"
-                          style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                          onClick={handleEditUser}
-                        >
-                          {titles.buttonUpdate}
-                        </Button>
-                      )}
-                      <Button
-                        variant="contained"
-                        startIcon={<IconCircleX />}
-                        size="large"
-                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
-                        onClick={handleCloseCreate}
-                      >
-                        {titles.buttonCancel}
-                      </Button>
-                    </ButtonGroup>
-                  </center>
-                </Grid>
               </Grid>
             </Grid>
           </Grid>
@@ -877,7 +857,7 @@ export default function Users() {
                       variant="contained"
                       startIcon={<IconTrash />}
                       size="large"
-                      style={{ margin: 5, backgroundColor: genConst.CONST_DELETE_COLOR }}
+                      style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                       onClick={handleDeleteUser}
                     >
                       {titles.buttonDelete}
@@ -886,7 +866,7 @@ export default function Users() {
                       variant="contained"
                       startIcon={<IconCircleX />}
                       size="large"
-                      style={{ margin: 5, backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                      style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
                       onClick={handleCloseDelete}
                     >
                       {titles.buttonCancel}
@@ -898,6 +878,114 @@ export default function Users() {
           </Grid>
         </Box>
       </Modal>
+
+      <Modal open={openSub} onClose={handleCloseSub} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
+        <Box sx={uiStyles.modalStylesDelete}>
+          <Typography id="modal-modal-title" variant="h2" component="h2" align="center">
+            {titles.titleSub}
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 14 }}>
+            {titles.titleSubModal} <strong>{type == 1 ? ' MES' : ' AÑO'}</strong> al usuario <strong>{name + ' ' + lastName}</strong>?
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 10, fontSize: 14 }}>
+            Fecha Inicio: <strong>{startDate}</strong>
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+            Fecha Fin: <strong>{endDate}</strong>
+          </Typography>
+          <Grid container style={{ marginTop: 10 }}>
+            <Grid item xs={12}>
+              <Grid container spacing={0}>
+                <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+                    SUBTOTAL
+                  </Typography>
+                </Grid>
+                <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+                    IVA
+                  </Typography>
+                </Grid>
+                <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+                    TOTAL
+                  </Typography>
+                </Grid>
+                <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+                    $ <strong>{Number.parseFloat(subtotal).toFixed(2)}</strong>
+                  </Typography>
+                </Grid>
+                <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+                    $ <strong>{Number.parseFloat(iva).toFixed(2)}</strong>
+                  </Typography>
+                </Grid>
+                <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 0, fontSize: 14 }}>
+                    $ <strong>{Number.parseFloat(total).toFixed(2)}</strong>
+                  </Typography>
+                </Grid>
+                <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 1 }}>
+                  <center>
+                    <div
+                      style={{
+                        border: 'dashed gray',
+                        borderRadius: 10,
+                        borderWidth: 0.2,
+                        width: 300,
+                        height: 160,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <center>
+                        <input type="file" id="picture" style={{ display: 'none' }} onChange={handleChangeVoucher} accept="image/*" />
+                        <div htmlFor="picture" id="picture">
+                          <label htmlFor="picture">
+                            <img
+                              src={picture.preview || defaultImage}
+                              alt="Comprobante"
+                              width={picture.preview ? 170 : 80}
+                              height={picture.preview ? 150 : 80}
+                              style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                            />
+                            {picture.preview ? '' : <p style={{ fontSize: 13, color: '#3a3b3c', marginTop: 30 }}>Adjuntar comprobante</p>}
+                          </label>
+                        </div>
+                      </center>
+                    </div>
+                  </center>
+                </Grid>
+                <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
+                  <center>
+                    <ButtonGroup>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconCheck />}
+                        size="large"
+                        style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
+                        onClick={handleActiveSubscription}
+                      >
+                        {titles.buttonSub}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconCircleX />}
+                        size="large"
+                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                        onClick={handleCloseSub}
+                      >
+                        {titles.buttonCancel}
+                      </Button>
+                    </ButtonGroup>
+                  </center>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Modal>
+
       <Modal open={openLoader} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <center>
           <Box sx={uiStyles.modalStylesLoader}>

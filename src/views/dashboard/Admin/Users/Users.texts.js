@@ -5,6 +5,8 @@ export const titles = {
   successUpdate: 'Usuario actualizado correctamente!.',
   successDelete: 'Usuario inactivado correctamente!.',
   titleDeleteModal: 'Seguro que desea eliminar al usuario: ',
+  titleSub: 'Activar Suscripción',
+  titleSubModal: 'Seguro que desea activar una suscripción por un ',
   titleCreate: 'Crear Usuario',
   titleUpdate: 'Editar Usuario',
   titleDelete: 'Inactivar Usuario',
@@ -26,14 +28,15 @@ export const titles = {
   buttonCreate: 'Crear',
   buttonUpdate: 'Actualizar',
   buttonDelete: 'Inactivar',
+  buttonSub: 'Activar',
   buttonCancel: 'Cancelar',
   loading: 'Cargando...',
   level1: 'Nivel 1',
   level2: 'Nivel 2',
   level3: 'Nivel 3',
   level4: 'Nivel 4',
-  active: 'MIEMBRO',
-  noActive: 'NO MIEMBRO',
+  active: 'ACTIVO',
+  noActive: 'INACTIVO',
   altImage: 'Avatar user'
 };
 

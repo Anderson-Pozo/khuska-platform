@@ -1,15 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 //Firebase
-import { authentication, db } from 'config/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { db } from 'config/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { collUsers } from 'store/collections';
 import { gridSpacing } from 'store/constant';
 import {
+  AppBar,
   Box,
   Button,
+  Container,
   CircularProgress,
   Grid,
   Modal,
@@ -19,18 +20,20 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  Toolbar
 } from '@mui/material';
 import UsersNetworkChild from './UsersNetworkChild';
 import { titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
-import TitleButton from 'components/message/TitleButton';
-import { useGetUserNameByCode } from 'hooks/useGetUserByCode';
+import { getUserChilds } from 'config/firebaseEvents';
+import { IconArrowLeft, IconNetwork } from '@tabler/icons';
 
 const UsersNetwork = () => {
+  let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const code = searchParams.get('code');
-  const name = useGetUserNameByCode(code);
+  const name = searchParams.get('name');
   //Lists
   const [childsList, setChildsList] = useState([]);
   const [childsListL2, setChildsListL2] = useState([]);
@@ -44,36 +47,19 @@ const UsersNetwork = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    onAuthStateChanged(authentication, async (user) => {
-      if (user) {
-        setOpen(true);
-        const childs = [];
-        const q = query(collection(db, collUsers), where('refer', '==', code));
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.size > 0) {
-          querySnapshot.forEach((doc) => {
-            childs.push(doc.data());
-          });
-          setChildsList(childs);
-          setChildsListL2([]);
-          setChildsListL3([]);
-          setChildsListL4([]);
-          setShowL2(false);
-          setShowL3(false);
-          setShowL4(false);
-        } else {
-          setChildsListL2([]);
-          setChildsListL3([]);
-          setChildsListL4([]);
-          setShowL2(false);
-          setShowL3(false);
-          setShowL4(false);
-        }
-      }
-      setTimeout(() => {
-        setOpen(false);
-      }, 1000);
+    setOpen(true);
+    getUserChilds(Number.parseInt(code)).then((data) => {
+      setChildsList(data);
+      setChildsListL2([]);
+      setChildsListL3([]);
+      setChildsListL4([]);
+      setShowL2(false);
+      setShowL3(false);
+      setShowL4(false);
     });
+    setTimeout(() => {
+      setOpen(false);
+    }, 1000);
   }, [code]);
 
   const childsLevel2 = async (code) => {
@@ -134,7 +120,16 @@ const UsersNetwork = () => {
   return (
     <div>
       <>
-        <TitleButton message={titles.title} submessage={name} avatar={''} route={'/main/users'} />
+        <AppBar position="static" style={uiStyles.appbar}>
+          <Container maxWidth="xl" style={uiStyles.container}>
+            <Toolbar disableGutters>
+              <IconArrowLeft color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} onClick={() => navigate('/main/users')} />
+              <IconNetwork color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
+              <strong>{titles.title}: </strong>
+              <span style={{ marginLeft: 10 }}>{name}</span>
+            </Toolbar>
+          </Container>
+        </AppBar>
         <Box>
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12}>

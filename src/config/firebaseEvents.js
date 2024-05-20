@@ -27,7 +27,7 @@ import {
   collUsrNoti,
   collVoucher
 } from 'store/collections';
-import { genConst } from 'store/constant';
+import { genConst, process } from 'store/constant';
 import { labels } from 'store/labels';
 import { generateId } from 'utils/idGenerator';
 import { fullDate, generateDate, shortDate } from 'utils/validations';
@@ -804,6 +804,7 @@ export const savePaymentRecord = (id, name, email, total, IVA, SUB) => {
     createAt: fullDate()
   };
   createDocument(collPayment, idPayment, obj);
+  createLogRecord(collLog, process.LOG_CREATE_TRAN, obj);
 };
 //SAVE KHUSKA BENEFIT
 export const saveKhuskaBenefit = (id, name, email, total) => {
@@ -832,7 +833,7 @@ export const saveUserBenefit = (id, name, email, i, resid, resfullname, resemail
     total: total,
     level: i + 1,
     createAt: fullDate(),
-    state: genConst.CONST_BEN_PAI
+    state: genConst.CONST_BEN_PEN
   };
   createDocument(collUserBenefit, idBenefit, obj);
 };

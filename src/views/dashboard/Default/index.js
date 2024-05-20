@@ -23,6 +23,7 @@ import TotalBusiness from './Main/TotalBusiness';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { collSubscription, collUsers } from 'store/collections';
+import { sendWelcomeEmail } from 'utils/sendEmail';
 
 const Dashboard = () => {
   const [isLoading, setLoading] = useState(true);
@@ -36,6 +37,7 @@ const Dashboard = () => {
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
+        sendWelcomeEmail(user.email, user.displayName);
         getUserSubscription(user.uid).then((st) => {
           setState(st);
         });
