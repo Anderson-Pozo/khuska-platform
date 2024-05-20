@@ -30,28 +30,23 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Settings.styles';
-
 import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconSettings } from '@tabler/icons';
-
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 //Collections
-import { collSettings } from 'store/collections';
+import { collLog, collSettings } from 'store/collections';
 import * as Msg from 'store/message';
 import * as LogMsg from 'store/logsMessages';
 import { generateId } from 'utils/idGenerator';
 import { titles, inputLabels } from './Settings.texts';
-
 //Utils
 import { fullDate } from 'utils/validations';
-import { createDocument, deleteDocument, updateDocument, createLogRecord, getDocuments } from 'config/firebaseEvents';
-
+import { createDocument, deleteDocument, updateDocument, getDocuments, createLogRecord } from 'config/firebaseEvents';
 //types array
 import { types } from 'store/typesParam';
 import MessageDark from 'components/message/MessageDark';
-import { ctaAccount } from 'store/constant';
+import { ctaAccount, genConst, process } from 'store/constant';
 
 function searchingData(search) {
   return function (x) {
@@ -171,7 +166,7 @@ export default function Settings() {
         updateAt: null
       };
       createDocument(collSettings, ide, obj);
-      createLogRecord({ details: LogMsg.logsettcre, createAt: fullDate(), object: obj });
+      createLogRecord(collLog, process.LOG_CREATE_PARAM, obj);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
@@ -198,7 +193,7 @@ export default function Settings() {
         updateAt: fullDate()
       };
       updateDocument(collSettings, id, obj);
-      createLogRecord({ details: LogMsg.logsettupd, createAt: fullDate(), object: obj });
+      createLogRecord(collLog, process.LOG_EDIT_PARAM, obj);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
@@ -227,7 +222,7 @@ export default function Settings() {
       updateAt: updateAt
     };
     deleteDocument(collSettings, id, obj);
-    createLogRecord({ details: LogMsg.logsettdel, createAt: fullDate(), object: obj });
+    createLogRecord(collLog, process.LOG_DELETE_PARAM, obj);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);
@@ -374,7 +369,7 @@ export default function Settings() {
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
                           <Button
-                            style={uiStyles.editButton}
+                            style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
                             onClick={() => {
                               setId(r.id);
                               setTitle(titles.modalEdit);
@@ -390,7 +385,7 @@ export default function Settings() {
                             <IconEdit />
                           </Button>
                           <Button
-                            style={uiStyles.deleteButton}
+                            style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                             onClick={() => {
                               setId(r.id);
                               setType(r.type);

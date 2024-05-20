@@ -18,10 +18,16 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { fullDate, shortDate, shortDateFormat, validateEmail } from 'utils/validations';
 import { isEmpty, size } from 'lodash';
-import { createDocument, createUserAditionalData, isExistUserReferalCode, isExistUserReferalEmail } from 'config/firebaseEvents';
-import { genConst } from 'store/constant';
+import {
+  createDocument,
+  createLogRecord,
+  createUserAditionalData,
+  isExistUserReferalCode,
+  isExistUserReferalEmail
+} from 'config/firebaseEvents';
+import { genConst, process } from 'store/constant';
 import { generateId } from 'utils/idGenerator';
-import { collUsers } from 'store/collections';
+import { collLog, collUsers } from 'store/collections';
 
 const AuthRegister = () => {
   let navigate = useNavigate();
@@ -134,6 +140,7 @@ const AuthRegister = () => {
           displayName: name + ' ' + lastname
         });
         createUserAditionalData(credentials.user.uid, mail);
+        createLogRecord(collLog, process.LOG_USER_REGISTER, userObject);
         handleCleanFields();
         toast.success('Usuario registrado correctamente!.', { position: toast.POSITION.TOP_RIGHT });
         setTimeout(() => {

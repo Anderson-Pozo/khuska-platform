@@ -59,7 +59,7 @@ const EarningBlueCard = ({ total, detail }) => {
           <Grid item>
             <Grid container alignItems="center">
               <Grid item>
-                <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
+                <Typography sx={{ fontSize: '1.6rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
                   $ {Number.parseFloat(total).toFixed(2)}
                 </Typography>
               </Grid>
@@ -68,7 +68,7 @@ const EarningBlueCard = ({ total, detail }) => {
           <Grid item sx={{ mb: 1.25 }}>
             <Typography
               sx={{
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 fontWeight: 500,
                 color: '#FFF'
               }}

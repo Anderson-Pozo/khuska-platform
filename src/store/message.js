@@ -12,9 +12,9 @@ export const settupdsucc = 'Parámetro actualizado correctamente!.';
 export const settdelsucc = 'Parámetro eliminado correctamente!.';
 export const settvalreq = 'Todos los campos marcados con * son obligatorios.!';
 
-export const coucresucc = 'Curso creado correctamente!.';
-export const couupdsucc = 'Curso actualizado correctamente!.';
-export const coudelsucc = 'Curso eliminado correctamente!.';
+export const coucresucc = 'Negocio creado correctamente!.';
+export const couupdsucc = 'Negocio actualizado correctamente!.';
+export const coudelsucc = 'Negocio eliminado correctamente!.';
 
 export const voucresucc = 'Comprobante enviado correctamente!.';
 
@@ -33,5 +33,9 @@ export const notcresucc = 'Notificación generada correctamente!.';
 export const notupdsucc = 'Notificación actualizada correctamente!.';
 export const notdelsucc = 'Notificación eliminada correctamente!.';
 export const notcreinf = 'Debe ingresar el mensaje de la notificación!.';
+
+export const transuccess = 'Transacción guardada correctamente.';
+export const trandelete = 'Transacción eliminada correctamente.';
+export const tranerror = 'Transacción no pudo ser guardada.';
 
 export const msgSubState = 'Debes tener una subscripción activa para difrutar de los beneficios de KHUSKA!';

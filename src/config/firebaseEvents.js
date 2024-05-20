@@ -104,8 +104,16 @@ export function deleteDocument(table, idRecord) {
 export function getDocuments(table) {
   return getDocs(collection(db, table));
 }
-export function createLogRecord(object) {
-  return addDoc(collection(db, collLog), object);
+export function createLogRecord(table, process, object) {
+  const idLog = generateId(10);
+  const logObject = {
+    id: idLog,
+    process: process,
+    createAt: fullDate(),
+    state: genConst.CONST_STATE_AC,
+    object: object
+  };
+  return setDoc(doc(db, table, idLog), logObject);
 }
 export function createSystemNotification(object) {
   return addDoc(collection(db, collUsrNoti), object);
@@ -538,10 +546,10 @@ export async function getCtaList() {
 //STADISTICS COUNT ITEMS
 //Obtenemos cantidad de Usuarios Registrados
 export const countUser = async () => {
-  const usersCollection = collection(db, collUsers);
-  const querySnapshot = await getDocs(usersCollection);
-  const userCount = querySnapshot.size;
-  return userCount;
+  const q = query(collection(db, collUsers), where('profile', '==', genConst.CONST_PRO_DEF));
+  const querySnapshot = await getDocs(q);
+  const count = querySnapshot.size;
+  return count;
 };
 //Obtenemos cantidad de Usuarios Administradores Registrados
 export const countAdminUser = async () => {
@@ -553,6 +561,13 @@ export const countAdminUser = async () => {
 //Obtenemos cantidad de Negocios Registrados
 export const countBusiness = async () => {
   const collCount = collection(db, collBusiness);
+  const querySnapshot = await getDocs(collCount);
+  const count = querySnapshot.size;
+  return count;
+};
+//Obtenemos cantidad de Productos Registrados
+export const countProducts = async () => {
+  const collCount = collection(db, collProducts);
   const querySnapshot = await getDocs(collCount);
   const count = querySnapshot.size;
   return count;
@@ -706,18 +721,6 @@ export const createUserAditionalData = (uid, email) => {
     state: genConst.CONST_STATE_IN
   };
   createDocument(collSubscription, uid, objSubscription);
-  //Log
-  const idLog = generateId(10);
-  const log = {
-    id: idLog,
-    idUser: uid,
-    createAt: fullDate(),
-    lastLogin: fullDate(),
-    email: email,
-    state: genConst.CONST_STATE_IN,
-    message: 'Registro de nuevo usuario.'
-  };
-  createDocument(collLog, idLog, log);
   //Address
   const userAddress = {
     idUser: uid,

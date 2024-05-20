@@ -26,17 +26,22 @@ import {
   ButtonGroup,
   Select
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import CircularProgress from '@mui/material/CircularProgress';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
 import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconNetwork, IconUserCircle } from '@tabler/icons';
 //Firebase Events
-import { createDocument, deleteDocument, getDad, getUserDataSubscription, updateDocument } from 'config/firebaseEvents';
+import { createDocument, createLogRecord, deleteDocument, getDad, getUserDataSubscription, updateDocument } from 'config/firebaseEvents';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { genConst } from 'store/constant';
-import { collHistUsr, collKhuskaBenefit, collSubscription, collUserBenefit, collUsers } from 'store/collections';
+import { genConst, process } from 'store/constant';
+import { collKhuskaBenefit, collLog, collSubscription, collUserBenefit, collUsers } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
 //Utils
@@ -47,6 +52,34 @@ import { useGetUsers } from 'hooks/useGetUsers';
 
 let globalTotal = 0;
 
+const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  '&:not(:last-child)': {
+    borderBottom: 0
+  },
+  '&::before': {
+    display: 'none'
+  }
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />} {...props} />
+))(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+  flexDirection: 'row-reverse',
+  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+    transform: 'rotate(90deg)'
+  },
+  '& .MuiAccordionSummary-content': {
+    marginLeft: theme.spacing(1)
+  }
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: '1px solid rgba(0, 0, 0, .125)'
+}));
+
 export default function Users() {
   let navigate = useNavigate();
   const [page, setPage] = useState(0);
@@ -56,7 +89,7 @@ export default function Users() {
   const [openDelete, setOpenDelete] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState(null);
-
+  const [expanded, setExpanded] = useState('panel1');
   const [id, setId] = useState(null);
   const [name, setName] = useState(null);
   const [lastName, setLastName] = useState(null);
@@ -111,6 +144,10 @@ export default function Users() {
     window.location.reload();
   };
 
+  const handleChange = (panel) => (event, newExpanded) => {
+    setExpanded(newExpanded ? panel : false);
+  };
+
   const handleCreateUser = () => {
     if (!name || !email) {
       toast.info(titles.require, { position: toast.POSITION.TOP_RIGHT });
@@ -131,11 +168,11 @@ export default function Users() {
         state: genConst.CONST_STA_ACT,
         updateAt: null
       };
+      createLogRecord(collLog, process.LOG_CREATE_USER, object);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
         reloadData();
-        console.log(object);
         toast.success(titles.successCreate, { position: toast.POSITION.TOP_RIGHT });
       }, 2000);
     }
@@ -156,6 +193,7 @@ export default function Users() {
       };
       setOpenLoader(true);
       updateDocument(collUsers, id, object);
+      createLogRecord(collLog, process.LOG_EDIT_USER, object);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
@@ -181,7 +219,7 @@ export default function Users() {
       updateAt: updateAt
     };
     deleteDocument(collUsers, id);
-    createDocument(collHistUsr, usrHistId, objectHist);
+    createLogRecord(collLog, process.LOG_DELETE_USER, objectHist);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);
@@ -206,10 +244,10 @@ export default function Users() {
       state: genConst.CONST_STATE_AC
     };
 
+    updateDocument(collSubscription, id, subObj);
+    updateDocument(collUsers, id, usrObj);
     setTimeout(function () {
       setOpenLoader(false);
-      updateDocument(collSubscription, id, subObj);
-      updateDocument(collUsers, id, usrObj);
       //sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
       //history.push('/dashboard');
       toast.success('Suscripción activada por un mes!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
@@ -230,10 +268,10 @@ export default function Users() {
       subState: genConst.CONST_STATE_AC
     };
 
+    updateDocument(collSubscription, id, subObj);
+    updateDocument(collUsers, id, usrObj);
     setTimeout(function () {
       setOpenLoader(false);
-      updateDocument(collSubscription, id, subObj);
-      updateDocument(collUsers, id, usrObj);
       //sendActiveSubscriptionEmail(userEmail, userName, initDate(), 30, endDateMonth(), 'Manual', 30);
       toast.success('Suscripción activada por un año!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
     }, 2000);
@@ -591,180 +629,195 @@ export default function Users() {
       <Modal open={openCreate} onClose={handleCloseCreate} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.modalStyles}>
           <Typography id="modal-modal-title" variant="h2" component="h2">
-            {title}
+            {title} {isEdit ? <strong style={{ fontSize: 16 }}>{id}</strong> : <></>}
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
-                {isEdit ? (
-                  <Grid item lg={12} md={12} sm={12} xs={12}>
-                    <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 10 }}>
-                      <FormControl fullWidth>
-                        <InputLabel>
-                          <strong style={{ fontSize: 14 }}>ID: {id}</strong>
-                        </InputLabel>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <></>
-                )}
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="name">
-                      <span>*</span> {inputLabels.labelName}
-                    </InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.name}
-                      type="text"
-                      name={inputLabels.name}
-                      value={name || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setName(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="lastName">
-                      <span>*</span> {inputLabels.labelLastName}
-                    </InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.lastName}
-                      type="text"
-                      name={inputLabels.lastName}
-                      value={lastName || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setLastName(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                    <InputLabel htmlFor="email">
-                      <span>*</span> {inputLabels.labelEmail}
-                    </InputLabel>
-                    <OutlinedInput
-                      id={inputLabels.email}
-                      type="email"
-                      name={inputLabels.email}
-                      value={email || ''}
-                      inputProps={{}}
-                      onChange={(ev) => setEMail(ev.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id={inputLabels.profile}>* {inputLabels.labelProfile}</InputLabel>
-                    <Select
-                      labelId={inputLabels.profile}
-                      id={inputLabels.profile}
-                      value={profile}
-                      label={inputLabels.labelProfile}
-                      onChange={(ev) => setProfile(ev.target.value)}
-                    >
-                      <MenuItem value={genConst.CONST_PRO_ADM}>{genConst.CONST_PRO_ADM_TXT}</MenuItem>
-                      <MenuItem value={genConst.CONST_PRO_DEF}>{genConst.CONST_PRO_STU_TXT}</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id={inputLabels.state}>* {inputLabels.labelState}</InputLabel>
-                    <Select
-                      labelId={inputLabels.state}
-                      id={inputLabels.state}
-                      value={state}
-                      label={inputLabels.labelState}
-                      onChange={(ev) => setState(ev.target.value)}
-                    >
-                      <MenuItem value={genConst.CONST_STA_ACT}>{genConst.CONST_STA_ACT_TXT}</MenuItem>
-                      <MenuItem value={genConst.CONST_STA_INACT}>{genConst.CONST_STA_INACT_TXT}</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                {isEdit ? (
-                  <>
-                    <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
-                      <FormControl fullWidth>
-                        <InputLabel>
-                          <strong style={{ fontSize: 16 }}>Usuario</strong>
-                        </InputLabel>
-                      </FormControl>
-                      <FormControl fullWidth>
-                        <InputLabel>
-                          <strong>Usuario desde: </strong>
-                          {createAt}
-                        </InputLabel>
-                      </FormControl>
-                      <FormControl fullWidth>
-                        <InputLabel>
-                          <strong>Código: </strong>
-                          {code}
-                        </InputLabel>
-                      </FormControl>
-                    </Grid>
-                    <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
-                      <FormControl fullWidth>
-                        <InputLabel>
-                          <strong style={{ fontSize: 16 }}>Suscripción</strong>
-                        </InputLabel>
-                      </FormControl>
-                      {subData.state == genConst.CONST_STATE_AC ? (
-                        <>
-                          <FormControl fullWidth>
-                            <InputLabel>
-                              <strong>Plan Actual: </strong>
-                              {subData.description}
-                            </InputLabel>
-                          </FormControl>
-                          <FormControl fullWidth>
-                            <InputLabel>
-                              <strong>Precio: </strong>
-                              {'$ ' + subData.price}
-                            </InputLabel>
-                          </FormControl>
-                          <FormControl fullWidth>
-                            <InputLabel>
-                              <strong>Fecha hasta: </strong>
-                              {subData.endDate}
-                            </InputLabel>
-                          </FormControl>
-                        </>
-                      ) : (
-                        <FormControl fullWidth>
-                          <InputLabel>
-                            <strong>ESTADO: </strong>
-                            {subData.state == genConst.CONST_STATE_AC
-                              ? genConst.CONST_SUB_STATE_ACT_TEXT
-                              : genConst.CONST_SUB_STATE_INA_TEXT}
-                          </InputLabel>
-                        </FormControl>
-                      )}
-                    </Grid>
-                  </>
-                ) : (
-                  <></>
-                )}
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <center>
-                    <h5>Distribución Beneficios en Red personal</h5>
-                    <ButtonGroup variant="outlined" aria-label="outlined button group">
-                      <Button onClick={handleActiveMonth}>Mensual</Button>
-                      <Button onClick={handleActiveYear}>Anual</Button>
-                    </ButtonGroup>
-                  </center>
-                </Grid>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <center>
-                    <h5>Acciones estado de suscripción</h5>
-                    <ButtonGroup variant="outlined" aria-label="outlined button group">
-                      <Button onClick={handleMonthSub}>Mensual</Button>
-                      <Button onClick={handleYearSub}>Anual</Button>
-                    </ButtonGroup>
-                  </center>
-                </Grid>
+                <div>
+                  <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                    <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+                      <Typography>Datos Usuario</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid container style={{ marginTop: 10 }}>
+                        <Grid item xs={12}>
+                          <Grid container spacing={1}>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                <InputLabel htmlFor="name">
+                                  <span>*</span> {inputLabels.labelName}
+                                </InputLabel>
+                                <OutlinedInput
+                                  id={inputLabels.name}
+                                  type="text"
+                                  name={inputLabels.name}
+                                  value={name || ''}
+                                  inputProps={{}}
+                                  onChange={(ev) => setName(ev.target.value)}
+                                />
+                              </FormControl>
+                            </Grid>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                <InputLabel htmlFor="lastName">
+                                  <span>*</span> {inputLabels.labelLastName}
+                                </InputLabel>
+                                <OutlinedInput
+                                  id={inputLabels.lastName}
+                                  type="text"
+                                  name={inputLabels.lastName}
+                                  value={lastName || ''}
+                                  inputProps={{}}
+                                  onChange={(ev) => setLastName(ev.target.value)}
+                                />
+                              </FormControl>
+                            </Grid>
+                            <Grid item lg={12} md={12} sm={12} xs={12}>
+                              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                <InputLabel htmlFor="email">
+                                  <span>*</span> {inputLabels.labelEmail}
+                                </InputLabel>
+                                <OutlinedInput
+                                  id={inputLabels.email}
+                                  type="email"
+                                  name={inputLabels.email}
+                                  value={email || ''}
+                                  inputProps={{}}
+                                  onChange={(ev) => setEMail(ev.target.value)}
+                                />
+                              </FormControl>
+                            </Grid>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <FormControl fullWidth>
+                                <InputLabel id={inputLabels.profile}>* {inputLabels.labelProfile}</InputLabel>
+                                <Select
+                                  labelId={inputLabels.profile}
+                                  id={inputLabels.profile}
+                                  value={profile}
+                                  label={inputLabels.labelProfile}
+                                  onChange={(ev) => setProfile(ev.target.value)}
+                                >
+                                  <MenuItem value={genConst.CONST_PRO_ADM}>{genConst.CONST_PRO_ADM_TXT}</MenuItem>
+                                  <MenuItem value={genConst.CONST_PRO_DEF}>{genConst.CONST_PRO_STU_TXT}</MenuItem>
+                                </Select>
+                              </FormControl>
+                            </Grid>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <FormControl fullWidth>
+                                <InputLabel id={inputLabels.state}>* {inputLabels.labelState}</InputLabel>
+                                <Select
+                                  labelId={inputLabels.state}
+                                  id={inputLabels.state}
+                                  value={state}
+                                  label={inputLabels.labelState}
+                                  onChange={(ev) => setState(ev.target.value)}
+                                >
+                                  <MenuItem value={genConst.CONST_STA_ACT}>{genConst.CONST_STA_ACT_TXT}</MenuItem>
+                                  <MenuItem value={genConst.CONST_STA_INACT}>{genConst.CONST_STA_INACT_TXT}</MenuItem>
+                                </Select>
+                              </FormControl>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+                    <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
+                      <Typography>Suscripción</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid container style={{ marginTop: 10 }}>
+                        <Grid item xs={12}>
+                          <Grid container spacing={1}>
+                            {isEdit ? (
+                              <>
+                                <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong style={{ fontSize: 16 }}>Usuario</strong>
+                                    </InputLabel>
+                                  </FormControl>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong>Usuario desde: </strong>
+                                      {createAt}
+                                    </InputLabel>
+                                  </FormControl>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong>Código: </strong>
+                                      {code}
+                                    </InputLabel>
+                                  </FormControl>
+                                </Grid>
+                                <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong style={{ fontSize: 16 }}>Suscripción</strong>
+                                    </InputLabel>
+                                  </FormControl>
+                                  {subData.state == genConst.CONST_STATE_AC ? (
+                                    <>
+                                      <FormControl fullWidth>
+                                        <InputLabel>
+                                          <strong>Plan Actual: </strong>
+                                          {subData.description}
+                                        </InputLabel>
+                                      </FormControl>
+                                      <FormControl fullWidth>
+                                        <InputLabel>
+                                          <strong>Precio: </strong>
+                                          {'$ ' + subData.price}
+                                        </InputLabel>
+                                      </FormControl>
+                                      <FormControl fullWidth>
+                                        <InputLabel>
+                                          <strong>Fecha hasta: </strong>
+                                          {subData.endDate}
+                                        </InputLabel>
+                                      </FormControl>
+                                    </>
+                                  ) : (
+                                    <FormControl fullWidth>
+                                      <InputLabel>
+                                        <strong>ESTADO: </strong>
+                                        {subData.state == genConst.CONST_STATE_AC
+                                          ? genConst.CONST_SUB_STATE_ACT_TEXT
+                                          : genConst.CONST_SUB_STATE_INA_TEXT}
+                                      </InputLabel>
+                                    </FormControl>
+                                  )}
+                                </Grid>
+                              </>
+                            ) : (
+                              <></>
+                            )}
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <center>
+                                <h5>Distribución Beneficios en Red personal</h5>
+                                <ButtonGroup variant="outlined" aria-label="outlined button group">
+                                  <Button onClick={handleActiveMonth}>Mensual</Button>
+                                  <Button onClick={handleActiveYear}>Anual</Button>
+                                </ButtonGroup>
+                              </center>
+                            </Grid>
+                            <Grid item lg={6} md={6} sm={6} xs={6}>
+                              <center>
+                                <h5>Acciones estado de suscripción</h5>
+                                <ButtonGroup variant="outlined" aria-label="outlined button group">
+                                  <Button onClick={handleMonthSub}>Mensual</Button>
+                                  <Button onClick={handleYearSub}>Anual</Button>
+                                </ButtonGroup>
+                              </center>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
                 <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
                   <center>
                     <ButtonGroup>

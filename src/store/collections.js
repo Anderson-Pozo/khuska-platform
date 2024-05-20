@@ -10,6 +10,7 @@ export const collHistUsr = 'HistoricUsers';
 export const collHistBusiness = 'HistoricBusiness';
 export const collHistBenefits = 'HistoricBenefits';
 export const collLog = 'Logs';
+export const collLogTran = 'LogsTransactions';
 export const collLogSession = 'LogSession';
 export const collGenNoti = 'GeneralNotifications';
 export const collUsrNoti = 'UserNotifications';

@@ -6,12 +6,12 @@ const icons = { IconFriends, IconUsers, IconFileReport };
 
 const historic = {
   id: 'historic',
-  title: 'Históricos y Logs',
+  title: 'Logs',
   type: 'group',
   children: [
     {
       id: 'logs',
-      title: 'Logs',
+      title: 'Logs Generales',
       type: 'item',
       url: '/main/logs',
       icon: icons.IconFileReport,

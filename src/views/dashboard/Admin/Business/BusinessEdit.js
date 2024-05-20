@@ -16,11 +16,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Msg from 'store/message';
 import { titles, inputLabels } from './Business.texts';
 import { fullDate } from 'utils/validations';
-import { collBusiness } from 'store/collections';
+import { collBusiness, collLog } from 'store/collections';
 
 import { storage } from 'config/firebase';
-import { getBusinessById, updateDocument } from 'config/firebaseEvents';
+import { createLogRecord, getBusinessById, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { process } from 'store/constant';
 
 export default function BusinessEdit() {
   let navigate = useNavigate();
@@ -108,8 +109,9 @@ export default function BusinessEdit() {
         deleteAt: null,
         state: 1
       };
+      updateDocument(collBusiness, id, object);
+      createLogRecord(collLog, process.LOG_EDIT_BUSINESS, object);
       setTimeout(() => {
-        updateDocument(collBusiness, id, object);
         //Logo
         if (change0) {
           if (logo.raw !== null) {

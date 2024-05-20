@@ -31,14 +31,14 @@ import MessageDark from 'components/message/MessageDark';
 import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUserCircle } from '@tabler/icons';
 
 //Firebase Events
-import { createDocument, deleteDocument, updateDocument } from 'config/firebaseEvents';
+import { createLogRecord, deleteDocument, updateDocument } from 'config/firebaseEvents';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { genConst } from 'store/constant';
-import { collHistUsr, collUsers } from 'store/collections';
+import { genConst, process } from 'store/constant';
+import { collLog, collUsers } from 'store/collections';
 import { inputLabels, titles } from './AdminUsers.texts';
 import { uiStyles } from './AdminUsers.styles';
 
@@ -116,11 +116,11 @@ export default function Users() {
         state: genConst.CONST_STA_ACT,
         updateAt: null
       };
+      createLogRecord(collLog, process.LOG_CREATE_ADMIN, object);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
         reloadData();
-        console.log(object);
         toast.success(titles.successCreate, { position: toast.POSITION.TOP_RIGHT });
       }, 2000);
     }
@@ -139,6 +139,7 @@ export default function Users() {
       };
       setOpenLoader(true);
       updateDocument(collUsers, id, object);
+      createLogRecord(collLog, process.LOG_EDIT_ADMIN, object);
       setTimeout(() => {
         setOpenLoader(false);
         setOpenCreate(false);
@@ -162,7 +163,7 @@ export default function Users() {
       updateAt: updateAt
     };
     deleteDocument(collUsers, id);
-    createDocument(collHistUsr, usrHistId, objectHist);
+    createLogRecord(collLog, process.LOG_DELETE_ADMIN, objectHist);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);

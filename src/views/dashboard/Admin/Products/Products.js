@@ -32,11 +32,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Msg from 'store/message';
 import { titles, inputLabels } from './Products.texts';
 //Utils
-import { deleteDocument, getProductsByBusiness } from 'config/firebaseEvents';
+import { createLogRecord, deleteDocument, getProductsByBusiness } from 'config/firebaseEvents';
 //types array
 import MessageDark from 'components/message/MessageDark';
-import { genConst } from 'store/constant';
-import { collProducts } from 'store/collections';
+import { genConst, process } from 'store/constant';
+import { collLog, collProducts } from 'store/collections';
+import { fullDate } from 'utils/validations';
 
 function searchingData(search) {
   return function (x) {
@@ -85,7 +86,13 @@ export default function Products() {
 
   const handleDelete = () => {
     setOpenLoader(true);
+    const object = {
+      idProduct: id,
+      name: name,
+      deleteAt: fullDate()
+    };
     deleteDocument(collProducts, id);
+    createLogRecord(collLog, process.LOG_DELETE_PROD, object);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);

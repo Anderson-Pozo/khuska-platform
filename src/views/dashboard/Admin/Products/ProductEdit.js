@@ -29,11 +29,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Msg from 'store/message';
 import { titles, inputLabels } from './Products.texts';
 import { fullDate } from 'utils/validations';
-import { collProducts } from 'store/collections';
+import { collLog, collProducts } from 'store/collections';
 
 import { storage } from 'config/firebase';
-import { getCategories, getProductById, updateDocument } from 'config/firebaseEvents';
+import { createLogRecord, getCategories, getProductById, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { process } from 'store/constant';
 
 export default function ProductEdit() {
   let navigate = useNavigate();
@@ -98,6 +99,7 @@ export default function ProductEdit() {
       };
       setTimeout(() => {
         updateDocument(collProducts, idProduct, object);
+        createLogRecord(collLog, process.LOG_CREATE_PROD, object);
         //Picture1
         if (change1) {
           if (picture1.raw !== null) {

@@ -11,10 +11,24 @@ import MainCard from 'components/cards/MainCard';
 import { IconCash } from '@tabler/icons';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
-  backgroundColor: '#FF6666',
+  backgroundColor: '#ECD163',
   color: '#fff',
   overflow: 'hidden',
   position: 'relative',
+  '&:after': {
+    content: '""',
+    position: 'absolute',
+    width: 210,
+    height: 210,
+    background: 'rgba(255,255,255,0.7)',
+    borderRadius: '50%',
+    top: -85,
+    right: -95,
+    [theme.breakpoints.down('sm')]: {
+      top: -105,
+      right: -140
+    }
+  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -32,7 +46,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
   }
 }));
 
-const EarningRedCard = ({ total, detail }) => {
+const EarningYellowCard = ({ total, detail }) => {
   const theme = useTheme();
 
   return (
@@ -59,16 +73,14 @@ const EarningRedCard = ({ total, detail }) => {
           <Grid item>
             <Grid container alignItems="center">
               <Grid item>
-                <Typography sx={{ fontSize: '1.6rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                  $ {Number.parseFloat(total).toFixed(2)}
-                </Typography>
+                <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>$ {total}</Typography>
               </Grid>
             </Grid>
           </Grid>
           <Grid item sx={{ mb: 1.25 }}>
             <Typography
               sx={{
-                fontSize: '0.9rem',
+                fontSize: '1rem',
                 fontWeight: 500,
                 color: '#FFF'
               }}
@@ -82,9 +94,9 @@ const EarningRedCard = ({ total, detail }) => {
   );
 };
 
-EarningRedCard.propTypes = {
+EarningYellowCard.propTypes = {
   total: PropTypes.number,
   detail: PropTypes.string
 };
 
-export default EarningRedCard;
+export default EarningYellowCard;

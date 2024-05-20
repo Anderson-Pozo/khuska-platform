@@ -31,12 +31,13 @@ import { generateId } from 'utils/idGenerator';
 import { titles, inputLabels } from './Products.texts';
 import defaultImageCourse from 'assets/images/defaultCourse.jpg';
 import { fullDate } from 'utils/validations';
-import { collProducts } from 'store/collections';
+import { collLog, collProducts } from 'store/collections';
 
 import { authentication, storage } from 'config/firebase';
-import { createDocument, getCategories, updateDocument } from 'config/firebaseEvents';
+import { createDocument, createLogRecord, getCategories, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { onAuthStateChanged } from 'firebase/auth';
+import { process } from 'store/constant';
 
 export default function ProductAdd() {
   let navigate = useNavigate();
@@ -106,6 +107,7 @@ export default function ProductAdd() {
       };
       setTimeout(() => {
         createDocument(collProducts, ide, object);
+        createLogRecord(collLog, process.LOG_CREATE_PROD, object);
         //Picture1
         if (picture1.raw !== null) {
           const imageName = ide + 'p1.jpg';

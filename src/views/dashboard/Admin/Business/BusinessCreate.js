@@ -18,12 +18,13 @@ import { generateId } from 'utils/idGenerator';
 import { titles, inputLabels } from './Business.texts';
 import defaultImageCourse from 'assets/images/defaultCourse.jpg';
 import { fullDate } from 'utils/validations';
-import { collBusiness } from 'store/collections';
+import { collBusiness, collLog } from 'store/collections';
 
 import { authentication, storage } from 'config/firebase';
-import { createDocument, updateDocument } from 'config/firebaseEvents';
+import { createDocument, createLogRecord, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { onAuthStateChanged } from 'firebase/auth';
+import { process } from 'store/constant';
 
 export default function BusinessCreate() {
   let navigate = useNavigate();
@@ -100,8 +101,9 @@ export default function BusinessCreate() {
         deleteAt: null,
         state: 1
       };
+      createDocument(collBusiness, ide, object);
+      createLogRecord(collLog, process.LOG_CREATE_BUSINESS, object);
       setTimeout(() => {
-        createDocument(collBusiness, ide, object);
         //Logo
         if (logo.raw !== null) {
           const imageName = ide + 'logo.jpg';

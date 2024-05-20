@@ -6,8 +6,6 @@ export function searchingData(search) {
       x.name.toUpperCase().includes(search) ||
       x.lastName.toLowerCase().includes(search) ||
       x.lastName.toUpperCase().includes(search) ||
-      x.ownReferal.toLowerCase().includes(search) ||
-      x.ownReferal.toUpperCase().includes(search) ||
       x.email.toLowerCase().includes(search) ||
       x.email.toUpperCase().includes(search) ||
       !search

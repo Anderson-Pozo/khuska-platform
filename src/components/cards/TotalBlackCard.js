@@ -7,11 +7,11 @@ import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography }
 import MainCard from 'components/cards/MainCard';
 
 // assets
-import { IconBuilding } from '@tabler/icons';
+import { IconTicket } from '@tabler/icons';
 
 // styles
 const CardWrapper = styled(MainCard)(({ theme }) => ({
-  backgroundColor: '#9f98c2',
+  backgroundColor: '#242526',
   overflow: 'hidden',
   position: 'relative',
   '&:after': {
@@ -38,7 +38,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 // ==============================|| DASHBOARD - TOTAL INCOME LIGHT CARD ||============================== //
 
-const TotalYellowCard = ({ total, detail }) => {
+const TotalBlackCard = ({ total, detail }) => {
   const theme = useTheme();
 
   return (
@@ -52,11 +52,11 @@ const TotalYellowCard = ({ total, detail }) => {
                 sx={{
                   ...theme.typography.commonAvatar,
                   ...theme.typography.largeAvatar,
-                  backgroundColor: theme.palette.primary[800],
+                  backgroundColor: '#FFF',
                   color: theme.palette.warning.dark
                 }}
               >
-                <IconBuilding color="#FFF" />
+                <IconTicket color="#242526" />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
@@ -89,9 +89,9 @@ const TotalYellowCard = ({ total, detail }) => {
   );
 };
 
-TotalYellowCard.propTypes = {
+TotalBlackCard.propTypes = {
   total: PropTypes.number,
   detail: PropTypes.string
 };
 
-export default TotalYellowCard;
+export default TotalBlackCard;

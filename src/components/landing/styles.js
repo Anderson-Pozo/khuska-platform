@@ -36,7 +36,8 @@ export const uiStyles = {
   },
   colorText: {
     color: '#53338a',
-    lineHeight: 'normal'
+    lineHeight: 'normal',
+    fontSize: '1.4rem'
   },
   container: {
     textAlign: 'center'
@@ -44,7 +45,7 @@ export const uiStyles = {
   title: {
     color: '#fff',
     lineHeight: 'normal',
-    marginTop: 40,
+    marginTop: 20,
     fontSize: '1.6rem'
   },
   goDown: {
@@ -53,7 +54,7 @@ export const uiStyles = {
   },
   rootPlace: {
     width: 250,
-    height: 150,
+    height: 110,
     background: 'rgba(0,0,0,0.7)',
     borderRadius: 20,
     color: '#FFF'

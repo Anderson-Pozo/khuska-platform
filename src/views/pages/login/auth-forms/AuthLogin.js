@@ -21,7 +21,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 //Firebase
 import { authentication } from 'config/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { createDocument, getProfileUser, isSessionActive } from 'config/firebaseEvents';
+import { createLogRecord, getProfileUser, isSessionActive } from 'config/firebaseEvents';
 // project imports
 import AnimateButton from 'components/extended/AnimateButton';
 //Notifications
@@ -30,10 +30,10 @@ import 'react-toastify/dist/ReactToastify.css';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { genConst } from 'store/constant';
-import { collLogSession } from 'store/collections';
+import { genConst, process } from 'store/constant';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
+import { collLog } from 'store/collections';
 
 const AuthLogin = () => {
   let navigate = useNavigate();
@@ -91,7 +91,7 @@ const AuthLogin = () => {
             ? 'https://www.google.com/maps/search/?api=1&query=' + position.latitude + ',' + position.longitude + '&zoom=20'
             : null
         };
-        createDocument(collLogSession, logId, object);
+        createLogRecord(collLog, process.LOG_USER_LOGIN, object);
         setTimeout(() => {
           setOpen(false);
           getProfileUser(user.uid).then((pro) => {

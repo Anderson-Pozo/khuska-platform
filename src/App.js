@@ -59,17 +59,14 @@ const Products = Loadable(lazy(() => import('views/dashboard/Admin/Products/Prod
 const ProductAdd = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductAdd')));
 const ProductEdit = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductEdit')));
 const ProductView = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductView')));
-//Comprobantes
+// dashboard Comprobantes
 const Vouchers = Loadable(lazy(() => import('views/dashboard/Admin/Vouchers/Vouchers')));
-
 // dashboard Network
 const Network = Loadable(lazy(() => import('views/dashboard/Admin/Network/Network')));
 // dashboard Mail
 const Mail = Loadable(lazy(() => import('views/dashboard/Admin/Mail/Mail')));
 // dashboard Benefits
 const Benefits = Loadable(lazy(() => import('views/dashboard/Admin/Benefits/Benefits')));
-// dashboard Clients
-const Clients = Loadable(lazy(() => import('views/dashboard/Admin/Clients/Clients')));
 // dashboard Users
 const AdminUsers = Loadable(lazy(() => import('views/dashboard/Admin/AdminUsers/AdminUsers')));
 const Users = Loadable(lazy(() => import('views/dashboard/Admin/Users/Users')));
@@ -78,8 +75,6 @@ const Share = Loadable(lazy(() => import('views/dashboard/Admin/Share/Share')));
 const Settings = Loadable(lazy(() => import('views/dashboard/Admin/Settings/Settings')));
 const Notifications = Loadable(lazy(() => import('views/dashboard/Admin/Notifications/Notifications')));
 //Historic
-const ClientsHist = Loadable(lazy(() => import('views/dashboard/Admin/Historic/Clients')));
-const UsersHist = Loadable(lazy(() => import('views/dashboard/Admin/Historic/Users')));
 const Logs = Loadable(lazy(() => import('views/dashboard/Admin/Logs/Logs')));
 //DEFAULT SECTION ====================================================
 // default Login
@@ -169,7 +164,6 @@ const App = () => {
           {profile == genConst.CONST_PRO_ADM ? (
             <Route element={<MainLayout />} path="/main" exact>
               <Route element={<DashboardAdmin />} path="dashboard" exact />
-              <Route element={<Clients />} path="clients" exact />
               <Route element={<AdminUsers />} path="admin-users" exact />
               <Route element={<Users />} path="users" exact />
               <Route element={<Share />} path="share" exact />
@@ -193,8 +187,6 @@ const App = () => {
               <Route element={<UserBill />} path="user-bill" exact />
               <Route element={<UserPaymentMethods />} path="user-payment-methods" exact />
               <Route element={<UserSecurity />} path="user-security" exact />
-              <Route element={<ClientsHist />} path="historic-clients" exact />
-              <Route element={<UsersHist />} path="historic-users" exact />
               <Route element={<Logs />} path="logs" exact />
             </Route>
           ) : (
