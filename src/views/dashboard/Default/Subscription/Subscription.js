@@ -27,7 +27,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // project imports
 import { genConst } from 'store/constant';
-import { endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
+import { endDateFormatWithParam, endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
 import Deposit from './Deposit';
 import { IconBrandPaypal, IconCreditCard } from '@tabler/icons';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -42,6 +42,7 @@ import {
   updateDocument
 } from 'config/firebaseEvents';
 import { collSubscription, collUsers } from 'store/collections';
+import { sendPaymentSubKhuskaEmail } from 'utils/sendEmail';
 
 let globalTotal = 0;
 
@@ -148,17 +149,18 @@ const Subscription = () => {
 
   const subscribeUser = (id, userName, userEmail, ref, type, result) => {
     const subObject = {
-      idUser: id,
-      nameUser: userName,
-      emailUser: userEmail,
-      refCode: ref ? ref : null,
-      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
-      startDate: shortDateFormat(),
-      endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
       date: fullDate(),
       dateFormat: fullDateFormat(),
-      price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,
       description: type == 1 ? 'Estandar (30 días)' : 'Plus (365 días)',
+      emailUser: userEmail,
+      endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
+      endDateFormat: type == 1 ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS) : endDateFormatWithParam(genConst.CONST_YEAR_DAYS),
+      idUser: id,
+      nameUser: userName,
+      price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,
+      refCode: ref ? ref : null,
+      startDate: shortDateFormat(),
+      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
       totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : genConst.CONST_YEAR_DAYS
     };
     const usrObject = {
@@ -201,6 +203,9 @@ const Subscription = () => {
     }
     setTimeout(function () {
       setOpenLoader(false);
+      let endD = type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS);
+      let typ = type == 1 ? 'Estandar (30 días)' : 'Plus (365 días)';
+      sendPaymentSubKhuskaEmail(email, name, typ, total, initDate(), endD);
       toast.success('Suscripción ha sido activada!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
       navigate('/app/dashboard');
     }, 4000);

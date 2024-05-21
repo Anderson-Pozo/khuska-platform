@@ -38,7 +38,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { msgSubState } from 'store/message';
 //Custom Hook
-import { useGetSubscriptionEndDate } from 'hooks/useGetSubscriptionEndDate';
+import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 
 export default function Business() {
   let navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function Business() {
   const [countBusiness, setCountBusiness] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [openLoader, setOpenLoader] = useState(false);
-  const newStateSub = useGetSubscriptionEndDate();
+  const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
@@ -235,7 +235,7 @@ export default function Business() {
   return (
     <div>
       <ToastContainer />
-      {newStateSub == genConst.CONST_SUB_S_I ? (
+      {stateSub == genConst.CONST_SUB_S_I ? (
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12}>
             <Grid item lg={12} md={12} sm={12} xs={12}>
@@ -243,11 +243,6 @@ export default function Business() {
             </Grid>
           </Grid>
         </Grid>
-      ) : newStateSub == genConst.CONST_SUB_S_U ? (
-        <>
-          <Typography variant="h5">{titles.lastday}</Typography>
-          <MainComponent />
-        </>
       ) : (
         <>
           <MainComponent />

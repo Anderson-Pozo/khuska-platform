@@ -110,6 +110,22 @@ export function endDateWithParam(days) {
   return d + '/' + m + '/' + y;
 }
 
+export function endDateFormatWithParam(days) {
+  var iniDate = new Date();
+  var priorDate = new Date().setDate(iniDate.getDate() + days);
+  var endDate = new Date(priorDate);
+  var d = endDate.getDate();
+  var m = endDate.getMonth() + 1;
+  var y = endDate.getFullYear();
+  if (d < 10) {
+    d = '0' + d;
+  }
+  if (m < 10) {
+    m = '0' + m;
+  }
+  return y + '-' + m + '-' + d;
+}
+
 export function fullDate() {
   var date = new Date();
   var month = date.getMonth() + 1;

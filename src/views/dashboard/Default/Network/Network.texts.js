@@ -6,7 +6,7 @@ export const titles = {
   level2: 'Nivel 2',
   level3: 'Nivel 3',
   level4: 'Nivel 4',
-  active: 'MIEMBRO',
-  noActive: 'NO MIEMBRO',
+  active: 'ACTIVO',
+  noActive: 'INACTIVO',
   altImage: 'Avatar user'
 };

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -17,20 +16,16 @@ import {
   Typography,
   useMediaQuery
 } from '@mui/material';
-
 // project imports
 import MainCard from 'components/cards/MainCard';
 import Transitions from 'components/extended/Transitions';
 import NotificationList from './NotificationList';
-
-import { collNotifications } from 'store/collections';
-
-import { db, authentication } from 'config/firebase';
+import { authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs, where, query } from 'firebase/firestore';
 
 // assets
 import { IconBell } from '@tabler/icons';
+import { getUserNotificationsUnread } from 'config/firebaseEvents';
 
 const NotificationSection = () => {
   const theme = useTheme();
@@ -61,22 +56,16 @@ const NotificationSection = () => {
 
   const [dataList, setDataList] = useState([]);
 
-  const getData = async (id) => {
-    const list = [];
-    const q = query(collection(db, collNotifications), where('idUser', '==', id), where('state', '==', 0));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      list.push(doc.data());
+  const getData = () => {
+    onAuthStateChanged(authentication, (user) => {
+      getUserNotificationsUnread(user.uid).then((data) => {
+        setDataList(data);
+      });
     });
-    setDataList(list);
   };
 
   useEffect(() => {
-    onAuthStateChanged(authentication, (user) => {
-      if (user) {
-        getData(user.uid);
-      }
-    });
+    getData();
   }, []);
 
   return (
@@ -157,6 +146,7 @@ const NotificationSection = () => {
                       disableElevation
                       onClick={() => {
                         navigate('/app/notifications');
+                        setOpen(false);
                       }}
                     >
                       Ver Todas

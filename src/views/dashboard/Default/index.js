@@ -23,7 +23,6 @@ import TotalBusiness from './Main/TotalBusiness';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { collSubscription, collUsers } from 'store/collections';
-import { sendWelcomeEmail } from 'utils/sendEmail';
 
 const Dashboard = () => {
   const [isLoading, setLoading] = useState(true);
@@ -31,20 +30,25 @@ const Dashboard = () => {
   const [totalBusiness, setTotalBusiness] = useState(0);
   const [endDate, setEndDate] = useState('');
   const [state, setState] = useState('');
-  const [days, setDays] = useState('');
+  const [days, setDays] = useState(0);
   const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
-        sendWelcomeEmail(user.email, user.displayName);
         getUserSubscription(user.uid).then((st) => {
           setState(st);
         });
         getUserSubscriptionEndDate(user.uid).then((date) => {
-          if (date === null) {
+          const subObject = {
+            state: genConst.CONST_STATE_IN
+          };
+          const usrObject = {
+            subState: genConst.CONST_STATE_IN,
+            state: genConst.CONST_STATE_IN
+          };
+          if (date === null || date === undefined || date === '') {
             setState(0);
-            console.log('Inactiva');
           } else {
             let end = new Date(date).getTime();
             let now = new Date().getTime();
@@ -52,26 +56,17 @@ const Dashboard = () => {
             var newDiff = Math.floor(diff / (1000 * 60 * 60 * 24));
             setDays(newDiff);
             setEndDate(date);
-            const subObject = {
-              state: genConst.CONST_STATE_IN
-            };
-            const usrObject = {
-              subState: genConst.CONST_STATE_IN,
-              state: genConst.CONST_STATE_IN
-            };
             if (newDiff === 0) {
               console.log('Caducado');
               setState(0);
-              updateDocument(collUsers, user.id, subObject);
-              updateDocument(collSubscription, user.id, usrObject);
+              updateDocument(collUsers, user.uid, subObject);
+              updateDocument(collSubscription, user.uid, usrObject);
             } else if (newDiff > 0) {
-              console.log('Activo');
               setState(2);
             } else {
-              console.log('Caducado');
               setState(0);
-              updateDocument(collUsers, user.id, subObject);
-              updateDocument(collSubscription, user.id, usrObject);
+              updateDocument(collUsers, user.uid, subObject);
+              updateDocument(collSubscription, user.uid, usrObject);
             }
           }
         });

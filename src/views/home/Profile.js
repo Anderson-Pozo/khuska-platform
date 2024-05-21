@@ -32,10 +32,10 @@ const UserProfile = () => {
     <Grid container spacing={gridSpacing} sx={{ pt: 3 }}>
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
-          <Grid item lg={4} md={6} sm={6} xs={12}>
+          <Grid item lg={5} md={6} sm={6} xs={12}>
             <ProfileAvatar id={id} name={name} email={email} />
           </Grid>
-          <Grid item lg={8} md={6} sm={6} xs={12}>
+          <Grid item lg={7} md={6} sm={6} xs={12}>
             <ProfileData />
           </Grid>
         </Grid>

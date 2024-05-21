@@ -18,7 +18,7 @@ export const uiStyles = {
   imagePic: { width: 50, height: 50, borderRadius: '50%' },
   stateActive: { marginTop: -10, color: '#5ABD7C' },
   stateNoActive: { marginTop: -10, color: '#EB635D' },
-  name: { marginTop: 2 },
-  email: { marginTop: -10 },
-  btn: { width: 250 }
+  name: { marginTop: 2, fontSize: 12, textTransform: 'upercase' },
+  email: { marginTop: -10, fontSize: 12, textTransform: 'lowercase' },
+  btn: { width: 200 }
 };

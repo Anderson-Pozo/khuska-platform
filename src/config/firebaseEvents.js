@@ -313,6 +313,15 @@ export async function getUserNotifications(id) {
   });
   return list;
 }
+export async function getUserNotificationsUnread(id) {
+  const list = [];
+  const q = query(collection(db, collNotifications), where('idUser', '==', id), where('state', '==', 0));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+}
 export const getBenefits = async () => {
   const list = [];
   const querySnapshot = await getDocuments(collKhuskaBenefit);
@@ -714,11 +723,18 @@ export async function getChatByMessageId(id) {
 export const createUserAditionalData = (uid, email) => {
   //Subscription
   const objSubscription = {
-    idUser: uid,
-    startDate: null,
+    date: null,
+    dateFormat: null,
+    description: null,
+    emailUser: null,
     endDate: null,
-    cancelDate: null,
-    state: genConst.CONST_STATE_IN
+    idUser: uid,
+    nameUser: null,
+    price: 0,
+    refCode: null,
+    startDate: null,
+    state: genConst.CONST_STATE_IN,
+    totalDays: 0
   };
   createDocument(collSubscription, uid, objSubscription);
   //Address

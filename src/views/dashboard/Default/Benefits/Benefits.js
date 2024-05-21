@@ -12,8 +12,7 @@ import {
   Grid,
   Box,
   CircularProgress,
-  Modal,
-  Typography
+  Modal
 } from '@mui/material';
 import { uiStyles } from './Benefits.styles';
 //Notifications
@@ -31,14 +30,14 @@ import {
 import SubscriptionState from 'components/message/SubscriptionState';
 //types array
 import MessageDark from 'components/message/MessageDark';
-import { Messages, genConst } from 'store/constant';
+import { genConst } from 'store/constant';
 import EarningBlueCard from 'components/cards/EarningBlueCard';
 import EarningRedCard from 'components/cards/EarningRedCard';
 import EarningYellowCard from 'components/cards/EaringYellowCard';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { msgSubState } from 'store/message';
-import { useGetSubscriptionEndDate } from 'hooks/useGetSubscriptionEndDate';
+import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 
 export default function Benefits() {
   const [page, setPage] = useState(0);
@@ -48,7 +47,7 @@ export default function Benefits() {
   const [totalPN, setTotalPN] = useState(0);
   const [dataList, setDataList] = useState([]);
   const [open, setOpen] = useState(false);
-  const stateSub = useGetSubscriptionEndDate();
+  const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
@@ -179,11 +178,6 @@ export default function Benefits() {
             </Grid>
           </Grid>
         </Grid>
-      ) : stateSub == genConst.CONST_SUB_S_U ? (
-        <>
-          <Typography variant="h5">{Messages.lastDay}</Typography>
-          <MainComponent />
-        </>
       ) : (
         <MainComponent />
       )}

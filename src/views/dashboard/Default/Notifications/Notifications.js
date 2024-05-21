@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
 import { Paper, Tooltip } from '@mui/material';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
 import { Button, Grid, Modal, Box } from '@mui/material';
 import { IconMessage2 } from '@tabler/icons';
 import { uiStyles } from './Notifications.styles';
 import MessageDark from 'components/message/MessageDark';
-import { collUsrNoti } from 'store/collections';
+import { collNotifications } from 'store/collections';
 import { getUserNotifications, updateDocument } from 'config/firebaseEvents';
 import { genConst } from 'store/constant';
 import { titles, inputLabels } from './Notifications.texts';
@@ -14,20 +15,26 @@ import CircularProgress from '@mui/material/CircularProgress';
 //Notifications
 import 'react-toastify/dist/ReactToastify.css';
 import { fullDate } from 'utils/validations';
-import { useGetUserId } from 'hooks/useGetUserId';
+import { onAuthStateChanged } from 'firebase/auth';
+import { authentication } from 'config/firebase';
 
 const Notifications = () => {
-  let userId = useGetUserId();
-  const [dataList, setDataList] = React.useState([]);
-  const [openLoader, setOpenLoader] = React.useState(false);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [dataList, setDataList] = useState([]);
+  const [openLoader, setOpenLoader] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    getUserNotifications(userId).then((data) => {
-      setDataList(data);
+    getData();
+  }, []);
+
+  const getData = () => {
+    onAuthStateChanged(authentication, (user) => {
+      getUserNotifications(user.uid).then((data) => {
+        setDataList(data);
+      });
     });
-  }, [userId]);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -42,9 +49,9 @@ const Notifications = () => {
     setOpenLoader(true);
     const object = {
       updateAt: fullDate(),
-      state: 0
+      state: 1
     };
-    updateDocument(collUsrNoti, id, object);
+    updateDocument(collNotifications, id, object);
     setTimeout(() => {
       setOpenLoader(false);
     }, 2000);
@@ -75,8 +82,8 @@ const Notifications = () => {
                     <TableCell align="left">{r.message}</TableCell>
                     <TableCell align="left">{r.date}</TableCell>
                     <TableCell align="center">
-                      {r.state === 1 ? (
-                        <Tooltip title="Marcar como leido">
+                      {r.state === 0 ? (
+                        <Tooltip title="Marcar como leído">
                           <Button
                             style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                             onClick={() => {
@@ -87,14 +94,8 @@ const Notifications = () => {
                           </Button>
                         </Tooltip>
                       ) : (
-                        <Tooltip title="Leida">
-                          <Button
-                            style={{ backgroundColor: genConst.CONST_VIEW_COLOR }}
-                            disabled
-                            onClick={() => {
-                              handleEdit(r.id);
-                            }}
-                          >
+                        <Tooltip title="Leída">
+                          <Button style={{ backgroundColor: genConst.CONST_INFO_COLOR }}>
                             <IconMessage2 color="#FFF" />
                           </Button>
                         </Tooltip>

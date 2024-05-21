@@ -74,5 +74,5 @@ export const uiStyles = {
   stateNoActive: { marginTop: -10, color: '#EB635D', fontSize: 12 },
   name: { marginTop: 2, fontSize: 12, textTransform: 'upercase' },
   email: { marginTop: -10, fontSize: 12, textTransform: 'lowercase' },
-  btn: { width: 160 }
+  btn: { width: 200 }
 };

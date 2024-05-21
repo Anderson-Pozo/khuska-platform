@@ -11,7 +11,7 @@ import MainCard from 'components/cards/MainCard';
 // Firebase
 import { authentication, db } from 'config/firebase';
 import { updateProfile, onAuthStateChanged } from 'firebase/auth';
-import { updateDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -20,26 +20,15 @@ import 'react-toastify/dist/ReactToastify.css';
 // project imports
 import AnimateButton from 'components/extended/AnimateButton';
 import { collUsers } from 'store/collections';
+import { IconDeviceMobile, IconUser } from '@tabler/icons';
+import { fullDate } from 'utils/validations';
+import { updateDocument } from 'config/firebaseEvents';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
   backgroundColor: '#414551',
   color: '#fff',
   overflow: 'hidden',
   position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: theme.palette.secondary[800],
-    borderRadius: '50%',
-    top: -85,
-    right: -95,
-    [theme.breakpoints.down('sm')]: {
-      top: -105,
-      right: -140
-    }
-  },
   '&:before': {
     content: '""',
     position: 'absolute',
@@ -88,13 +77,14 @@ const ProfileData = () => {
       updateProfile(authentication.currentUser, {
         displayName: name + ' ' + lastName
       });
-      updateDoc(doc(db, collUsers, id), {
+      const object = {
         name: name,
         lastName: lastName,
         fullName: name + ' ' + lastName,
         phone: phone,
-        updateAt: Date.now()
-      });
+        updateAt: fullDate()
+      };
+      updateDocument(collUsers, id, object);
       toast.success('Perfil actualizado correctamente!', { position: toast.POSITION.TOP_RIGHT });
       setTimeout(() => {
         window.location.reload();
@@ -132,6 +122,7 @@ const ProfileData = () => {
                     value={name || ''}
                     name="name"
                     onChange={(ev) => setName(ev.target.value)}
+                    endAdornment={<IconUser />}
                   />
                 </FormControl>
               </Grid>
@@ -144,6 +135,7 @@ const ProfileData = () => {
                     value={lastName || ''}
                     name="lastName"
                     onChange={(ev) => setLastName(ev.target.value)}
+                    endAdornment={<IconUser />}
                   />
                 </FormControl>
               </Grid>
@@ -158,6 +150,7 @@ const ProfileData = () => {
                     value={phone || ''}
                     name="phone"
                     onChange={(ev) => setPhone(ev.target.value)}
+                    endAdornment={<IconDeviceMobile />}
                   />
                 </FormControl>
               </Grid>

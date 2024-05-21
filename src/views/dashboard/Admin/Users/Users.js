@@ -68,7 +68,7 @@ import { collLog, collSubscription, collUsers } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
 //Utils
-import { endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
+import { endDateFormatWithParam, endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
 import { generateId } from 'utils/idGenerator';
 import { searchingData } from 'utils/search';
 import defaultImage from 'assets/images/addImgB.png';
@@ -298,6 +298,7 @@ export default function Users() {
       state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
       startDate: shortDateFormat(),
       endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
+      endDateFormat: type == 1 ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS) : endDateFormatWithParam(genConst.CONST_YEAR_DAYS),
       date: fullDate(),
       dateFormat: fullDateFormat(),
       price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,

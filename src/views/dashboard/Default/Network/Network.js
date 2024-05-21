@@ -26,7 +26,7 @@ import Title from 'components/message/Title';
 import NetworkChild from './NetworkChild';
 import { titles } from './Network.texts';
 import { uiStyles } from './Network.styles';
-import { useGetSubscriptionEndDate } from 'hooks/useGetSubscriptionEndDate';
+import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 
 const Network = () => {
   //Lists
@@ -43,7 +43,7 @@ const Network = () => {
   const [userState, setUserState] = useState(null);
   const [utlAvatar, setUrlAvatar] = useState(null);
   const [open, setOpen] = useState(false);
-  const stateSub = useGetSubscriptionEndDate();
+  const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -297,11 +297,6 @@ const Network = () => {
             </Grid>
           </Grid>
         </Grid>
-      ) : stateSub == genConst.CONST_SUB_S_U ? (
-        <>
-          <Typography variant="h5">{titles.lastday}</Typography>
-          <MainComponent />
-        </>
       ) : (
         <MainComponent />
       )}
