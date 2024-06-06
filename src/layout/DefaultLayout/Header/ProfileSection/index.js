@@ -34,7 +34,7 @@ import Transitions from 'components/extended/Transitions';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 
 // assets
-import { IconLogout, IconSettings, IconUser, IconLock, IconCreditCard, IconNote, IconPhone } from '@tabler/icons';
+import { IconLogout, IconSettings, IconUser, IconLock, IconCreditCard, IconNote, IconPhone, IconTicket } from '@tabler/icons';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -209,6 +209,14 @@ const ProfileSection = () => {
                               <IconCreditCard stroke={1.5} size="1.3rem" />
                             </ListItemIcon>
                             <ListItemText primary={<Typography variant="body2">Métodos de Pago</Typography>} />
+                          </ListItemButton>
+                        </Link>
+                        <Link to="user-subscription" style={{ textDecoration: 'none' }}>
+                          <ListItemButton sx={{ borderRadius: `${customization.borderRadius}px` }}>
+                            <ListItemIcon>
+                              <IconTicket stroke={1.5} size="1.3rem" />
+                            </ListItemIcon>
+                            <ListItemText primary={<Typography variant="body2">Suscripción</Typography>} />
                           </ListItemButton>
                         </Link>
                         <Link to="user-security" style={{ textDecoration: 'none' }}>

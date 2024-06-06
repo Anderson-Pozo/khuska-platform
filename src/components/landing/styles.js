@@ -55,7 +55,7 @@ export const uiStyles = {
   rootPlace: {
     width: 250,
     height: 110,
-    background: 'rgba(0,0,0,0.7)',
+    background: 'rgba(83,51,138,0.7)',
     borderRadius: 20,
     color: '#FFF'
   },

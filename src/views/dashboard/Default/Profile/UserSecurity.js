@@ -24,7 +24,6 @@ const UserSecurity = () => {
 
   return (
     <div>
-      <h3>Seguridad de Usuario</h3>
       <p hidden>{id}</p>
       <p hidden>{email}</p>
       <Grid container spacing={gridSpacing}>

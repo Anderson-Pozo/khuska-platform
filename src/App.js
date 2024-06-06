@@ -93,6 +93,7 @@ const UserContactDefault = Loadable(lazy(() => import('views/dashboard/Default/P
 const UserBillDefault = Loadable(lazy(() => import('views/dashboard/Default/Profile/ProfileBill')));
 const UserPaymentMethodsDefault = Loadable(lazy(() => import('views/dashboard/Default/Profile/ProfilePaymentMethods')));
 const UserSecurityDefault = Loadable(lazy(() => import('views/dashboard/Default/Profile/UserSecurity')));
+const UserSubscriptionDefault = Loadable(lazy(() => import('views/dashboard/Default/Profile/ProfileSubscription')));
 // dashboard Settings
 const ShareDefault = Loadable(lazy(() => import('views/dashboard/Default/Share/Share')));
 const NetworkDefault = Loadable(lazy(() => import('views/dashboard/Default/Network/Network')));
@@ -212,6 +213,7 @@ const App = () => {
               <Route element={<UserBillDefault />} path="user-bill" exact />
               <Route element={<UserPaymentMethodsDefault />} path="user-payment-methods" exact />
               <Route element={<UserSecurityDefault />} path="user-security" exact />
+              <Route element={<UserSubscriptionDefault />} path="user-subscription" exact />
             </Route>
           )}
         </Routes>

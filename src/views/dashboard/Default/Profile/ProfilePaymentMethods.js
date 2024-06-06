@@ -26,7 +26,6 @@ const UserProfilePaymentMethods = () => {
   }, []);
   return (
     <div>
-      <h3>Metodos de Pago</h3>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <Grid container spacing={gridSpacing}>

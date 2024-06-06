@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Grid, Typography, TextField, Button, Chip, Modal, Box, Menu, MenuItem } from '@mui/material';
+import { Grid, Typography, TextField, Button, Modal, Box, Menu, MenuItem } from '@mui/material';
 import { uiStyles } from './styles';
 import { styled } from '@mui/material/styles';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,7 +8,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import avatarImg from 'assets/images/profile/profile-picture-6.jpg';
+//import avatarImg from 'assets/images/profile/profile-picture-6.jpg';
 import defaultImage from 'assets/images/addImgB.png';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
@@ -93,7 +93,7 @@ export default function Item() {
   //Variables
   const [user, setUser] = useState('');
   const [userId, setUserId] = useState('');
-  const [photo, setPhoto] = useState('');
+  //const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
@@ -120,7 +120,7 @@ export default function Item() {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
         setUser(user.displayName);
-        setPhoto(user.photoURL);
+        //setPhoto(user.photoURL);
         setUserId(user.uid);
       }
     });
@@ -388,24 +388,8 @@ export default function Item() {
             >
               Artículo en Venta
             </Typography>
-            <div
-              style={{
-                width: '100%',
-                height: 40,
-                backgroundColor: 'transparent',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: 20
-              }}
-            >
-              <Chip
-                avatar={<img alt="User" src={photo || avatarImg} style={{ borderRadius: 50 }} />}
-                label={<span style={{ color: '#3a3b3c' }}>{user}</span>}
-                variant="outlined"
-              />
-            </div>
             <span style={{ color: '#3a3b3c' }}>Proporciona una descripción que sea lo más detallada posible.</span>
-            <div style={{ padding: 1, margin: 5, marginTop: 20 }}>
+            <div style={{ padding: 1, margin: 5, marginTop: 10 }}>
               <TextField
                 variant="filled"
                 type="text"
@@ -495,6 +479,27 @@ export default function Item() {
                 onChange={(ev) => setDescription(ev.target.value)}
               />
             </div>
+            <div style={{ marginTop: 0, padding: 5 }}>
+              <center>
+                <Button
+                  disableElevation
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{ borderRadius: 10, height: 45 }}
+                  onClick={handleSaveProduct}
+                >
+                  Crear
+                </Button>
+              </center>
+              <h5 style={{ textAlign: 'justify', textJustify: 'inter-word', color: '#3a3b3c' }}>
+                Los artículos de KhuskaMarket son públicos, por lo que cualquier persona dentro y fuera de KhuskaMarket puede verlos. Los
+                artículos como animales, drogas, armas, falsificaciones y otros que infringen derechos de propiedad intelectual no están
+                permitidos en KhuskaMarket. Consulta nuestras Políticas de comercio.
+              </h5>
+            </div>
           </Grid>
           <Grid item sm={12} xs={12} md={6} lg={6}>
             <div style={uiStyles.main}>
@@ -566,7 +571,10 @@ export default function Item() {
                                       {picture1.preview ? (
                                         ''
                                       ) : (
-                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
+                                        <>
+                                          <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 20 }}>Imagen de Portada</p>
+                                          <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 10 }}>Imagen 300 x 500</p>
+                                        </>
                                       )}
                                     </label>
                                   </div>
@@ -777,27 +785,6 @@ export default function Item() {
                         </Grid>
                       </Grid>
                     </Grid>
-                  </div>
-                  <div style={{ marginTop: 20 }}>
-                    <center>
-                      <Button
-                        disableElevation
-                        fullWidth
-                        size="large"
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        style={{ borderRadius: 10, height: 45 }}
-                        onClick={handleSaveProduct}
-                      >
-                        Crear
-                      </Button>
-                    </center>
-                    <h5 style={{ textAlign: 'justify', textJustify: 'inter-word', color: '#3a3b3c' }}>
-                      Los artículos de KhuskaMarket son públicos, por lo que cualquier persona dentro y fuera de KhuskaMarket puede verlos.
-                      Los artículos como animales, drogas, armas, falsificaciones y otros que infringen derechos de propiedad intelectual no
-                      están permitidos en KhuskaMarket. Consulta nuestras Políticas de comercio.
-                    </h5>
                   </div>
                 </div>
               </div>

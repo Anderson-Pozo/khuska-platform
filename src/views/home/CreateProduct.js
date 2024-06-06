@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Grid, useMediaQuery, Button } from '@mui/material';
+import { Grid, useMediaQuery, Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import { authentication } from 'config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import pic from 'assets/images/camera.png';
+import { IconCar, IconHome, IconShoppingBag } from '@tabler/icons';
 
 export default function CreateProduct() {
   const theme = useTheme();
@@ -26,11 +26,12 @@ export default function CreateProduct() {
     minHeight: 220,
     justifyContent: 'center',
     color: '#FFF',
-    backgroundColor: '#242526',
+    backgroundColor: 'rgb(83, 51, 138, 0.7)',
     borderRadius: 8,
+    //cursor: 'pointer',
     margin: 2,
     '&:hover': {
-      backgroundColor: '#3a3b3c',
+      backgroundColor: 'rgb(83, 51, 138, 0.9)',
       color: '#FFF'
     }
   });
@@ -51,7 +52,7 @@ export default function CreateProduct() {
               <Grid item xs={12}>
                 <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                   <Grid item>
-                    <h2 style={{ color: '#3a3b3c' }}>Crear Producto</h2>
+                    <h1 style={{ color: 'rgb(83, 51, 138)' }}>Crear Producto</h1>
                   </Grid>
                 </Grid>
               </Grid>
@@ -67,13 +68,17 @@ export default function CreateProduct() {
                 >
                   <Grid container spacing={2} alignItems="center" justifyContent="center">
                     <Grid item lg={12} md={12} sm={12} xs={12}>
-                      <img src={pic} width={100} alt="icon category" />
+                      <IconShoppingBag size={60} />
                     </Grid>
-                    <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -3 }}>
-                      <span style={{ fontWeight: 'bold', fontSize: 15 }}>Artículo en venta</span>
+                    <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -2 }}>
+                      <Typography color={'#FFF'} variant={'h3'}>
+                        Articulo
+                      </Typography>
                     </Grid>
                     <Grid item lg={12} md={12} sm={12} xs={12}>
-                      <span style={{ fontSize: 12 }}>Crea una sola publicación para vender uno o más artículos.</span>
+                      <Typography color={'#FFF'} variant={'h5'}>
+                        Crea una sola publicación para vender uno o más artículos.
+                      </Typography>
                     </Grid>
                   </Grid>
                 </CustomButton>
@@ -89,13 +94,17 @@ export default function CreateProduct() {
                 >
                   <Grid container spacing={2} alignItems="center" justifyContent="center">
                     <Grid item xs={12}>
-                      <img src={pic} width={100} alt="icon category" />
+                      <IconCar size={60} />
                     </Grid>
-                    <Grid item xs={12} sx={{ mt: -3 }}>
-                      <span style={{ fontWeight: 'bold', fontSize: 15 }}>Vehículo en venta</span>
+                    <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -2 }}>
+                      <Typography color={'#FFF'} variant={'h3'}>
+                        Vehículo
+                      </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <span style={{ fontSize: 12 }}>Vende un auto, camión u otro tipo de vehículo.</span>
+                      <Typography color={'#FFF'} variant={'h5'}>
+                        Vende un auto, camión u otro tipo de vehículo.
+                      </Typography>
                     </Grid>
                   </Grid>
                 </CustomButton>
@@ -111,13 +120,17 @@ export default function CreateProduct() {
                 >
                   <Grid container spacing={2} alignItems="center" justifyContent="center">
                     <Grid item xs={12}>
-                      <img src={pic} width={100} alt="icon category" />
+                      <IconHome size={60} />
                     </Grid>
-                    <Grid item xs={12} sx={{ mt: -3 }}>
-                      <span style={{ fontWeight: 'bold', fontSize: 15 }}>Propiedad en venta</span>
+                    <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -2 }}>
+                      <Typography color={'#FFF'} variant={'h3'}>
+                        Propiedad
+                      </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <span style={{ fontSize: 12 }}>Publica una casa o departamente para vender o alquilar.</span>
+                      <Typography color={'#FFF'} variant={'h5'}>
+                        Publica una casa o departamente para vender o alquilar.
+                      </Typography>
                     </Grid>
                   </Grid>
                 </CustomButton>

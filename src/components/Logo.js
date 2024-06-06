@@ -6,7 +6,7 @@ import logo from 'assets/images/khuska/logo.png';
 const Logo = () => {
   return (
     <Typography component={Link} to="/">
-      <img src={logo} alt="Logo Principal" width="160" />
+      <img src={logo} alt="Logo Principal" width="140" />
     </Typography>
   );
 };

@@ -26,7 +26,6 @@ const UserProfileContact = () => {
   }, []);
   return (
     <div>
-      <h3>Datos de Contacto</h3>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <Grid container spacing={gridSpacing}>

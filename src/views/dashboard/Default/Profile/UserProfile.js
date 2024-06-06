@@ -24,7 +24,6 @@ const UserProfile = () => {
   }, []);
   return (
     <div>
-      <h3>Perfil de Usuario</h3>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <Grid container spacing={gridSpacing}>

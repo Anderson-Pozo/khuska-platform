@@ -91,11 +91,11 @@ function Market(props) {
     minHeight: 50,
     justifyContent: 'center',
     color: '#FFF',
-    backgroundColor: '#38376e',
+    backgroundColor: 'rgb(83, 51, 138, 0.7)',
     borderRadius: 8,
     margin: 6,
     '&:hover': {
-      backgroundColor: '#394d62',
+      backgroundColor: 'rgb(83, 51, 138, 0.9)',
       color: '#FFF'
     }
   });
@@ -103,11 +103,11 @@ function Market(props) {
     minHeight: 50,
     justifyContent: 'center',
     color: '#FFF',
-    backgroundColor: '#3a3b3c',
+    backgroundColor: 'rgb(83, 51, 138, 0.7)',
     borderRadius: 8,
     margin: 6,
     '&:hover': {
-      backgroundColor: '#242526',
+      backgroundColor: 'rgb(83, 51, 138, 0.9)',
       color: '#FFF'
     }
   });

@@ -25,7 +25,6 @@ const UserProfileBill = () => {
   }, []);
   return (
     <div>
-      <h3>Datos de Facturación</h3>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <Grid container spacing={gridSpacing}>
