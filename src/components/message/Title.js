@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // material-ui
 import { styled } from '@mui/material/styles';
-import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 // project imports
 import MainCard from 'components/cards/MainCard';
 // assets
@@ -22,18 +22,12 @@ const Title = ({ message, submessage, avatar }) => {
         <List sx={{ py: 0 }}>
           <ListItem alignItems="center" disableGutters sx={{ py: 0 }}>
             <ListItemAvatar>
-              <Avatar
-                variant="rounded"
-                sx={{
-                  color: '#fff',
-                  borderRadius: '50%',
-                  background: 'transparent',
-                  width: 60,
-                  height: 60
-                }}
-              >
-                <img id="profile-pic" style={{ width: 50, height: 50, borderRadius: '50%' }} src={avatar || defaultImg} alt="Avatar user" />
-              </Avatar>
+              <img
+                id="profile-pic"
+                style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover' }}
+                src={avatar || defaultImg}
+                alt="Avatar user"
+              />
             </ListItemAvatar>
             <ListItemText
               sx={{

@@ -5,7 +5,7 @@ import MainCard from 'components/cards/MainCard';
 const AuthCardWrapper = ({ children, ...other }) => (
   <MainCard
     sx={{
-      maxWidth: { xs: 400, lg: 475 },
+      maxWidth: { xs: 400, lg: 550 },
       margin: { xs: 2.5, md: 3 },
       '& > *': {
         flexGrow: 1,

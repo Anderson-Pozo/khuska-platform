@@ -12,14 +12,22 @@ import {
   Grid,
   Box,
   CircularProgress,
-  Modal
+  Modal,
+  AppBar,
+  Toolbar,
+  OutlinedInput,
+  IconButton,
+  Typography,
+  Tooltip,
+  ButtonGroup,
+  Button
 } from '@mui/material';
 import { uiStyles } from './Benefits.styles';
 //Notifications
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //Collections
-import { titles } from './Benefits.texts';
+import { inputLabels, titles } from './Benefits.texts';
 //Utils
 import {
   getTotalCancelBenefitByUserId,
@@ -38,6 +46,10 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { msgSubState } from 'store/message';
 import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
+import { IconCheck, IconCircleX, IconFileDollar, IconPlus, IconSearch } from '@tabler/icons';
+import { searchingBenefit } from 'utils/search';
+import { generateId } from 'utils/idGenerator';
+import { fullDate } from 'utils/validations';
 
 export default function Benefits() {
   const [page, setPage] = useState(0);
@@ -47,6 +59,10 @@ export default function Benefits() {
   const [totalPN, setTotalPN] = useState(0);
   const [dataList, setDataList] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openOrder, setOpenOrder] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [amount, setAmount] = useState(0);
   const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
@@ -72,6 +88,14 @@ export default function Benefits() {
     });
   }, []);
 
+  const handleOpenOrder = () => {
+    setOpenOrder(true);
+  };
+
+  const handleCloseOrder = () => {
+    setOpenOrder(false);
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -81,9 +105,76 @@ export default function Benefits() {
     setPage(0);
   };
 
+  const handleGenerateOrder = () => {
+    if (!amount) {
+      toast.info('Ingrese un valor!', { position: toast.POSITION.TOP_RIGHT });
+    } else if (Number.parseFloat(totalP) <= 0) {
+      toast.info('Saldo no disponible!', { position: toast.POSITION.TOP_RIGHT });
+    } else if (amount < 31) {
+      toast.info('El monto mínimo debe ser $30!', { position: toast.POSITION.TOP_RIGHT });
+    } else {
+      toast.success('Orden generada correctamente!', { position: toast.POSITION.TOP_RIGHT });
+      const idOrder = generateId(10);
+      const object = {
+        id: idOrder,
+        amount: Number.parseFloat(amount).toFixed(2),
+        ctaAmount: Number.parseFloat(totalP).toFixed(2),
+        createAt: fullDate(),
+        state: 1
+      };
+      console.log(object);
+    }
+  };
+
   const MainComponent = () => {
     return (
       <>
+        <AppBar position="static" style={uiStyles.appbar}>
+          <Toolbar>
+            <IconButton color="inherit">
+              <IconFileDollar color="#FFF" />
+            </IconButton>
+            <Tooltip title="Generar orden pago">
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  handleOpenOrder();
+                }}
+              >
+                <IconPlus />
+              </IconButton>
+            </Tooltip>
+            <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+              Beneficios
+            </Typography>
+            <Tooltip title="Buscar">
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  setShowSearch(!showSearch);
+                }}
+              >
+                <IconSearch />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+        </AppBar>
+        {showSearch && (
+          <Box sx={{ flexGrow: 0 }}>
+            {dataList.length > 0 ? (
+              <OutlinedInput
+                id={inputLabels.search}
+                type="text"
+                name={inputLabels.search}
+                onChange={(ev) => setSearch(ev.target.value)}
+                placeholder={inputLabels.placeHolderSearch}
+                style={{ width: '100%', marginTop: 10 }}
+              />
+            ) : (
+              <></>
+            )}
+          </Box>
+        )}
         {dataList.length > 0 ? (
           <Paper sx={uiStyles.paper}>
             <Grid container spacing={1} sx={{ p: 2 }}>
@@ -127,18 +218,21 @@ export default function Benefits() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((r) => (
-                      <TableRow hover key={r.id}>
-                        <TableCell align="left">{r.nameUser}</TableCell>
-                        <TableCell align="left">{r.nameRefer}</TableCell>
-                        <TableCell align="left">{r.level}</TableCell>
-                        <TableCell align="left">{r.createAt}</TableCell>
-                        <TableCell align="left">
-                          {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
-                        </TableCell>
-                        <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
-                      </TableRow>
-                    ))}
+                    {dataList
+                      .filter(searchingBenefit(search))
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((r) => (
+                        <TableRow hover key={r.id}>
+                          <TableCell align="left">{r.nameUser}</TableCell>
+                          <TableCell align="left">{r.nameRefer}</TableCell>
+                          <TableCell align="left">{r.level}</TableCell>
+                          <TableCell align="left">{r.createAt}</TableCell>
+                          <TableCell align="left">
+                            {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
+                          </TableCell>
+                          <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -181,6 +275,59 @@ export default function Benefits() {
       ) : (
         <MainComponent />
       )}
+      <Modal open={openOrder} onClose={handleCloseOrder} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
+        <Box sx={uiStyles.modalStyles}>
+          <Typography id="modal-modal-title" variant="h3" component="h3" align="center">
+            Generar orden de pago
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
+            Recuerde que para generar una orden de pago el monto mīnimo debe ser $30
+          </Typography>
+          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
+            Saldo Actual: <strong>$ {totalP}</strong>
+          </Typography>
+          <Grid container style={{ marginTop: 10 }}>
+            <Grid item xs={12}>
+              <Grid container spacing={1}>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <OutlinedInput
+                    id={inputLabels.orderValue}
+                    type="text"
+                    name="order"
+                    onChange={(ev) => setAmount(ev.target.value)}
+                    placeholder={inputLabels.placeHolderAmount}
+                    style={{ width: '100%', marginTop: 10 }}
+                  />
+                </Grid>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <center>
+                    <ButtonGroup>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconCheck />}
+                        size="large"
+                        style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
+                        onClick={handleGenerateOrder}
+                      >
+                        {titles.buttonAccept}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        startIcon={<IconCircleX />}
+                        size="large"
+                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                        onClick={handleCloseOrder}
+                      >
+                        {titles.buttonCancel}
+                      </Button>
+                    </ButtonGroup>
+                  </center>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Modal>
       <Modal open={open} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <center>
           <Box sx={uiStyles.modalLoader}>

@@ -29,6 +29,7 @@ import { genConst, process } from 'store/constant';
 import { generateId } from 'utils/idGenerator';
 import { collLog, collUsers } from 'store/collections';
 import { sendWelcomeEmail } from 'utils/sendEmail';
+import { IconDeviceMobile, IconMail, IconUser, IconUsers } from '@tabler/icons';
 
 const AuthRegister = () => {
   let navigate = useNavigate();
@@ -38,6 +39,7 @@ const AuthRegister = () => {
   const [openLoader, setOpenLoader] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailRef, setEmailRef] = useState('');
@@ -70,6 +72,8 @@ const AuthRegister = () => {
   const handleRegister = async () => {
     if (isEmpty(firstName) || isEmpty(lastName)) {
       toast.info('Por favor, ingresa tus nombres y apellidos.', { position: toast.POSITION.TOP_RIGHT });
+    } else if (isEmpty(phone)) {
+      toast.info('Por favor, ingresa un número de teléfono.', { position: toast.POSITION.TOP_RIGHT });
     } else if (isEmpty(email) || isEmpty(password)) {
       toast.info('Por favor, ingresa un correo electrónico y una contraseña.', { position: toast.POSITION.TOP_RIGHT });
     } else if (!validateEmail(email)) {
@@ -89,7 +93,7 @@ const AuthRegister = () => {
             isExistUserReferalEmail(emailRef).then((res) => {
               if (res !== null) {
                 toast.success('Persona referida encontrada! ' + res, { position: toast.POSITION.TOP_RIGHT });
-                handleCreateAccount(firstName, lastName, email, password, res);
+                handleCreateAccount(firstName, lastName, phone, email, password, res);
               } else {
                 toast.info('Persona referida no encontrada!', { position: toast.POSITION.TOP_RIGHT });
               }
@@ -99,7 +103,7 @@ const AuthRegister = () => {
           isExistUserReferalCode(Number.parseInt(emailRef)).then((res) => {
             if (res !== null) {
               toast.success('Persona referida encontrada! ' + res, { position: toast.POSITION.TOP_RIGHT });
-              handleCreateAccount(firstName, lastName, email, password, res);
+              handleCreateAccount(firstName, lastName, phone, email, password, res);
             } else {
               toast.info('Persona referida no encontrada!', { position: toast.POSITION.TOP_RIGHT });
             }
@@ -109,7 +113,7 @@ const AuthRegister = () => {
     }
   };
 
-  const handleCreateAccount = (name, lastname, mail, pass, ref) => {
+  const handleCreateAccount = (name, lastname, phone, mail, pass, ref) => {
     setOpenLoader(true);
     createUserWithEmailAndPassword(authentication, mail, pass)
       .then((credentials) => {
@@ -128,7 +132,7 @@ const AuthRegister = () => {
           lastName: lastname,
           name: name,
           ownReferal: Number.parseInt(generateId(6)),
-          phone: null,
+          phone: phone,
           profile: genConst.CONST_PRO_DEF,
           refer: ref ? ref : null,
           registerDate: shortDateFormat(),
@@ -182,7 +186,7 @@ const AuthRegister = () => {
               value={firstName}
               name="firstName"
               onChange={(ev) => setFirstName(ev.target.value)}
-              inputProps={{}}
+              endAdornment={<IconUser />}
             />
           </FormControl>
         </Grid>
@@ -195,11 +199,24 @@ const AuthRegister = () => {
               value={lastName}
               name="lastName"
               onChange={(ev) => setLastName(ev.target.value)}
-              inputProps={{}}
+              endAdornment={<IconUser />}
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 1 }}>
+            <InputLabel htmlFor="outlined-adornment-phone-register">Teléfono</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-phone-register"
+              type="number"
+              value={phone}
+              name="phone"
+              onChange={(ev) => setPhone(ev.target.value)}
+              endAdornment={<IconDeviceMobile />}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
           <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 1 }}>
             <InputLabel htmlFor="outlined-adornment-email-register">Correo Electrónico</InputLabel>
             <OutlinedInput
@@ -208,7 +225,7 @@ const AuthRegister = () => {
               value={email}
               name="email"
               onChange={(ev) => setEmail(ev.target.value)}
-              inputProps={{}}
+              endAdornment={<IconMail />}
             />
           </FormControl>
         </Grid>
@@ -248,7 +265,7 @@ const AuthRegister = () => {
               value={emailRef}
               name="emailRef"
               onChange={(ev) => setEmailRef(ev.target.value)}
-              inputProps={{}}
+              endAdornment={<IconUsers />}
             />
           </FormControl>
         </Grid>

@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // project imports
 import AnimateButton from 'components/extended/AnimateButton';
+import { IconMail } from '@tabler/icons';
 
 const AuthRecover = ({ ...others }) => {
   const theme = useTheme();
@@ -58,7 +59,7 @@ const AuthRecover = ({ ...others }) => {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 label="Correo Electrónico"
-                inputProps={{}}
+                endAdornment={<IconMail />}
               />
               {touched.email && errors.email && (
                 <FormHelperText error id="standard-weight-helper-text-email-login">

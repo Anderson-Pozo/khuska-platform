@@ -21,6 +21,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AnimateButton from 'components/extended/AnimateButton';
 import { collUserPhone } from 'store/collections';
 import { fullDate } from 'utils/validations';
+import { IconDeviceMobile } from '@tabler/icons';
 
 const CardWrapper = styled(MainCard)(() => ({
   backgroundColor: '#414551',
@@ -87,6 +88,7 @@ const UserPhone = () => {
                     value={phone || ''}
                     name="phone"
                     onChange={(ev) => setPhone(ev.target.value)}
+                    endAdornment={<IconDeviceMobile />}
                   />
                 </FormControl>
               </Grid>

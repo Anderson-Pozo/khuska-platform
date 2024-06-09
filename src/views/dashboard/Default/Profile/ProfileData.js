@@ -20,40 +20,11 @@ import AnimateButton from 'components/extended/AnimateButton';
 import { collUsers } from 'store/collections';
 import { IconDeviceMobile, IconUser } from '@tabler/icons';
 
-const CardWrapper = styled(MainCard)(({ theme }) => ({
+const CardWrapper = styled(MainCard)(() => ({
   backgroundColor: '#414551',
   color: '#fff',
   overflow: 'hidden',
-  position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: theme.palette.secondary[800],
-    borderRadius: '50%',
-    top: -85,
-    right: -95,
-    [theme.breakpoints.down('sm')]: {
-      top: -105,
-      right: -140
-    }
-  },
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: theme.palette.secondary[800],
-    borderRadius: '50%',
-    top: -125,
-    right: -15,
-    opacity: 0.5,
-    [theme.breakpoints.down('sm')]: {
-      top: -155,
-      right: -70
-    }
-  }
+  position: 'relative'
 }));
 
 const ProfileData = () => {

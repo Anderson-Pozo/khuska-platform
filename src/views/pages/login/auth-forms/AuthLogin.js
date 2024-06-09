@@ -34,6 +34,7 @@ import { genConst, process } from 'store/constant';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
 import { collLog } from 'store/collections';
+import { IconUser } from '@tabler/icons';
 
 const AuthLogin = () => {
   let navigate = useNavigate();
@@ -138,7 +139,7 @@ const AuthLogin = () => {
               value={email}
               name="email"
               onChange={(ev) => setEmail(ev.target.value)}
-              label="Correo Electrónico / Username"
+              endAdornment={<IconUser />}
             />
           </FormControl>
         </Grid>

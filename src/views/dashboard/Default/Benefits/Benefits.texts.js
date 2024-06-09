@@ -12,6 +12,7 @@ export const titles = {
   buttonCreate: 'Crear',
   buttonEdit: 'Editar',
   buttonDelete: 'Borrar',
+  buttonAccept: 'Generar',
   buttonCancel: 'Cancelar',
   buttonClose: 'Cerrar',
   buttonExport: 'Exportar',
@@ -39,6 +40,8 @@ export const inputLabels = {
   observations: 'observationes',
   labelBirth: 'Fecha de Nacimiento',
   birth: 'birth',
-  placeHolderSearch: 'Buscar por email o apellido',
-  search: 'search'
+  placeHolderSearch: 'Buscar por usuario',
+  placeHolderAmount: 'Monto a procesar',
+  search: 'search',
+  orderValue: 'Ingrese el monto que desea procesar!'
 };

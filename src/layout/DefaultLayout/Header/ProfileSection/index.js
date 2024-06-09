@@ -36,8 +36,6 @@ import User1 from 'assets/images/profile/profile-picture-6.jpg';
 // assets
 import { IconLogout, IconSettings, IconUser, IconLock, IconCreditCard, IconNote, IconPhone, IconTicket } from '@tabler/icons';
 
-// ==============================|| PROFILE MENU ||============================== //
-
 const ProfileSection = () => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
@@ -113,7 +111,10 @@ const ProfileSection = () => {
             sx={{
               ...theme.typography.mediumAvatar,
               margin: '8px 0 8px 8px !important',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              width: 40,
+              height: 40,
+              objectFit: 'cover'
             }}
             ref={anchorRef}
             aria-controls={open ? 'menu-list-grow' : undefined}

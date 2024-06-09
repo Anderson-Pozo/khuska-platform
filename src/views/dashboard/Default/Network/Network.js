@@ -41,7 +41,7 @@ const Network = () => {
   //Variables
   const [userRefer, setUserRefer] = useState(null);
   const [userState, setUserState] = useState(null);
-  const [utlAvatar, setUrlAvatar] = useState(null);
+  const [urlAvatar, setUrlAvatar] = useState(null);
   const [open, setOpen] = useState(false);
   const stateSub = useGetSubscriptionState();
 
@@ -143,7 +143,7 @@ const Network = () => {
   const MainComponent = () => {
     return (
       <>
-        <Title message={titles.title} submessage={titles.ref + userRefer} avatar={utlAvatar} />
+        <Title message={titles.title} submessage={titles.ref + userRefer} avatar={urlAvatar} />
         <div hidden>{userState}</div>
         <Box>
           <Grid container spacing={gridSpacing}>
@@ -167,6 +167,7 @@ const Network = () => {
                                 avatar={child.avatar}
                                 name={child.name}
                                 lastName={child.lastName}
+                                phone={child.phone}
                                 email={child.email}
                                 state={child.state}
                               />
@@ -198,6 +199,7 @@ const Network = () => {
                                   avatar={child.avatar}
                                   name={child.name}
                                   lastName={child.lastName}
+                                  phone={child.phone}
                                   email={child.email}
                                   state={child.state}
                                 />
@@ -232,6 +234,7 @@ const Network = () => {
                                   avatar={child.avatar}
                                   name={child.name}
                                   lastName={child.lastName}
+                                  phone={child.phone}
                                   email={child.email}
                                   state={child.state}
                                 />
@@ -266,6 +269,7 @@ const Network = () => {
                                   avatar={child.avatar}
                                   name={child.name}
                                   lastName={child.lastName}
+                                  phone={child.phone}
                                   email={child.email}
                                   state={child.state}
                                 />

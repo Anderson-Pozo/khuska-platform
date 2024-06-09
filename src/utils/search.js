@@ -49,3 +49,9 @@ export function searchingProductsByNameOrCategory(search) {
     );
   };
 }
+
+export function searchingBenefit(search) {
+  return function (x) {
+    return x.id.includes(search) || x.nameUser.toLowerCase().includes(search) || x.nameUser.toUpperCase().includes(search) || !search;
+  };
+}
