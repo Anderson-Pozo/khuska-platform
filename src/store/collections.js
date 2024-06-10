@@ -23,6 +23,7 @@ export const collVoucher = 'Vouchers';
 export const collBenefits = 'Benefits';
 export const collNetwork = 'Network';
 export const collCategories = 'Categories';
+export const collOrders = 'Orders';
 
 //New Tables Khuska
 export const collSubscription = 'Subscription';

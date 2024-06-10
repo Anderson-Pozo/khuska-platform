@@ -29,18 +29,12 @@ import 'react-toastify/dist/ReactToastify.css';
 //Collections
 import { inputLabels, titles } from './Benefits.texts';
 //Utils
-import {
-  getTotalCancelBenefitByUserId,
-  getTotalPaidBenefitByUserId,
-  getTotalPendinBenefitByUserId,
-  getUserBenefits
-} from 'config/firebaseEvents';
+import { getTotalPaidBenefitByUserId, getTotalPendinBenefitByUserId, getUserBenefits } from 'config/firebaseEvents';
 import SubscriptionState from 'components/message/SubscriptionState';
 //types array
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
 import EarningBlueCard from 'components/cards/EarningBlueCard';
-import EarningRedCard from 'components/cards/EarningRedCard';
 import EarningYellowCard from 'components/cards/EaringYellowCard';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
@@ -54,7 +48,6 @@ import { fullDate } from 'utils/validations';
 export default function Benefits() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalC, setTotalC] = useState(0);
   const [totalP, setTotalP] = useState(0);
   const [totalPN, setTotalPN] = useState(0);
   const [dataList, setDataList] = useState([]);
@@ -71,9 +64,6 @@ export default function Benefits() {
         setOpen(true);
         getUserBenefits(user.uid).then((res) => {
           setDataList(res);
-        });
-        getTotalCancelBenefitByUserId(user.uid).then((res) => {
-          setTotalC(Number.parseFloat(res).toFixed(2));
         });
         getTotalPendinBenefitByUserId(user.uid).then((res) => {
           setTotalPN(Number.parseFloat(res).toFixed(2));
@@ -108,17 +98,17 @@ export default function Benefits() {
   const handleGenerateOrder = () => {
     if (!amount) {
       toast.info('Ingrese un valor!', { position: toast.POSITION.TOP_RIGHT });
-    } else if (Number.parseFloat(totalP) <= 0) {
+    } else if (Number.parseFloat(totalPN) <= 0) {
       toast.info('Saldo no disponible!', { position: toast.POSITION.TOP_RIGHT });
-    } else if (amount < 31) {
-      toast.info('El monto mínimo debe ser $30!', { position: toast.POSITION.TOP_RIGHT });
+    } else if (amount < 9) {
+      toast.info('El monto mínimo debe ser $9!', { position: toast.POSITION.TOP_RIGHT });
     } else {
       toast.success('Orden generada correctamente!', { position: toast.POSITION.TOP_RIGHT });
       const idOrder = generateId(10);
       const object = {
         id: idOrder,
         amount: Number.parseFloat(amount).toFixed(2),
-        ctaAmount: Number.parseFloat(totalP).toFixed(2),
+        ctaAmount: Number.parseFloat(totalPN).toFixed(2),
         createAt: fullDate(),
         state: 1
       };
@@ -180,14 +170,11 @@ export default function Benefits() {
             <Grid container spacing={1} sx={{ p: 2 }}>
               <Grid item xs={12}>
                 <Grid container spacing={2}>
-                  <Grid item lg={4} md={4} sm={4} xs={4}>
-                    <EarningBlueCard total={totalP} detail="Pagado" />
+                  <Grid item lg={6} md={6} sm={6} xs={6}>
+                    <EarningBlueCard total={totalP} detail="Saldo Actual" />
                   </Grid>
-                  <Grid item lg={4} md={4} sm={4} xs={4}>
+                  <Grid item lg={6} md={6} sm={6} xs={6}>
                     <EarningYellowCard total={totalPN} detail="Pendiente" />
-                  </Grid>
-                  <Grid item lg={4} md={4} sm={4} xs={4}>
-                    <EarningRedCard total={totalC} detail="Cancelado" />
                   </Grid>
                 </Grid>
               </Grid>
@@ -209,7 +196,7 @@ export default function Benefits() {
                       <TableCell key="id-createAt" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                         {'Fecha'}
                       </TableCell>
-                      <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                      <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold', display: 'none' }}>
                         {'Estado'}
                       </TableCell>
                       <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
@@ -227,7 +214,7 @@ export default function Benefits() {
                           <TableCell align="left">{r.nameRefer}</TableCell>
                           <TableCell align="left">{r.level}</TableCell>
                           <TableCell align="left">{r.createAt}</TableCell>
-                          <TableCell align="left">
+                          <TableCell align="left" style={{ display: 'none' }}>
                             {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
                           </TableCell>
                           <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
@@ -281,10 +268,10 @@ export default function Benefits() {
             Generar orden de pago
           </Typography>
           <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
-            Recuerde que para generar una orden de pago el monto mīnimo debe ser $30
+            Recuerde que para generar una orden de pago el monto mínimo debe ser $30
           </Typography>
           <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
-            Saldo Actual: <strong>$ {totalP}</strong>
+            Saldo Actual: <strong>$ {totalPN}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
