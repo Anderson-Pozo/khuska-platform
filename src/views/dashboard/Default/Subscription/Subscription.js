@@ -21,13 +21,20 @@ import {
   Tab,
   Modal
 } from '@mui/material';
-import CreditCard from 'components/creditCard/CreditCard';
 import CircularProgress from '@mui/material/CircularProgress';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // project imports
-import { genConst } from 'store/constant';
-import { endDateFormatWithParam, endDateWithParam, fullDate, fullDateFormat, initDate, shortDateFormat } from 'utils/validations';
+import { API_KEYS, genConst } from 'store/constant';
+import {
+  calculateNewDateAddingDays,
+  endDateFormatWithParam,
+  endDateWithParam,
+  fullDate,
+  fullDateFormat,
+  initDate,
+  shortDateFormat
+} from 'utils/validations';
 import Deposit from './Deposit';
 import { IconBrandPaypal, IconCreditCard } from '@tabler/icons';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -43,6 +50,8 @@ import {
 } from 'config/firebaseEvents';
 import { collSubscription, collUsers } from 'store/collections';
 import { sendPaymentSubKhuskaEmail } from 'utils/sendEmail';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import PayPalButton from './PayPalButton';
 
 let globalTotal = 0;
 
@@ -81,9 +90,12 @@ const Subscription = () => {
   //DATE PARAMS
   const [startDate] = useState(initDate());
   const [endDate, setEndDate] = useState(null);
+  const [newStartDate, setNewStartDate] = useState(null);
+  const [newEndDate, setNewEndDate] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [value, setValue] = useState(0);
   const [openLoader, setOpenLoader] = useState(false);
+  const [object, setObject] = useState({});
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -112,6 +124,10 @@ const Subscription = () => {
     if (event.target.value == 1) {
       setIsType(true);
       setType(1);
+      const newStartDate = calculateNewDateAddingDays(23);
+      const newEndDate = calculateNewDateAddingDays(23 + 30);
+      setNewStartDate(newStartDate);
+      setNewEndDate(newEndDate);
       let subtotal = Math.round((genConst.CONST_MONTH_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
       let ivaValue = genConst.CONST_MONTH_VALUE - subtotal;
       let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
@@ -119,9 +135,25 @@ const Subscription = () => {
       setSubtotal(subtotal);
       setTotal(genConst.CONST_MONTH_VALUE);
       setEndDate(endDateWithParam(genConst.CONST_MONTH_DAYS));
+      getUserReferalDad(userId).then((code) => {
+        setObject({
+          userId: userId,
+          userName: userName,
+          userEmail: userEmail,
+          type: 1,
+          code: code ? code : null,
+          startDate: newStartDate,
+          endDate: newEndDate,
+          endDateFormat: endDateFormatWithParam(genConst.CONST_MONTH_DAYS + 23)
+        });
+      });
     } else if (event.target.value == 2) {
       setIsType(true);
       setType(2);
+      const newStartDate = calculateNewDateAddingDays(23);
+      const newEndDate = calculateNewDateAddingDays(23 + 365);
+      setNewStartDate(newStartDate);
+      setNewEndDate(newEndDate);
       let subtotal = Math.round((genConst.CONST_YEAR_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
       let ivaValue = genConst.CONST_YEAR_VALUE - subtotal;
       let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
@@ -129,6 +161,18 @@ const Subscription = () => {
       setSubtotal(subtotal);
       setTotal(genConst.CONST_YEAR_VALUE);
       setEndDate(endDateWithParam(genConst.CONST_YEAR_DAYS));
+      getUserReferalDad(userId).then((code) => {
+        setObject({
+          userId: userId,
+          userName: userName,
+          userEmail: userEmail,
+          type: 2,
+          code: code ? code : null,
+          startDate: newStartDate,
+          endDate: newEndDate,
+          endDateFormat: endDateFormatWithParam(genConst.CONST_YEAR_DAYS + 23)
+        });
+      });
     }
   };
 
@@ -147,7 +191,7 @@ const Subscription = () => {
     });
   };
 
-  const subscribeUser = (id, userName, userEmail, ref, type, result) => {
+  const subscribeUser = (userId, userName, userEmail, ref, type, result) => {
     const subObject = {
       date: fullDate(),
       dateFormat: fullDateFormat(),
@@ -155,7 +199,7 @@ const Subscription = () => {
       emailUser: userEmail,
       endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
       endDateFormat: type == 1 ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS) : endDateFormatWithParam(genConst.CONST_YEAR_DAYS),
-      idUser: id,
+      idUser: userId,
       nameUser: userName,
       price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,
       refCode: ref ? ref : null,
@@ -168,9 +212,9 @@ const Subscription = () => {
       state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN
     };
     if (result === 200) {
-      createDocument(collSubscription, id, subObject);
-      updateDocument(collUsers, id, usrObject);
-      paymentDistribution(id, userName, userEmail, ref);
+      createDocument(collSubscription, userId, subObject);
+      updateDocument(collUsers, userId, usrObject);
+      paymentDistribution(userId, userName, userEmail, ref);
     } else {
       console.log('Algo salio mal!');
       setOpenLoader(false);
@@ -286,6 +330,26 @@ const Subscription = () => {
                             </Grid>
                             <Grid item xs={6}>
                               <Typography variant={'h5'} style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                                Nueva Fecha Inicio:
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant={'h5'} style={{ textAlign: 'left', marginLeft: 20 }}>
+                                {newStartDate}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant={'h5'} style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                                Nueva Fecha Fin:
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant={'h5'} style={{ textAlign: 'left', marginLeft: 20 }}>
+                                {newEndDate}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant={'h5'} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                                 Subtotal:
                               </Typography>
                             </Grid>
@@ -386,11 +450,34 @@ const Subscription = () => {
                             <strong>Total a Pagar: </strong>
                             <span style={{ fontWeight: 'normal' }}>$ {total}</span>
                             <br />
+                            <br />
+                            <PayPalScriptProvider
+                              options={{
+                                'client-id': API_KEYS.PAYPAL_CLIENT_ID_TEST
+                              }}
+                            >
+                              <center>
+                                <div style={{ width: '50%' }}>
+                                  <PayPalButton
+                                    invoice={type == 1 ? 'Suscripción mensual Khuska' : 'Suscripción anual Khuska'}
+                                    totalValue={total}
+                                    object={object}
+                                  />
+                                </div>
+                              </center>
+                            </PayPalScriptProvider>
                             <Button
                               variant="contained"
                               sx={{ mt: 1, mr: 1 }}
                               startIcon={<IconBrandPaypal />}
-                              style={{ color: '#FFF', height: 60, borderRadius: 10, width: 280, backgroundColor: '#FFC439' }}
+                              style={{
+                                color: '#FFF',
+                                height: 60,
+                                borderRadius: 10,
+                                width: 280,
+                                backgroundColor: '#FFC439',
+                                display: 'none'
+                              }}
                               onClick={handlePayPal}
                             >
                               <span style={{ color: '#003087', fontWeight: 'bold', fontSize: 15 }}>Pay</span>
@@ -398,7 +485,7 @@ const Subscription = () => {
                             </Button>
                           </TabPanel>
                           <TabPanel value={value} index={1}>
-                            <CreditCard total={total} type={type} />
+                            <Typography variant={'h5'}>{'Próximamente.'}</Typography>
                           </TabPanel>
                         </Box>
                       ) : method == 2 ? (
@@ -408,7 +495,9 @@ const Subscription = () => {
                       )}
                       <Box sx={{ mb: 2, mt: 0 }}>
                         <center>
-                          <Typography variant={'h5'}>{'La activación puede tomar hasta 24 horas.'}</Typography>
+                          <Typography variant={'h5'} hidden>
+                            {'La activación puede tomar hasta 24 horas.'}
+                          </Typography>
                           <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
                             Regresar
                           </Button>

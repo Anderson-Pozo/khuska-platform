@@ -4,6 +4,10 @@ export const drawerWidth = 260;
 export const appDrawerWidth = 320;
 export const ctaAccount = 'CTAACC';
 
+export const API_KEYS = {
+  PAYPAL_CLIENT_ID_TEST: 'ATID4pMhXRXf8RGlt5drorRrPIDaTtPB0fVVDvKIcQ5FPvGyophM-X7UayLT21xIuCXN1CrZO0CpRfj4'
+};
+
 export const process = {
   LOG_USER_REGISTER: 'REGISTRO DE USUARIO',
   LOG_USER_LOGIN: 'INICIO DE SESIÓN DE USUARIO',

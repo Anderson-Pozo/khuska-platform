@@ -29,7 +29,7 @@ import 'react-toastify/dist/ReactToastify.css';
 //Collections
 import { inputLabels, titles } from './Benefits.texts';
 //Utils
-import { getTotalPaidBenefitByUserId, getTotalPendinBenefitByUserId, getUserBenefits } from 'config/firebaseEvents';
+import { createDocument, getTotalPaidBenefitByUserId, getTotalPendinBenefitByUserId, getUserBenefits } from 'config/firebaseEvents';
 import SubscriptionState from 'components/message/SubscriptionState';
 //types array
 import MessageDark from 'components/message/MessageDark';
@@ -44,6 +44,7 @@ import { IconCheck, IconCircleX, IconFileDollar, IconPlus, IconSearch } from '@t
 import { searchingBenefit } from 'utils/search';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
+import { collOrders } from 'store/collections';
 
 export default function Benefits() {
   const [page, setPage] = useState(0);
@@ -56,12 +57,18 @@ export default function Benefits() {
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [amount, setAmount] = useState(0);
+  const [userId, setUserId] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         setOpen(true);
+        setUserId(user.uid);
+        setUserName(user.displayName);
+        setUserEmail(user.email);
         getUserBenefits(user.uid).then((res) => {
           setDataList(res);
         });
@@ -110,9 +117,13 @@ export default function Benefits() {
         amount: Number.parseFloat(amount).toFixed(2),
         ctaAmount: Number.parseFloat(totalPN).toFixed(2),
         createAt: fullDate(),
+        userId: userId,
+        userName: userName,
+        userEmail: userEmail,
         state: 1
       };
       console.log(object);
+      createDocument(collOrders, idOrder, object);
     }
   };
 

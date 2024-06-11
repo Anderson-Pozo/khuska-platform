@@ -4,6 +4,12 @@ export function validateEmail(email) {
   return re.test(email);
 }
 
+export function calculateNewDateAddingDays(days) {
+  const today = new Date();
+  today.setDate(today.getDate() + Number(days));
+  return today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+}
+
 export function generateDate() {
   var sp = '/';
   var today = new Date();

@@ -110,6 +110,8 @@ const ProductsEditDefault = Loadable(lazy(() => import('views/dashboard/Default/
 const ProductsViewDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductView')));
 const ProductMessagesDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductMessage')));
 const ProductMessagesChatDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductMessageChat')));
+const SuccessDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Success')));
+const FailedDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Failed')));
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
@@ -214,6 +216,8 @@ const App = () => {
               <Route element={<UserPaymentMethodsDefault />} path="user-payment-methods" exact />
               <Route element={<UserSecurityDefault />} path="user-security" exact />
               <Route element={<UserSubscriptionDefault />} path="user-subscription" exact />
+              <Route element={<SuccessDefault />} path="success" exact />
+              <Route element={<FailedDefault />} path="failed" exact />
             </Route>
           )}
         </Routes>
