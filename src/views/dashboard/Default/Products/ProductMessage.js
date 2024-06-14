@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Avatar, Box, Grid, Modal, ListItemButton, ButtonGroup } from '@mui/material';
+import { Avatar, Box, Grid, Modal, ListItemButton, ButtonGroup, AppBar, Toolbar, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,11 +10,15 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { getMessageByProductId } from 'config/firebaseEvents';
 import MessageDark from 'components/message/MessageDark';
+import { IconArrowBack, IconBox, IconEye } from '@tabler/icons';
 
 export default function Messages() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idProduct = searchParams.get('id');
+  const idBusiness = searchParams.get('idBusiness');
+  //const nameProduct = searchParams.get('name');
+  const nameBusiness = searchParams.get('nameBusiness');
   const [openLoader, setOpenLoader] = useState(false);
   const [messages, setMessages] = useState([]);
 
@@ -45,6 +49,34 @@ export default function Messages() {
   return (
     <Box>
       <ToastContainer />
+      <AppBar position="static" style={uiStyles.appbar}>
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconBox color="#FFF" />
+          </IconButton>
+          <Tooltip title="Regresar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                navigate({
+                  pathname: '/app/products',
+                  search: `?id=${idBusiness}&name=${nameBusiness}`
+                });
+              }}
+            >
+              <IconArrowBack />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Chat del Producto
+          </Typography>
+          <Tooltip title="">
+            <IconButton color="inherit">
+              <IconEye />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+      </AppBar>
       {messages.length > 0 ? (
         <Grid container spacing={1} style={{ marginTop: 5 }}>
           <Grid item lg={12} xs={12}>

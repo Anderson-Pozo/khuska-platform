@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   AppBar,
+  Box,
   Button,
   CssBaseline,
   Drawer,
@@ -13,17 +14,14 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  IconButton,
-  Avatar
+  IconButton
 } from '@mui/material';
 import { uiStyles } from './styles';
 import { Link as Scroll } from 'react-scroll';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box } from '@mui/system';
 import Hero from './Hero';
-import logo from 'assets/images/khuska/logo.png';
-import defaultAvatar from 'assets/images/profile/profile-picture-6.jpg';
+import logo from 'assets/images/khuska/logoW.png';
 import { useAuth } from 'hooks/useAuth';
 import { isSessionActive } from 'config/firebaseEvents';
 
@@ -31,18 +29,13 @@ const drawerWidth = 240;
 
 const Header = (props) => {
   let navigate = useNavigate();
-  const { isLoggin, name } = useAuth();
+  const { isLoggin } = useAuth();
   const { window } = props;
-  const [checked, setChecked] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
-
-  useEffect(() => {
-    setChecked(true);
-  }, []);
 
   const handleGoTo = () => {
     isSessionActive(navigate);
@@ -52,41 +45,56 @@ const Header = (props) => {
     isSessionActive(navigate);
   };
 
+  //MOBILE
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        <img src={logo} alt="logobrand" width={130} />
+        <img src={logo} alt="khuska logo brand" width={130} />
       </Typography>
       <Divider />
       <List>
         <Scroll to="header" smooth={true}>
           <ListItem key={1} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }} onClick={() => setMobileOpen(false)}>
-              <ListItemText primary={'Inicio'} />
+              <ListItemText primary={<span style={{ fontSize: 16 }}>INICIO</span>} />
             </ListItemButton>
           </ListItem>
         </Scroll>
         <Scroll to="about" smooth={true}>
           <ListItem key={2} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }} onClick={() => setMobileOpen(false)}>
-              <ListItemText primary={'Somos'} />
+              <ListItemText primary={<span style={{ fontSize: 16 }}>KHUSKA</span>} />
             </ListItemButton>
           </ListItem>
         </Scroll>
         <Scroll to="contacts" smooth={true}>
           <ListItem key={4} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }} onClick={() => setMobileOpen(false)}>
-              <ListItemText primary={'Contáctanos'} />
+              <ListItemText primary={<span style={{ fontSize: 16 }}>CONTÁCTANOS</span>} />
             </ListItemButton>
           </ListItem>
         </Scroll>
-        <Box style={{ padding: 10 }}>
-          <center>
-            <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} fullWidth style={{ borderRadius: 10, height: 40 }}>
-              Login
+        {isLoggin ? (
+          <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
+            <Button
+              variant="contained"
+              startIcon={<PersonIcon />}
+              onClick={() => {
+                setMobileOpen(false);
+                handleGoDash();
+              }}
+              style={{ fontSize: 12, height: 50, marginTop: 30 }}
+            >
+              IR AL DASHBOARD
             </Button>
-          </center>
-        </Box>
+          </Box>
+        ) : (
+          <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
+            <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} style={{ width: 180, height: 40, fontSize: 12 }}>
+              INICIAR SESIÓN
+            </Button>
+          </Box>
+        )}
       </List>
     </Box>
   );
@@ -100,18 +108,24 @@ const Header = (props) => {
         <Toolbar style={uiStyles.appbarWrapper}>
           <div style={uiStyles.appbarTitle}>
             <Link to="/">
-              <img src={logo} alt="logobrand" width={160} />
+              <img src={logo} alt="logobrand" width={130} />
             </Link>
           </div>
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
             <Scroll to="header" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 0, fontSize: 13 }}>Inicio</Button>
+              <Button sx={{ color: '#fff', marginLeft: 0, fontSize: 13 }}>
+                <span style={{ fontSize: 13 }}>INICIO</span>
+              </Button>
             </Scroll>
             <Scroll to="about" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 13 }}>Somos</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, fontSize: 13 }}>
+                <span style={{ fontSize: 13 }}>KHUSKA</span>
+              </Button>
             </Scroll>
             <Scroll to="contacts" smooth={true}>
-              <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 13 }}>Contáctanos</Button>
+              <Button sx={{ color: '#fff', marginLeft: 3, marginRight: 3, fontSize: 13 }}>
+                <span style={{ fontSize: 13 }}>CONTÁCTANOS</span>
+              </Button>
             </Scroll>
           </Box>
           {isLoggin ? (
@@ -119,17 +133,20 @@ const Header = (props) => {
               <List>
                 <ListItem disablePadding>
                   <ListItemButton onClick={handleGoDash} style={{ borderRadius: 12, height: 50 }}>
-                    <Avatar alt="avatar user" src={defaultAvatar} sx={{ width: 35, height: 35, marginRight: 1 }} />
-                    <p style={{ color: '#FFF', fontSize: 12, fontWeight: 'bold' }}>{name}</p>
+                    <p style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>IR AL DASHBOARD</p>
                   </ListItemButton>
                 </ListItem>
               </List>
             </Box>
           ) : (
-            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
-              <Button variant="contained" startIcon={<PersonIcon />} onClick={handleGoTo} style={{ width: 120, fontSize: 12 }}>
-                Login
-              </Button>
+            <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }} onClick={handleGoTo}>
+              <List>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleGoTo} style={{ borderRadius: 12, height: 50 }}>
+                    <p style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>INICIAR SESIÓN</p>
+                  </ListItemButton>
+                </ListItem>
+              </List>
             </Box>
           )}
           <IconButton
@@ -161,7 +178,7 @@ const Header = (props) => {
         </Drawer>
       </nav>
 
-      <Hero checked={checked} />
+      <Hero />
     </Box>
   );
 };

@@ -41,6 +41,9 @@ const BusinessInfoSearch = Loadable(lazy(() => import('views/home/BusinessInfo')
 const Home = Loadable(lazy(() => import('views/home/Home')));
 // Error
 const NotFound = Loadable(lazy(() => import('views/pages/error/NotFound')));
+const NotFoundMarket = Loadable(lazy(() => import('views/home/NotFound')));
+const NotFoundAdmin = Loadable(lazy(() => import('views/dashboard/Admin/NotFound/NotFound')));
+const NotFoundDefault = Loadable(lazy(() => import('views/dashboard/Default/NotFound/NotFound')));
 // dashboard Admin
 const DashboardAdmin = Loadable(lazy(() => import('views/dashboard/Admin')));
 // dashboard Profile
@@ -152,6 +155,8 @@ const App = () => {
             <Route element={<Login />} path="login" exact />
             <Route element={<Register />} path="register" exact />
             <Route element={<Recovery />} path="recovery" exact />
+            <Route element={<NotFoundMarket />} path="404" exact />
+            <Route path="*" element={<Navigate to="404" />} />
           </Route>
           <Route element={<MinimalLayout />} path="/auth" exact>
             <Route element={<AuthSignin />} path="signin" exact />
@@ -191,6 +196,8 @@ const App = () => {
               <Route element={<UserPaymentMethods />} path="user-payment-methods" exact />
               <Route element={<UserSecurity />} path="user-security" exact />
               <Route element={<Logs />} path="logs" exact />
+              <Route element={<NotFoundAdmin />} path="404" exact />
+              <Route path="*" element={<Navigate to="404" />} />
             </Route>
           ) : (
             <Route element={<DefaultLayout />} path="/app" exact>
@@ -218,6 +225,8 @@ const App = () => {
               <Route element={<UserSubscriptionDefault />} path="user-subscription" exact />
               <Route element={<SuccessDefault />} path="success" exact />
               <Route element={<FailedDefault />} path="failed" exact />
+              <Route element={<NotFoundDefault />} path="404" exact />
+              <Route path="*" element={<Navigate to="404" />} />
             </Route>
           )}
         </Routes>

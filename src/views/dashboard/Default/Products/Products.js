@@ -15,16 +15,27 @@ import {
   Box,
   Toolbar,
   Typography,
-  Container,
   Modal,
   Grid,
   OutlinedInput,
   ButtonGroup,
-  Avatar
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Products.styles';
-import { IconPlus, IconTrash, IconEdit, IconCircleX, IconEye, IconArrowBack, IconMessage } from '@tabler/icons';
+import {
+  IconPlus,
+  IconTrash,
+  IconEdit,
+  IconCircleX,
+  IconEye,
+  IconArrowBack,
+  IconMessage,
+  IconBox,
+  IconReload,
+  IconSearch
+} from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -57,6 +68,7 @@ export default function Products() {
   const [search, setSearch] = useState('');
   const [openLoader, setOpenLoader] = useState(false);
   const [dataList, setDataList] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
 
   const getData = () => {
     getProductsByBusiness(idBusiness).then((data) => {
@@ -99,49 +111,80 @@ export default function Products() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconArrowBack
-              color="#FFF"
-              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconBox color="#FFF" />
+          </IconButton>
+          <Tooltip title="Regresar">
+            <IconButton
+              color="inherit"
               onClick={() => {
                 navigate('/app/business');
               }}
-            />
-            <IconPlus
-              color="#FFF"
-              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+            >
+              <IconArrowBack />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Crear Producto">
+            <IconButton
+              color="inherit"
               onClick={() => {
                 navigate({
                   pathname: '/app/add-product',
                   search: `?id=${idBusiness}&name=${nameBusiness}`
                 });
               }}
-            />
-          </Toolbar>
-        </Container>
+            >
+              <IconPlus />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Recargar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                reloadData();
+              }}
+            >
+              <IconReload />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            {nameBusiness}
+          </Typography>
+          <Tooltip title="Buscar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setShowSearch(!showSearch);
+              }}
+            >
+              <IconSearch />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
-      <Box sx={{ flexGrow: 0 }}>
-        {dataList.length > 0 ? (
-          <OutlinedInput
-            id={inputLabels.search}
-            type="text"
-            name={inputLabels.search}
-            onChange={(ev) => setSearch(ev.target.value)}
-            placeholder={inputLabels.placeHolderSearch}
-            style={{ width: '100%', marginTop: 10 }}
-          />
-        ) : (
-          <></>
-        )}
-      </Box>
+      {showSearch && (
+        <Box sx={{ flexGrow: 0 }}>
+          {dataList.length > 0 ? (
+            <OutlinedInput
+              id={inputLabels.search}
+              type="text"
+              name={inputLabels.search}
+              onChange={(ev) => setSearch(ev.target.value)}
+              placeholder={inputLabels.placeHolderSearch}
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
       {dataList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 400 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  <TableCell key="id-name" align="left" style={{ minWidth: 40, fontWeight: 'bold' }}></TableCell>
                   <TableCell key="id-name" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
                     {inputLabels.name}
                   </TableCell>
@@ -162,11 +205,6 @@ export default function Products() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((r) => (
                     <TableRow hover key={r.id}>
-                      <TableCell align="left">
-                        <ButtonGroup>
-                          <Avatar src={r.picture1 || ''} color="inherit" style={{ width: 32, height: 32 }} />
-                        </ButtonGroup>
-                      </TableCell>
                       <TableCell align="left">{r.name}</TableCell>
                       <TableCell align="left">$ {Number.parseFloat(r.price).toFixed(2)}</TableCell>
                       <TableCell align="left">{r.quantity} u</TableCell>
@@ -177,7 +215,7 @@ export default function Products() {
                             onClick={() => {
                               navigate({
                                 pathname: '/app/info-product',
-                                search: `?id=${r.id}`
+                                search: `?id=${r.id}&name=${r.name}&idBusiness=${idBusiness}&nameBusiness=${nameBusiness}`
                               });
                             }}
                           >
@@ -188,7 +226,7 @@ export default function Products() {
                             onClick={() => {
                               navigate({
                                 pathname: '/app/messages-product',
-                                search: `?id=${r.id}`
+                                search: `?id=${r.id}&name=${r.name}&idBusiness=${idBusiness}&nameBusiness=${nameBusiness}`
                               });
                             }}
                           >
@@ -199,7 +237,7 @@ export default function Products() {
                             onClick={() => {
                               navigate({
                                 pathname: '/app/edit-product',
-                                search: `?id=${r.id}`
+                                search: `?id=${r.id}&name=${r.name}&idBusiness=${idBusiness}&nameBusiness=${nameBusiness}`
                               });
                             }}
                           >
@@ -244,10 +282,10 @@ export default function Products() {
       )}
       <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.styleDelete}>
-          <Typography id="modal-modal-title" variant="h2" component="h2">
+          <Typography id="modal-modal-title" variant="h2" component="h2" align="center">
             {titles.modalDelete}
           </Typography>
-          <Typography id="modal-modal-title" variant="p" component="p" style={uiStyles.modalDeleteTitle}>
+          <Typography id="modal-modal-title" variant="p" component="p" align="center" style={uiStyles.modalDeleteTitle}>
             {titles.modaleDeleteDetail} <strong>{name}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
@@ -260,7 +298,7 @@ export default function Products() {
                         variant="contained"
                         startIcon={<IconTrash />}
                         size="large"
-                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_DELETE_COLOR }}
+                        style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                         onClick={handleDelete}
                       >
                         {titles.buttonDelete}
@@ -269,7 +307,7 @@ export default function Products() {
                         variant="contained"
                         startIcon={<IconCircleX />}
                         size="large"
-                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
                         onClick={handleCloseDelete}
                       >
                         {titles.buttonCancel}

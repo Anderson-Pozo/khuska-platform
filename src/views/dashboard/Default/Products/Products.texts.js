@@ -61,7 +61,7 @@ export const titles = {
 };
 
 export const inputLabels = {
-  id: 'Identificativo del negocio',
+  id: 'Identificativo del producto',
   name: 'Nombre Producto',
   owner: 'Responsable',
   description: 'Descripción del Producto',
@@ -74,13 +74,13 @@ export const inputLabels = {
   province: 'Provincia',
   city: 'Ciudad',
   address: 'Dirección',
-  logo: 'Logotipo del negocio',
+  logo: 'Logotipo del producto',
   image: 'Imagen ',
   facebook: 'Link de Facebook',
   instagram: 'Link de Instagram',
   youtube: 'Link de Youtube',
   telegram: 'Link de Telegram',
-  search: 'Buscar por nombre de negocio',
+  search: 'Buscar por nombre de producto',
   validation: 'Puedes registrar hasta 3 negocios!',
-  placeHolderSearch: 'Buscar por nombre de Negocio'
+  placeHolderSearch: 'Buscar por nombre de Producto'
 };

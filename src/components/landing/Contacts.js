@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { uiStyles } from './styles';
-import { ButtonGroup, Button, Grid, TextField, Modal } from '@mui/material';
+import { Box, ButtonGroup, Button, Grid, TextField, Modal } from '@mui/material';
 import MainCard from 'components/cards/MainCard';
-import { Box } from '@mui/system';
 import { styled } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IconBrandFacebook, IconBrandInstagram, IconBrandWhatsapp } from '@tabler/icons';
@@ -16,7 +15,7 @@ import { collMail } from 'store/collections';
 import { fullDate } from 'utils/validations';
 
 const CardWrapper = styled(MainCard)(() => ({
-  backgroundColor: 'rgba(0,0,0,0.6)',
+  backgroundColor: 'rgba(0,0,0,0.9)',
   color: '#fff',
   overflow: 'hidden',
   position: 'relative',
@@ -75,17 +74,18 @@ export default function Contacts() {
             sx={{ p: 3 }}
             style={{
               borderRadius: 10,
-              backgroundColor: 'rgba(0,0,0,0.6)',
+              backgroundColor: 'rgba(0,0,0,0.9)',
               color: '#fff',
-              width: '100%'
+              width: '100%',
+              height: 320
             }}
           >
-            <h1 style={{ color: '#53338a', marginBottom: 30 }}>CONTÁCTANOS</h1>
-            <p style={{ textAlign: 'justify', textJustify: 'inter-word' }}>
+            <h2 style={{ color: '#53338a', marginBottom: 30 }}>CONTÁCTANOS</h2>
+            <p style={{ textAlign: 'justify', textJustify: 'inter-word', fontSize: 16, lineHeight: 'normal' }}>
               Puedes enviar tus mensajes vía mail, WhatsApp y nuestro equipo te contestará a la brevedad posible, estaremos gustosos de
               asesorarte para que consigas lo que estás buscando.
             </p>
-            <h3 style={{ color: '#9f98c2', marginTop: 30 }}>Síguenos en nuestras Redes Sociales:</h3>
+            <h3 style={{ color: '#9f98c2', marginTop: 30, fontSize: 16 }}>Síguenos en nuestras Redes Sociales:</h3>
             <center>
               <ButtonGroup disableElevation variant="contained" aria-label="Disabled elevation buttons">
                 <Button variant="outlined" style={{ width: 60, height: 60 }}>
@@ -105,7 +105,7 @@ export default function Contacts() {
           <CardWrapper border={false} content={false}>
             <Box sx={{ p: 5 }}>
               <center>
-                <h2>O escríbenos tus dudas en el siguiente formulario:</h2>
+                <h2 style={{ lineHeight: 'normal' }}>O escríbenos tus dudas en el siguiente formulario:</h2>
                 <Grid container spacing={4}>
                   <Grid item lg={6} md={6} sm={12} xs={12}>
                     <TextField

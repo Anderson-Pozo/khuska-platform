@@ -1,28 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { Button, Box, Grid, IconButton, Menu, MenuItem, FormControl, AppBar, Container, Toolbar, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Grid, IconButton, FormControl, AppBar, Toolbar, Typography, Paper, Tooltip } from '@mui/material';
 import { uiStyles } from './Business.styles';
-import { IconBook, IconApps, IconBusinessplan, IconBrandFacebook, IconBrandInstagram, IconBrandYoutube } from '@tabler/icons';
+import { IconBrandFacebook, IconBrandInstagram, IconBrandYoutube, IconBuilding, IconArrowBack, IconEye } from '@tabler/icons';
 //Notifications
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //Collections
-import { titles } from './Business.texts';
 import { getBusinessById } from 'config/firebaseEvents';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
+import { genConst } from 'store/constant';
 
 export default function BusinessInfo() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const idBusiness = searchParams.get('idBusiness');
+  const nameBusiness = searchParams.get('nameBusiness');
   const theme = useTheme();
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
   const [owner, setOwner] = useState(null);
   const [description, setDescription] = useState(null);
@@ -38,7 +36,7 @@ export default function BusinessInfo() {
   const [instagram, setInstagram] = useState(null);
   const [images, setImages] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     getBusinessById(id).then((data) => {
       setName(data[0].name);
       setOwner(data[0].owner);
@@ -92,210 +90,158 @@ export default function BusinessInfo() {
     });
   }, []);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.containerAdd}>
-          <Toolbar disableGutters>
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBusinessplan style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 10 }} />
-                  {titles.viewMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconBuilding color="#FFF" />
+          </IconButton>
+          <Tooltip title="Regresar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                navigate({
+                  pathname: '/app/products',
+                  search: `?id=${idBusiness}&name=${nameBusiness}`
+                });
+              }}
+            >
+              <IconArrowBack />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Información del Negocio
+          </Typography>
+          <Tooltip title="">
+            <IconButton color="inherit">
+              <IconEye />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
+      <Paper sx={uiStyles.paper}>
+        <Grid container spacing={1} style={{ marginTop: 5 }}>
+          <Grid item lg={6} xs={12}>
+            <Grid container spacing={0}>
+              <Grid item xs={12}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <h1 style={{ color: genConst.CONST_APPBAR }}>{name}</h1>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Responsable:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{owner}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Descripción:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{description}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Teléfono:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{phone}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Email:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{email}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Provincia / Ciudad:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{province + ' / ' + city}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Dirección:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{address}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Página Web:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <span>{webPage}</span>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <strong>Redes Sociales:</strong>
+                </FormControl>
+              </Grid>
+              <Grid item alignItems="center" xs={6} sx={{ mt: 2 }}>
+                <center>
+                  <IconButton color="inherit">
+                    <a href={facebook} target="blank" style={{ padding: 10 }}>
+                      <IconBrandFacebook size={40} />
+                    </a>
+                  </IconButton>
 
-      <Grid container spacing={1} style={{ marginTop: 5 }}>
-        <Grid item lg={6} xs={12}>
-          <Grid container spacing={0}>
-            <Grid item xs={12}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <h2>{name}</h2>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Responsable:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{owner}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Descripción:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{description}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Teléfono:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{phone}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Email:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{email}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Provincia / Ciudad:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{province + ' / ' + city}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Dirección:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{address}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Página Web:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <span>{webPage}</span>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                <strong>Redes Sociales:</strong>
-              </FormControl>
-            </Grid>
-            <Grid item alignItems="center" xs={10}>
-              <center>
-                <a href={facebook} target="blank" style={{ padding: 10 }}>
-                  <IconBrandFacebook size={40} />
-                </a>
-                <a href={instagram} target="blank" style={{ padding: 10 }}>
-                  <IconBrandInstagram size={40} />
-                </a>
-                <a href={youtube} target="blank" style={{ padding: 10 }}>
-                  <IconBrandYoutube size={40} />
-                </a>
-              </center>
+                  <IconButton color="inherit">
+                    <a href={instagram} target="blank" style={{ padding: 10 }}>
+                      <IconBrandInstagram size={40} />
+                    </a>
+                  </IconButton>
+
+                  <IconButton color="inherit">
+                    <a href={youtube} target="blank" style={{ padding: 10 }}>
+                      <IconBrandYoutube size={40} />
+                    </a>
+                  </IconButton>
+                </center>
+              </Grid>
             </Grid>
           </Grid>
+          <Grid item lg={6} xs={12}>
+            <center>
+              <ImageGallery
+                items={images}
+                autoPlay
+                showPlayButton={false}
+                showNav={false}
+                showFullscreenButton={false}
+                slideInterval={5000}
+              />
+            </center>
+          </Grid>
         </Grid>
-        <Grid item lg={6} xs={12}>
-          <center>
-            <ImageGallery
-              items={images}
-              autoPlay
-              showPlayButton={false}
-              showNav={false}
-              showFullscreenButton={false}
-              slideInterval={5000}
-            />
-          </center>
-        </Grid>
-      </Grid>
+      </Paper>
     </div>
   );
 }

@@ -1,33 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import {
-  Button,
-  Box,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  InputLabel,
-  OutlinedInput,
-  FormControl,
-  AppBar,
-  Container,
-  Toolbar,
-  Typography,
-  Modal
-} from '@mui/material';
+import { Box, Grid, IconButton, InputLabel, OutlinedInput, FormControl, AppBar, Toolbar, Typography, Modal, Tooltip } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import MenuIcon from '@mui/icons-material/Menu';
 import { uiStyles } from './Business.styles';
-
-import { IconBook, IconApps, IconDeviceFloppy } from '@tabler/icons';
-
+import {
+  IconDeviceFloppy,
+  IconBuilding,
+  IconArrowBack,
+  IconLocation,
+  IconAddressBook,
+  IconBrandFacebook,
+  IconBrandInstagram,
+  IconBrandYoutube,
+  IconWorld,
+  IconMail,
+  IconDeviceMobile,
+  IconUser
+} from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 //Collections
 import * as Msg from 'store/message';
 import { titles, inputLabels } from './Business.texts';
@@ -40,13 +34,10 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function BusinessEdit() {
   let navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const [openLoader, setOpenLoader] = useState(false);
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [name, setName] = useState(null);
   const [owner, setOwner] = useState(null);
   const [description, setDescription] = useState(null);
@@ -71,8 +62,13 @@ export default function BusinessEdit() {
   const [url2, setUrl2] = useState(null);
   const [url3, setUrl3] = useState(null);
   const [url4, setUrl4] = useState(null);
+  const [changeLogo, setChangeLogo] = useState(false);
+  const [change1, setChange1] = useState(false);
+  const [change2, setChange2] = useState(false);
+  const [change3, setChange3] = useState(false);
+  const [change4, setChange4] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     getBusinessById(id).then((data) => {
       setName(data[0].name);
       setOwner(data[0].owner);
@@ -94,34 +90,9 @@ export default function BusinessEdit() {
     });
   }, []);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleEdit = () => {
     if (!name || !owner || !description || !phone || !province || !address || !city || !email) {
       toast.info(Msg.requiered, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!logo.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture1.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture2.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture3.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
-    } else if (!picture4.preview) {
-      toast.info(Msg.imgreq, { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpenLoader(true);
       const object = {
@@ -134,91 +105,93 @@ export default function BusinessEdit() {
         province: province,
         city: city,
         address: address,
-        logo: null,
-        picture1: null,
-        picture2: null,
-        picture3: null,
-        picture4: null,
         facebook: facebook,
         instagram: instagram,
         youtube: youtube,
-        createAt: fullDate(),
-        updateAt: null,
-        deleteAt: null,
-        state: 1
+        updateAt: fullDate()
       };
       //console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
       //console.log(Intl.DateTimeFormat().resolvedOptions().locale);
       setTimeout(() => {
         updateDocument(collBusiness, id, object);
         //Logo
-        if (logo.raw !== null) {
-          const imageName = id + 'logo.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, logo.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                logo: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (changeLogo) {
+          if (logo.raw !== null) {
+            const imageName = id + 'logo.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, logo.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  logo: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture1
-        if (picture1.raw !== null) {
-          const imageName = id + 'p1.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture1.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture1: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change1) {
+          if (picture1.raw !== null) {
+            const imageName = id + 'p1.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture1.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture1: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture2
-        if (picture2.raw !== null) {
-          const imageName = id + 'p2.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture2.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture2: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change2) {
+          if (picture2.raw !== null) {
+            const imageName = id + 'p2.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture2.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture2: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture3
-        if (picture3.raw !== null) {
-          const imageName = id + 'p3.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture3.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture3: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change3) {
+          if (picture3.raw !== null) {
+            const imageName = id + 'p3.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture3.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture3: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         //Picture4
-        if (picture4.raw !== null) {
-          const imageName = id + 'p4.jpg';
-          const imageRef = ref(storage, `business/${imageName}`);
-          uploadBytes(imageRef, picture4.raw).then((snap) => {
-            getDownloadURL(snap.ref).then((url) => {
-              const obj = {
-                picture4: url
-              };
-              updateDocument(collBusiness, id, obj);
+        if (change4) {
+          if (picture4.raw !== null) {
+            const imageName = id + 'p4.jpg';
+            const imageRef = ref(storage, `business/${imageName}`);
+            uploadBytes(imageRef, picture4.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture4: url
+                };
+                updateDocument(collBusiness, id, obj);
+              });
             });
-          });
+          }
         }
         setOpenLoader(false);
-        toast.success(Msg.coucresucc, { position: toast.POSITION.TOP_RIGHT });
         clearData();
+        navigate('/app/business');
       }, 3000);
     }
   };
@@ -270,6 +243,7 @@ export default function BusinessEdit() {
         });
       };
     }
+    setChangeLogo(true);
   };
 
   const handlePicture1Change = (e) => {
@@ -284,6 +258,7 @@ export default function BusinessEdit() {
         });
       };
     }
+    setChange1(true);
   };
 
   const handlePicture2Change = (e) => {
@@ -298,6 +273,7 @@ export default function BusinessEdit() {
         });
       };
     }
+    setChange2(true);
   };
 
   const handlePicture3Change = (e) => {
@@ -312,6 +288,7 @@ export default function BusinessEdit() {
         });
       };
     }
+    setChange3(true);
   };
 
   const handlePicture4Change = (e) => {
@@ -326,96 +303,47 @@ export default function BusinessEdit() {
         });
       };
     }
+    setChange4(true);
   };
 
   return (
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.containerAdd}>
-          <Toolbar disableGutters>
-            <IconBook />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.viewMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    navigate('/app/business');
-                  }}
-                >
-                  <IconBook style={{ marginRight: 10 }} />
-                  {titles.viewMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={{ flexGrow: 0 }}>
-              <Button variant="primary" endIcon={<IconDeviceFloppy />} onClick={handleEdit}>
-                {titles.buttonEdit}
-              </Button>
-            </Box>
-          </Toolbar>
-        </Container>
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconBuilding color="#FFF" />
+          </IconButton>
+          <Tooltip title="Regresar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                navigate('/app/business');
+              }}
+            >
+              <IconArrowBack />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Editar Negocio
+          </Typography>
+          <Tooltip title="Guardar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                handleEdit();
+              }}
+            >
+              <IconDeviceFloppy />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
 
-      <Grid container spacing={1} style={{ marginTop: 5 }}>
-        <Grid item lg={7} xs={12}>
-          <Grid container spacing={1}>
-            <Grid item xs={7}>
+      <Grid container spacing={0.5} style={{ marginTop: 5 }}>
+        <Grid item lg={12} xs={12}>
+          <Grid container spacing={0.5}>
+            <Grid item lg={6} md={6} sm={12} xs={12}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="name">{inputLabels.name + ' *'}</InputLabel>
                 <OutlinedInput
@@ -425,10 +353,11 @@ export default function BusinessEdit() {
                   value={name || ''}
                   inputProps={{}}
                   onChange={(ev) => setName(ev.target.value)}
+                  endAdornment={<IconUser />}
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item lg={6} md={6} sm={12} xs={12}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="owner">{inputLabels.owner + ' *'}</InputLabel>
                 <OutlinedInput
@@ -438,11 +367,12 @@ export default function BusinessEdit() {
                   value={owner || ''}
                   inputProps={{}}
                   onChange={(ev) => setOwner(ev.target.value)}
+                  endAdornment={<IconUser />}
                 />
               </FormControl>
             </Grid>
             <Grid container spacing={1}>
-              <Grid item xs={12}>
+              <Grid item lg={12} md={12} sm={12} xs={12}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="description">{inputLabels.description + ' *'}</InputLabel>
                   <OutlinedInput
@@ -457,7 +387,7 @@ export default function BusinessEdit() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="phone">{inputLabels.phone + ' *'}</InputLabel>
                   <OutlinedInput
@@ -467,10 +397,11 @@ export default function BusinessEdit() {
                     value={phone || ''}
                     inputProps={{}}
                     onChange={(ev) => setPhone(ev.target.value)}
+                    endAdornment={<IconDeviceMobile />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="email">{inputLabels.email + ' *'}</InputLabel>
                   <OutlinedInput
@@ -480,10 +411,11 @@ export default function BusinessEdit() {
                     value={email || ''}
                     inputProps={{}}
                     onChange={(ev) => setEmail(ev.target.value)}
+                    endAdornment={<IconMail />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="webPage">{inputLabels.webPage}</InputLabel>
                   <OutlinedInput
@@ -493,10 +425,11 @@ export default function BusinessEdit() {
                     value={webPage || ''}
                     inputProps={{}}
                     onChange={(ev) => setWebPage(ev.target.value)}
+                    endAdornment={<IconWorld />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="province">{inputLabels.province + ' *'}</InputLabel>
                   <OutlinedInput
@@ -506,10 +439,11 @@ export default function BusinessEdit() {
                     value={province || ''}
                     inputProps={{}}
                     onChange={(ev) => setProvince(ev.target.value)}
+                    endAdornment={<IconLocation />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="city">{inputLabels.city + ' *'}</InputLabel>
                   <OutlinedInput
@@ -519,10 +453,11 @@ export default function BusinessEdit() {
                     value={city || ''}
                     inputProps={{}}
                     onChange={(ev) => setCity(ev.target.value)}
+                    endAdornment={<IconLocation />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="address">{inputLabels.address + ' *'}</InputLabel>
                   <OutlinedInput
@@ -532,10 +467,11 @@ export default function BusinessEdit() {
                     value={address || ''}
                     inputProps={{}}
                     onChange={(ev) => setAddress(ev.target.value)}
+                    endAdornment={<IconAddressBook />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="facebook">{inputLabels.facebook}</InputLabel>
                   <OutlinedInput
@@ -545,10 +481,11 @@ export default function BusinessEdit() {
                     value={facebook || ''}
                     inputProps={{}}
                     onChange={(ev) => setFacebook(ev.target.value)}
+                    endAdornment={<IconBrandFacebook />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="instagram">{inputLabels.instagram}</InputLabel>
                   <OutlinedInput
@@ -558,10 +495,11 @@ export default function BusinessEdit() {
                     value={instagram || ''}
                     inputProps={{}}
                     onChange={(ev) => setInstagram(ev.target.value)}
+                    endAdornment={<IconBrandInstagram />}
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={4} sm={6} xs={6}>
                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                   <InputLabel htmlFor="youtube">{inputLabels.youtube}</InputLabel>
                   <OutlinedInput
@@ -571,66 +509,132 @@ export default function BusinessEdit() {
                     value={youtube || ''}
                     inputProps={{}}
                     onChange={(ev) => setYoutube(ev.target.value)}
+                    endAdornment={<IconBrandYoutube />}
                   />
                 </FormControl>
-              </Grid>
-              <Grid item xs={12} lg={3}>
-                <Grid item xs={12} style={{ marginTop: 20 }}>
-                  <center>
-                    <input type="file" id="logo" style={{ display: 'none' }} onChange={handleLogoChange} accept="image/*" />
-                    <div htmlFor="logo" id="logo">
-                      <label htmlFor="logo">
-                        <img src={logo.preview || url0} alt="Logo" height={150} style={{ borderRadius: 15 }} />
-                        <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
-                      </label>
-                    </div>
-                  </center>
-                </Grid>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item lg={5} xs={12}>
-          <center>
-            <Grid container spacing={1}>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
-                <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
-                <div htmlFor="picture1" id="picture1">
-                  <label htmlFor="picture1">
-                    <img src={picture1.preview || url1} alt="picture1" width={200} height={140} style={{ borderRadius: 15 }} />
-                    <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                  </label>
-                </div>
-              </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
-                <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
-                <div htmlFor="picture2" id="picture2">
-                  <label htmlFor="picture2">
-                    <img src={picture2.preview || url2} alt="picture2" width={200} height={140} style={{ borderRadius: 15 }} />
-                    <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                  </label>
-                </div>
-              </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
-                <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
-                <div htmlFor="picture3" id="picture3">
-                  <label htmlFor="picture3">
-                    <img src={picture3.preview || url3} alt="picture3" width={200} height={140} style={{ borderRadius: 15 }} />
-                    <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                  </label>
-                </div>
-              </Grid>
-              <Grid item xs={6} style={{ marginTop: 20 }}>
-                <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
-                <div htmlFor="picture4" id="picture4">
-                  <label htmlFor="picture4">
-                    <img src={picture4.preview || url4} alt="picture4" width={200} height={140} style={{ borderRadius: 15 }} />
-                    <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
-                  </label>
-                </div>
-              </Grid>
+        <Grid item lg={12} xs={12}>
+          <Grid container spacing={1}>
+            <Grid item lg={12} md={12} sm={12} xs={12} style={{ marginTop: 20 }}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  height: '100%',
+                  padding: 10,
+                  cursor: 'pointer'
+                }}
+              >
+                <center>
+                  <input
+                    type="file"
+                    id="logo"
+                    style={{ display: 'none', cursor: 'pointer' }}
+                    onChange={handleLogoChange}
+                    accept="image/*"
+                  />
+                  <div htmlFor="logo" id="logo">
+                    <label htmlFor="logo">
+                      <img src={logo.preview || url0} alt="Logo" height={150} style={{ borderRadius: 15, cursor: 'pointer' }} />
+                      <p style={{ fontSize: 14 }}>{titles.logoImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
             </Grid>
-          </center>
+            <Grid item lg={6} md={6} sm={12} xs={12} style={{ marginTop: 20 }}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  height: '100%',
+                  padding: 10,
+                  cursor: 'pointer'
+                }}
+              >
+                <center>
+                  <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
+                  <div htmlFor="picture1" id="picture1">
+                    <label htmlFor="picture1">
+                      <img src={picture1.preview || url1} alt="picture1" height={150} style={{ borderRadius: 15, cursor: 'pointer' }} />
+                      <p style={{ fontSize: 14 }}>{titles.instructionsImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item lg={6} md={6} sm={12} xs={12} style={{ marginTop: 20 }}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  height: '100%',
+                  padding: 10,
+                  cursor: 'pointer'
+                }}
+              >
+                <center>
+                  <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
+                  <div htmlFor="picture2" id="picture2">
+                    <label htmlFor="picture2">
+                      <img src={picture2.preview || url2} alt="picture2" height={150} style={{ borderRadius: 15, cursor: 'pointer' }} />
+                      <p style={{ fontSize: 14 }}>{titles.instructionsImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item lg={6} md={6} sm={12} xs={12} style={{ marginTop: 20 }}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  height: '100%',
+                  padding: 10,
+                  cursor: 'pointer'
+                }}
+              >
+                <center>
+                  <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
+                  <div htmlFor="picture3" id="picture3">
+                    <label htmlFor="picture3">
+                      <img src={picture3.preview || url3} alt="picture3" height={150} style={{ borderRadius: 15, cursor: 'pointer' }} />
+                      <p style={{ fontSize: 14 }}>{titles.instructionsImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item lg={6} md={6} sm={12} xs={12} style={{ marginTop: 20 }}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  height: '100%',
+                  padding: 10,
+                  cursor: 'pointer'
+                }}
+              >
+                <center>
+                  <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
+                  <div htmlFor="picture4" id="picture4">
+                    <label htmlFor="picture4">
+                      <img src={picture4.preview || url4} alt="picture4" height={150} style={{ borderRadius: 15, cursor: 'pointer' }} />
+                      <p style={{ fontSize: 14 }}>{titles.instructionsImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
       <Modal open={openLoader} aria-labelledby="modal-loader" aria-describedby="modal-loader">

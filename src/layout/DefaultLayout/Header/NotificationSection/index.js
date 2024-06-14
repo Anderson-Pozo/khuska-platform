@@ -2,20 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import {
-  Avatar,
-  Box,
-  Button,
-  ButtonBase,
-  CardActions,
-  ClickAwayListener,
-  Divider,
-  Grid,
-  Paper,
-  Popper,
-  Typography,
-  useMediaQuery
-} from '@mui/material';
+import { Box, Button, CardActions, Chip, ClickAwayListener, Divider, Grid, Paper, Popper, Typography, useMediaQuery } from '@mui/material';
 // project imports
 import MainCard from 'components/cards/MainCard';
 import Transitions from 'components/extended/Transitions';
@@ -79,29 +66,42 @@ const NotificationSection = () => {
           }
         }}
       >
-        <ButtonBase sx={{ borderRadius: '12px' }}>
-          <Avatar
-            variant="rounded"
-            sx={{
-              ...theme.typography.commonAvatar,
-              ...theme.typography.mediumAvatar,
-              transition: 'all .2s ease-in-out',
-              background: theme.palette.secondary.light,
-              color: theme.palette.secondary.dark,
-              '&[aria-controls="menu-list-grow"],&:hover': {
-                background: theme.palette.secondary.dark,
-                color: theme.palette.secondary.light
+        <Chip
+          sx={{
+            height: '48px',
+            alignItems: 'center',
+            borderRadius: '27px',
+            transition: 'all .2s ease-in-out',
+            borderColor: theme.palette.primary.light,
+            backgroundColor: theme.palette.primary.light,
+            '&[aria-controls="menu-list-grow"], &:hover': {
+              borderColor: theme.palette.primary.main,
+              background: `${theme.palette.primary.main}!important`,
+              color: '#FFF',
+              '& svg': {
+                stroke: theme.palette.primary.light,
+                color: '#FFF'
               }
-            }}
-            ref={anchorRef}
-            aria-controls={open ? 'menu-list-grow' : undefined}
-            aria-haspopup="true"
-            onClick={handleToggle}
-            color="inherit"
-          >
-            <IconBell stroke={1.5} size="1.3rem" />
-          </Avatar>
-        </ButtonBase>
+            },
+            '& .MuiChip-label': {
+              lineHeight: 1,
+              color: '#FFF'
+            }
+          }}
+          icon={
+            <center>
+              <div style={{ marginLeft: 12 }}>
+                <IconBell />
+              </div>
+            </center>
+          }
+          ref={anchorRef}
+          aria-controls={open ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          variant="outlined"
+          onClick={handleToggle}
+          color="primary"
+        />
       </Box>
       <Popper
         placement={matchesXs ? 'bottom' : 'bottom-end'}

@@ -19,8 +19,8 @@ export const uiStyles = {
     padding: 0
   },
   appbar: {
-    background: 'rgba(255,255,255,0.4)',
-    height: 75
+    backgroundColor: '#53338a',
+    height: 60
   },
   appbarWrapper: {
     width: '92%',
@@ -34,35 +34,44 @@ export const uiStyles = {
     color: '#fff',
     fontSize: '2rem'
   },
-  colorText: {
-    color: '#53338a',
-    lineHeight: 'normal',
-    fontSize: '1.4rem'
-  },
   container: {
     textAlign: 'center'
   },
   title: {
-    color: '#fff',
+    color: '#9f60f6',
+    fontWeight: '600',
     lineHeight: 'normal',
     marginTop: 20,
-    fontSize: '1.6rem'
+    fontSize: 25
+  },
+  colorText: {
+    color: '#9f60f6',
+    fontWeight: '600',
+    lineHeight: 'normal',
+    fontSize: 25
   },
   goDown: {
-    color: '#9f98c2',
-    fontSize: '4rem'
+    color: '#9f60f6',
+    fontSize: 60
   },
   rootPlace: {
-    width: 250,
+    width: 350,
     height: 110,
-    background: 'rgba(83,51,138,0.7)',
+    background: 'rgba(83,51,138,0.94)',
+    borderRadius: 20,
+    color: '#FFF'
+  },
+  rootPlaceMid: {
+    width: 350,
+    height: 110,
+    background: 'rgba(63,38,98,0.94)',
     borderRadius: 20,
     color: '#FFF'
   },
   rootPlaceCard: {
     width: '95%',
     height: '100%',
-    background: 'rgba(0,0,0,0.7)',
+    background: 'rgba(83,51,138,0.94)',
     borderRadius: 20,
     color: '#FFF'
   },

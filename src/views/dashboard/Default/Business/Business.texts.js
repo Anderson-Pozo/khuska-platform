@@ -45,7 +45,7 @@ export const titles = {
   previewOwner: 'Tutor: ',
   previewDuration: 'Duración: ',
   instructionsImg: 'Click en la imagen para cambiarla',
-  logoImg: 'Click en la imagen para agregar logotipo',
+  logoImg: 'Logotipo',
   addUserCourseTitle: 'Usuarios Matriculados en ',
   searchLabel: 'Buscar Usuario: ',
   placeholderSearch: 'Buscar por Nombre o Correo',
@@ -59,7 +59,7 @@ export const titles = {
 
 export const inputLabels = {
   id: 'Identificativo del negocio',
-  name: 'Nombre',
+  name: 'Nombre del Negocio',
   owner: 'Responsable',
   description: 'Descripción',
   webPage: 'Página Web',

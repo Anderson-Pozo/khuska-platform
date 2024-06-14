@@ -6,7 +6,7 @@ export const uiStyles = {
   box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
   box2: { flexGrow: 1, display: { xs: 'none', md: 'flex' } },
   menu: { display: { xs: 'block', md: 'none' } },
-  paper: { width: '100%', overflow: 'hidden', marginTop: 2 },
+  paper: { width: '100%', overflow: 'hidden', marginTop: 2, padding: 4 },
   createButton: { margin: 5, backgroundColor: '#2DC3F7', color: '#FFF', border: 'none', borderRadius: 15, height: 50 },
   editButton: { margin: 5, backgroundColor: '#2DC3F7', color: '#FFF', border: 'none', borderRadius: 15, height: 50 },
   deleteButton: { margin: 5, backgroundColor: '#FF5656', color: '#FFF', border: 'none', borderRadius: 15, height: 50 },

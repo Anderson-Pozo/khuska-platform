@@ -7,7 +7,6 @@ import {
   AppBar,
   Box,
   Paper,
-  Container,
   Grid,
   OutlinedInput,
   Modal,
@@ -19,10 +18,12 @@ import {
   TableCell,
   Toolbar,
   Typography,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import { uiStyles } from './Business.styles';
-import { IconEdit, IconTrash, IconPlus, IconSearch, IconEye, IconCircleX, IconArchive } from '@tabler/icons';
+import { IconEdit, IconTrash, IconPlus, IconSearch, IconEye, IconCircleX, IconArchive, IconBuilding, IconReload } from '@tabler/icons';
 import SubscriptionState from 'components/message/SubscriptionState';
 //Notifications
 import { ToastContainer } from 'react-toastify';
@@ -42,7 +43,6 @@ import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 
 export default function Business() {
   let navigate = useNavigate();
-  const [search, setSearch] = useState('');
   const [dataList, setDataList] = useState([]);
   const [id, setId] = useState(null);
   const [name, setName] = useState(null);
@@ -50,6 +50,8 @@ export default function Business() {
   const [openDelete, setOpenDelete] = useState(false);
   const [openLoader, setOpenLoader] = useState(false);
   const stateSub = useGetSubscriptionState();
+  const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
@@ -76,7 +78,7 @@ export default function Business() {
       setOpenDelete(false);
       reloadCoursesData();
       handleClean();
-      toast.success(Msg.coudelsucc, { position: toast.POSITION.TOP_RIGHT });
+      toast.success('Negocio eliminado correctamente', { position: toast.POSITION.TOP_RIGHT });
     }, 2000);
   };
 
@@ -87,53 +89,66 @@ export default function Business() {
   const MainComponent = () => {
     return (
       <>
-        <AppBar position="static" style={uiStyles.appbarSearch}>
-          <Container maxWidth="xl" style={uiStyles.container}>
-            <Toolbar disableGutters>
-              <Box sx={uiStyles.box}>
-                <OutlinedInput
-                  id="searchField"
-                  type="text"
-                  name="searchField"
-                  value={search || ''}
-                  onChange={(ev) => setSearch(ev.target.value)}
-                  placeholder={inputLabels.search}
-                  style={{ width: '95%', border: 'none' }}
-                  endAdornment={<IconSearch />}
-                />
-              </Box>
-              <Box sx={uiStyles.box2}>
-                <OutlinedInput
-                  id="searchField"
-                  type="text"
-                  name="searchField"
-                  value={search || ''}
-                  onChange={(ev) => setSearch(ev.target.value)}
-                  placeholder={inputLabels.search}
-                  style={{ width: '95%', border: 'none' }}
-                  endAdornment={<IconSearch />}
-                />
-              </Box>
-              {countBusiness <= genConst.CONST_MAX_BUSINESS ? (
-                <Box sx={{ flexGrow: 0 }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<IconPlus />}
-                    size="large"
-                    style={uiStyles.appbarUpdateButton}
-                    onClick={() => {
-                      navigate('/app/add-business');
-                    }}
-                  >
-                    {titles.buttonCreate}
-                  </Button>
-                </Box>
-              ) : (
-                <></>
-              )}
-            </Toolbar>
-          </Container>
+        <AppBar position="static" style={uiStyles.appbar}>
+          <Toolbar>
+            <IconButton color="inherit">
+              <IconBuilding color="#FFF" />
+            </IconButton>
+            {countBusiness <= genConst.CONST_MAX_BUSINESS ? (
+              <Tooltip title="Crear Negocio">
+                <IconButton
+                  color="inherit"
+                  onClick={() => {
+                    navigate('/app/add-business');
+                  }}
+                >
+                  <IconPlus />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <></>
+            )}
+            <Tooltip title="Recargar">
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  reloadData();
+                }}
+              >
+                <IconReload />
+              </IconButton>
+            </Tooltip>
+            <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+              Negocios
+            </Typography>
+            <Tooltip title="Buscar">
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  setShowSearch(!showSearch);
+                }}
+              >
+                <IconSearch />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
         </AppBar>
+        {showSearch && (
+          <Box sx={{ flexGrow: 0 }}>
+            {dataList.length > 0 ? (
+              <OutlinedInput
+                id={'searchField'}
+                type="text"
+                name="searchField"
+                onChange={(ev) => setSearch(ev.target.value)}
+                placeholder={inputLabels.search}
+                style={{ width: '100%', marginTop: 10 }}
+              />
+            ) : (
+              <></>
+            )}
+          </Box>
+        )}
         {dataList.length > 0 ? (
           <Paper sx={uiStyles.paper}>
             <TableContainer sx={{ maxHeight: '100%' }}>
@@ -250,10 +265,10 @@ export default function Business() {
       )}
       <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.styleDelete}>
-          <Typography id="modal-modal-title" variant="h2" component="h2">
+          <Typography id="modal-modal-title" variant="h2" component="h2" align="center">
             {titles.modalDelete}
           </Typography>
-          <Typography id="modal-modal-title" variant="p" component="p" style={uiStyles.modalDeleteTitle}>
+          <Typography id="modal-modal-title" variant="p" component="p" align="center" style={uiStyles.modalDeleteTitle}>
             {titles.modaleDeleteDetail} <strong>{name}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
@@ -266,7 +281,7 @@ export default function Business() {
                         variant="contained"
                         startIcon={<IconTrash />}
                         size="large"
-                        style={uiStyles.deleteButton}
+                        style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                         onClick={handleDelete}
                       >
                         {titles.buttonDelete}
@@ -275,7 +290,7 @@ export default function Business() {
                         variant="contained"
                         startIcon={<IconCircleX />}
                         size="large"
-                        style={uiStyles.cancelButton}
+                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
                         onClick={handleCloseDelete}
                       >
                         {titles.buttonCancel}

@@ -3,23 +3,24 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import {
-  Button,
   Box,
   Grid,
   InputLabel,
   OutlinedInput,
   FormControl,
   AppBar,
-  Container,
   Toolbar,
   Modal,
   Select,
-  MenuItem
+  MenuItem,
+  IconButton,
+  Tooltip,
+  Typography
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Products.styles';
 
-import { IconDeviceFloppy, IconArrowBack } from '@tabler/icons';
+import { IconDeviceFloppy, IconArrowBack, IconBox, IconBrandProducthunt, IconCurrencyDollar, IconCheck } from '@tabler/icons';
 
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -39,6 +40,9 @@ export default function ProductEdit() {
   let navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idProduct = searchParams.get('id');
+  const idBusiness = searchParams.get('idBusiness');
+  const nameProduct = searchParams.get('name');
+  const nameBusiness = searchParams.get('nameBusiness');
   const theme = useTheme();
   const [openLoader, setOpenLoader] = useState(false);
   const [name, setName] = useState(null);
@@ -52,14 +56,20 @@ export default function ProductEdit() {
   const [picture2, setPicture2] = useState({ preview: '', raw: '' });
   const [picture3, setPicture3] = useState({ preview: '', raw: '' });
   const [picture4, setPicture4] = useState({ preview: '', raw: '' });
+  const [picture5, setPicture5] = useState({ preview: '', raw: '' });
+  const [picture6, setPicture6] = useState({ preview: '', raw: '' });
   const [url0, setUrl0] = useState(null);
   const [url1, setUrl1] = useState(null);
   const [url2, setUrl2] = useState(null);
   const [url3, setUrl3] = useState(null);
+  const [url4, setUrl4] = useState(null);
+  const [url5, setUrl5] = useState(null);
   const [change1, setChange1] = useState(false);
   const [change2, setChange2] = useState(false);
   const [change3, setChange3] = useState(false);
   const [change4, setChange4] = useState(false);
+  const [change5, setChange5] = useState(false);
+  const [change6, setChange6] = useState(false);
 
   useEffect(() => {
     getProductById(idProduct).then((data) => {
@@ -72,6 +82,8 @@ export default function ProductEdit() {
       setUrl1(data[0].picture2);
       setUrl2(data[0].picture3);
       setUrl3(data[0].picture4);
+      setUrl4(data[0].picture5);
+      setUrl5(data[0].picture6);
     });
     getCategories().then((data) => {
       setCategories(data);
@@ -93,6 +105,8 @@ export default function ProductEdit() {
         picture2: url1,
         picture3: url2,
         picture4: url3,
+        picture5: url4,
+        picture6: url5,
         updateAt: fullDate(),
         deleteAt: null,
         state: 1
@@ -159,6 +173,36 @@ export default function ProductEdit() {
             });
           }
         }
+        //Picture5
+        if (change5) {
+          if (picture5.raw !== null) {
+            const imageName = ide + 'p5.jpg';
+            const imageRef = ref(storage, `business/products/${imageName}`);
+            uploadBytes(imageRef, picture5.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture5: url
+                };
+                updateDocument(collProducts, ide, obj);
+              });
+            });
+          }
+        }
+        //Picture6
+        if (change6) {
+          if (picture6.raw !== null) {
+            const imageName = ide + 'p6.jpg';
+            const imageRef = ref(storage, `business/products/${imageName}`);
+            uploadBytes(imageRef, picture6.raw).then((snap) => {
+              getDownloadURL(snap.ref).then((url) => {
+                const obj = {
+                  picture6: url
+                };
+                updateDocument(collProducts, ide, obj);
+              });
+            });
+          }
+        }
         setOpenLoader(false);
         navigate('/app/products');
         toast.success(Msg.coucresucc, { position: toast.POSITION.TOP_RIGHT });
@@ -186,6 +230,14 @@ export default function ProductEdit() {
       raw: ''
     });
     setPicture4({
+      preview: '',
+      raw: ''
+    });
+    setPicture5({
+      preview: '',
+      raw: ''
+    });
+    setPicture6({
       preview: '',
       raw: ''
     });
@@ -251,6 +303,36 @@ export default function ProductEdit() {
     }
   };
 
+  const handlePicture5Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture5({
+          preview: img.src,
+          raw: raw
+        });
+        setChange5(true);
+      };
+    }
+  };
+
+  const handlePicture6Change = (e) => {
+    if (e.target.files.length) {
+      let img = new Image();
+      img.src = window.URL.createObjectURL(e.target.files[0]);
+      let raw = e.target.files[0];
+      img.onload = () => {
+        setPicture6({
+          preview: img.src,
+          raw: raw
+        });
+        setChange6(true);
+      };
+    }
+  };
+
   function handleChangeCategory(e) {
     setCategory(e.target.value);
   }
@@ -259,22 +341,37 @@ export default function ProductEdit() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconArrowBack
-              color="#FFF"
-              style={{ marginLeft: 0, marginRight: 20, cursor: 'pointer' }}
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconBox color="#FFF" />
+          </IconButton>
+          <Tooltip title="Regresar">
+            <IconButton
+              color="inherit"
               onClick={() => {
-                navigate('/app/business');
+                navigate({
+                  pathname: '/app/products',
+                  search: `?id=${idBusiness}&name=${nameBusiness}`
+                });
               }}
-            />
-            <Box sx={{ flexGrow: 0 }}>
-              <Button variant="primary" startIcon={<IconDeviceFloppy />} onClick={handleEdit}>
-                {titles.buttonSave}
-              </Button>
-            </Box>
-          </Toolbar>
-        </Container>
+            >
+              <IconArrowBack />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Editar {nameProduct} en {nameBusiness}
+          </Typography>
+          <Tooltip title="Guardar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                handleEdit();
+              }}
+            >
+              <IconDeviceFloppy />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
       <Grid container style={{ marginTop: 10, paddingLeft: 0 }}>
         <Grid item lg={12} xs={12}>
@@ -289,6 +386,7 @@ export default function ProductEdit() {
                   value={name || ''}
                   inputProps={{}}
                   onChange={(ev) => setName(ev.target.value)}
+                  endAdornment={<IconBrandProducthunt />}
                 />
               </FormControl>
             </Grid>
@@ -307,7 +405,7 @@ export default function ProductEdit() {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="category">{inputLabels.category + ' *'}</InputLabel>
                 <Select
@@ -327,7 +425,7 @@ export default function ProductEdit() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6} sm={6} md={4} lg={4}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="price">{inputLabels.price + ' *'}</InputLabel>
                 <OutlinedInput
@@ -337,10 +435,11 @@ export default function ProductEdit() {
                   value={price || ''}
                   inputProps={{}}
                   onChange={(ev) => setPrice(ev.target.value)}
+                  endAdornment={<IconCurrencyDollar />}
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={6} sm={6} md={4} lg={4}>
               <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                 <InputLabel htmlFor="quantity">{inputLabels.quantity + ' *'}</InputLabel>
                 <OutlinedInput
@@ -350,16 +449,17 @@ export default function ProductEdit() {
                   value={quantity || ''}
                   inputProps={{}}
                   onChange={(ev) => setQuantity(ev.target.value)}
+                  endAdornment={<IconCheck />}
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={6} lg={6} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 250, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                   <div htmlFor="picture1" id="picture1">
                     <label htmlFor="picture1">
-                      <img src={picture1.preview || url0} alt="picture1" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={picture1.preview || url0} alt="picture1" height={160} style={{ borderRadius: 15, paddingTop: 5 }} />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
@@ -367,13 +467,13 @@ export default function ProductEdit() {
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={6} lg={6} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 250, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
                   <div htmlFor="picture2" id="picture2">
                     <label htmlFor="picture2">
-                      <img src={picture2.preview || url1} alt="picture2" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={picture2.preview || url1} alt="picture2" height={160} style={{ borderRadius: 15, paddingTop: 5 }} />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
@@ -381,13 +481,13 @@ export default function ProductEdit() {
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={6} lg={6} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 250, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
                   <div htmlFor="picture3" id="picture3">
                     <label htmlFor="picture3">
-                      <img src={picture3.preview || url2} alt="picture3" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={picture3.preview || url2} alt="picture3" height={160} style={{ borderRadius: 15, paddingTop: 5 }} />
                       <p style={{ fontSize: 12 }}>{titles.instructionsImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>
@@ -395,13 +495,41 @@ export default function ProductEdit() {
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 210, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={6} lg={6} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 250, cursor: 'pointer' }}>
                 <center>
                   <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
                   <div htmlFor="picture4" id="picture4">
                     <label htmlFor="picture4">
-                      <img src={picture4.preview || url3} alt="picture4" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <img src={picture4.preview || url3} alt="picture4" height={160} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
+                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 250, cursor: 'pointer' }}>
+                <center>
+                  <input type="file" id="picture5" style={{ display: 'none' }} onChange={handlePicture5Change} accept="image/*" />
+                  <div htmlFor="picture5" id="picture5">
+                    <label htmlFor="picture5">
+                      <img src={picture5.preview || url4} alt="picture5" height={160} style={{ borderRadius: 15, paddingTop: 5 }} />
+                      <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
+                      <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
+                    </label>
+                  </div>
+                </center>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} style={{ marginTop: 20 }}>
+              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 250, cursor: 'pointer' }}>
+                <center>
+                  <input type="file" id="picture6" style={{ display: 'none' }} onChange={handlePicture6Change} accept="image/*" />
+                  <div htmlFor="picture6" id="picture6">
+                    <label htmlFor="picture6">
+                      <img src={picture6.preview || url5} alt="picture6" height={160} style={{ borderRadius: 15, paddingTop: 5 }} />
                       <p style={{ fontSize: 12 }}>{titles.logoImg}</p>
                       <p style={{ fontSize: 11 }}>{titles.sizeImg}</p>
                     </label>

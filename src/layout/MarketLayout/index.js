@@ -43,7 +43,7 @@ import {
 } from '@tabler/icons';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import logo from 'assets/images/khuska/logo.png';
+import logo from 'assets/images/khuska/logoW.png';
 import { onAuthStateChanged, signOut, getAuth } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { uiStyles } from './index.style';

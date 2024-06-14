@@ -8,7 +8,7 @@ export const uiStyles = {
   box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
   box2: { flexGrow: 1, display: { xs: 'none', md: 'flex' } },
   menu: { display: { xs: 'block', md: 'none' } },
-  paper: { width: '100%', overflow: 'hidden', marginTop: 2 },
+  paper: { width: '100%', overflow: 'hidden', marginTop: 2, padding: 4 },
   paperAddUser: { width: '100%', overflow: 'hidden', marginTop: 2 },
   title: { marginLeft: 10, marginRight: 10, fontSize: 18, fontWeight: 'bold' },
   createButtonAppbar: { margin: 0, backgroundColor: '#2DCA9D', color: '#FFF', borderRadius: 15 },
