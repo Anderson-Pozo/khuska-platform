@@ -6,6 +6,7 @@ import {
   collAdminUsers,
   collBusiness,
   collChat,
+  collFav,
   collGenNoti,
   collInbox,
   collIncomes,
@@ -248,6 +249,16 @@ export async function getUserById(id) {
 export async function getProductById(id) {
   let data = [];
   const q = query(collection(db, collProducts), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
+//
+export async function getFavoritesByProductIdAndUserId(id, userId) {
+  let data = [];
+  const q = query(collection(db, collFav), where('productId', '==', id), where('userId', '==', userId));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());

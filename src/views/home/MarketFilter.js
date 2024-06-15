@@ -6,6 +6,7 @@ import { searchingProducts } from 'utils/search';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './styles';
 import MessageDark from 'components/message/MessageDark';
+import { genConst } from 'store/constant';
 
 const MarketFilter = () => {
   const [searchParams] = useSearchParams();
@@ -47,7 +48,7 @@ const MarketFilter = () => {
             <Grid container spacing={0.5}>
               {products.filter(searchingProducts(search)).map((item) => {
                 return (
-                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={2}>
+                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={3}>
                     <div
                       aria-hidden="true"
                       onClick={() => {
@@ -57,24 +58,24 @@ const MarketFilter = () => {
                         });
                       }}
                     >
-                      <Card sx={{ maxWidth: '100%', height: 265, borderRadius: 3, backgroundColor: '#242526', cursor: 'pointer' }}>
+                      <Card sx={{ maxWidth: '100%', height: 265, borderRadius: 3, backgroundColor: '#FFF', cursor: 'pointer' }}>
                         <CardMedia
                           sx={{ borderRadius: 3, padding: 0.5 }}
                           component="img"
-                          height={194}
+                          height={170}
                           image={item.picture1}
                           alt="Portada img"
                         />
-                        <CardContent sx={{ backgroundColor: '#242526', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
-                          <Typography variant="h4" color="#FFF">
-                            ${item.price}
+                        <CardContent sx={{ backgroundColor: '#FFF', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
+                          <Typography variant="h3" color={genConst.CONST_APPBAR} align="center">
+                            ${Number.parseFloat(item.price).toFixed(2)}
                           </Typography>
                           <p
                             style={{
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
-                              color: '#FFF',
-                              fontSize: 11,
+                              color: '#000',
+                              fontSize: 13,
                               textOverflow: 'ellipsis',
                               maxWidth: '100%'
                             }}

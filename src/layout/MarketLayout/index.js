@@ -48,6 +48,7 @@ import { onAuthStateChanged, signOut, getAuth } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { uiStyles } from './index.style';
 import usrAvatarDef from 'assets/images/profile/profile-picture-6.jpg';
+import { genConst } from 'store/constant';
 
 const drawerWidth = 280;
 
@@ -162,7 +163,7 @@ function Market(props) {
 
   const CustomDrawerCreate = () => {
     return (
-      <div style={{ backgroundColor: '#242526', height: '200%', borderColor: '#272829', borderWidth: 0 }}>
+      <div style={{ backgroundColor: '#FFF', height: '200%', borderColor: '#272829', borderWidth: 0 }}>
         <Toolbar style={{ height: 60, borderColor: '#242526' }}>
           <img src={logo} alt="Logo" width={130} height={45} />
         </Toolbar>
@@ -237,7 +238,7 @@ function Market(props) {
     return (
       <div
         style={{
-          backgroundColor: '#242526',
+          backgroundColor: genConst.CONST_APPBAR,
           height: '200%',
           borderColor: '#272829'
         }}
@@ -620,7 +621,7 @@ function Market(props) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           height: 60,
           ml: { sm: `${drawerWidth}px` },
-          backgroundColor: '#242526'
+          backgroundColor: genConst.CONST_APPBAR
         }}
       >
         <Toolbar>

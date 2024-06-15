@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Grid, Typography, TextField, Button, Modal, Box, Menu, MenuItem } from '@mui/material';
+import { Grid, Typography, Button, Modal, Box, Menu, MenuItem, Paper, FormControl, InputLabel, OutlinedInput } from '@mui/material';
 import { uiStyles } from './styles';
-import { styled } from '@mui/material/styles';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -18,35 +18,8 @@ import * as Msg from 'store/message';
 import { collProducts } from 'store/collections';
 import { createDocument, getCategories, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiInputBase-root': {
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root': {
-      backgroundColor: '#242526',
-      borderRadius: 10,
-      marginBottom: 15,
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root:hover': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      '@media (hover: none)': {
-        backgroundColor: '#242526'
-      }
-    },
-    '& .MuiFilledInput-root.Mui-focused': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      border: '1px solid #242526'
-    },
-    '& .MuiInputLabel-outlined': {
-      color: '#FFF'
-    }
-  }
-}));
+import { IconCurrencyDollar, IconId, IconSquareRoundedLetterC } from '@tabler/icons';
+import { genConst } from 'store/constant';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -66,8 +39,10 @@ const StyledMenu = styled((props) => (
     borderRadius: 6,
     marginTop: theme.spacing(1),
     minWidth: '30%',
-    backgroundColor: '#242526',
-    color: '#FFF',
+    backgroundColor: '#d3d3d3',
+    border: 0.5,
+    borderColor: '#d3d3d3',
+    color: '#000',
     '& .MuiMenu-list': {
       padding: '4px 0'
     },
@@ -78,7 +53,7 @@ const StyledMenu = styled((props) => (
         marginRight: theme.spacing(1.5)
       },
       '&:active': {
-        backgroundColor: '#fff'
+        backgroundColor: '#000'
       }
     }
   }
@@ -87,13 +62,12 @@ const StyledMenu = styled((props) => (
 export default function Item() {
   const [searchParams] = useSearchParams();
   let navigate = useNavigate();
+  const theme = useTheme();
   const id = searchParams.get('idType');
-  const classes = useStyles();
   const [openLoader, setOpenLoader] = useState(false);
   //Variables
   const [user, setUser] = useState('');
   const [userId, setUserId] = useState('');
-  //const [photo, setPhoto] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
@@ -120,8 +94,9 @@ export default function Item() {
     onAuthStateChanged(authentication, async (user) => {
       if (user) {
         setUser(user.displayName);
-        //setPhoto(user.photoURL);
         setUserId(user.uid);
+      } else {
+        navigate('/market/main');
       }
     });
     getCategories().then((data) => {
@@ -159,6 +134,7 @@ export default function Item() {
         price: price,
         quantity: quantity,
         category: categoryValue,
+        categoryDesc: category,
         picture1: null,
         picture2: null,
         picture3: null,
@@ -375,112 +351,314 @@ export default function Item() {
   };
 
   return (
-    <Grid container spacing={0}>
+    <>
       <ToastContainer />
-      <Grid item xs={12}>
-        <Grid container spacing={0}>
-          <Grid item sm={12} xs={12} md={6} lg={6}>
-            <Typography
-              variant="h3"
-              noWrap
-              component="div"
-              style={{ color: '#3a3b3c', paddingBottom: 20, paddingTop: 20, paddingLeft: 10, fontWeight: 'bold' }}
-            >
-              Artículo en Venta
-            </Typography>
-            <span style={{ color: '#3a3b3c' }}>Proporciona una descripción que sea lo más detallada posible.</span>
-            <div style={{ padding: 1, margin: 5, marginTop: 10 }}>
-              <TextField
-                variant="filled"
-                type="text"
-                className={classes.root}
-                fullWidth
-                label="Título"
-                color="info"
-                onChange={(ev) => setName(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
-              <TextField
-                variant="filled"
-                type="number"
-                className={classes.root}
-                fullWidth
-                label="Precio"
-                color="info"
-                onChange={(ev) => setPrice(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
-              <TextField
-                variant="filled"
-                type="number"
-                className={classes.root}
-                fullWidth
-                label="Cantidad"
-                color="info"
-                onChange={(ev) => setQuantity(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
-              <Button
-                id="demo-customized-button"
-                fullWidth
-                onClick={handleClick}
-                style={{
-                  backgroundColor: '#242526',
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  color: '#697586',
-                  marginBottom: 18,
-                  borderRadius: 10,
-                  height: 50
-                }}
-              >
-                {category ? (
-                  <>
-                    <p style={{ color: '#FFF', fontSize: 14, marginLeft: 5 }}>{category}</p>
-                  </>
-                ) : (
-                  <span>Seleccione Categoría</span>
-                )}
-              </Button>
-              <StyledMenu
-                id="demo-customized-menu"
-                MenuListProps={{
-                  'aria-labelledby': 'demo-customized-button'
-                }}
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-              >
-                {categories.map((p) => (
-                  <MenuItem
-                    key={p.id}
-                    value={p.id}
-                    style={{ textAlign: 'left' }}
-                    onClick={() => {
-                      setCategory(p.name);
-                      setCategoryValue(p.value);
-                      handleClose();
-                    }}
-                  >
-                    {p.name}
-                  </MenuItem>
-                ))}
-              </StyledMenu>
-              <TextField
-                variant="filled"
-                className={classes.root}
-                fullWidth
-                label="Descripción"
-                color="info"
-                multiline
-                rows={5}
-                rowsMax={10}
-                inputProps={{ style: { color: '#FFF' } }}
-                onChange={(ev) => setDescription(ev.target.value)}
-              />
-            </div>
-            <div style={{ marginTop: 0, padding: 5 }}>
-              <center>
+      <Paper sx={uiStyles.paper}>
+        <Grid container spacing={1}>
+          <Grid item sm={12} xs={12} md={12} lg={12}>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <Typography
+                  variant="h3"
+                  textAlign="center"
+                  component="div"
+                  style={{ color: genConst.CONST_APPBAR, paddingBottom: 0, paddingTop: 10, paddingLeft: 0, fontWeight: 'bold' }}
+                >
+                  Artículo en Venta
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <span style={{ color: '#3a3b3c' }}>Proporciona una descripción que sea lo más detallada posible.</span>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <InputLabel htmlFor="outlined-adornment-title">Título</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-title"
+                    type="text"
+                    name="title"
+                    onChange={(ev) => setName(ev.target.value)}
+                    endAdornment={<IconId />}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <InputLabel htmlFor="outlined-adornment-description">Descripción</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-description"
+                    type="text"
+                    name="description"
+                    multiline
+                    rows={5}
+                    rowsMax={10}
+                    inputProps={{ style: { color: '#000' } }}
+                    onChange={(ev) => setDescription(ev.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <InputLabel htmlFor="outlined-adornment-price">Precio</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-price"
+                    type="number"
+                    name="price"
+                    onChange={(ev) => setPrice(ev.target.value)}
+                    endAdornment={<IconCurrencyDollar />}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                  <InputLabel htmlFor="outlined-adornment-quantity">Cantidad</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-quantity"
+                    type="number"
+                    name="quantity"
+                    onChange={(ev) => setQuantity(ev.target.value)}
+                    endAdornment={<IconSquareRoundedLetterC />}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <Button
+                  id="demo-customized-button"
+                  fullWidth
+                  variant="outlined"
+                  onClick={handleClick}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    color: '#000',
+                    marginTop: 8,
+                    borderRadius: 14,
+                    height: 55
+                  }}
+                >
+                  {category ? (
+                    <>
+                      <p style={{ color: '#d3d3d3', fontSize: 14, marginLeft: 5 }}>{category}</p>
+                    </>
+                  ) : (
+                    <span style={{ color: '#d3d3d3', fontSize: 14 }}>Seleccione Categoría</span>
+                  )}
+                </Button>
+                <StyledMenu
+                  id="demo-customized-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'demo-customized-button'
+                  }}
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  {categories.map((p) => (
+                    <MenuItem
+                      key={p.id}
+                      value={p.id}
+                      style={{ textAlign: 'left' }}
+                      onClick={() => {
+                        setCategory(p.name);
+                        setCategoryValue(p.value);
+                        handleClose();
+                      }}
+                    >
+                      {p.name}
+                    </MenuItem>
+                  ))}
+                </StyledMenu>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={12}>
+                <Typography
+                  variant="h5"
+                  component="h5"
+                  style={{
+                    color: genConst.CONST_APPBAR,
+                    paddingTop: 20
+                  }}
+                  textAlign="center"
+                >
+                  Puedes agregar un máximo de 6 imagenes.
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <div
+                  style={{
+                    border: 'dashed gray',
+                    borderRadius: 10,
+                    borderWidth: 0.2,
+                    width: '100%',
+                    height: 190,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <center>
+                    <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
+                    <div htmlFor="picture1" id="picture1">
+                      <label htmlFor="picture1">
+                        <img
+                          src={picture1.preview || defaultImage}
+                          alt="Picture1"
+                          height={picture1.preview ? 170 : 100}
+                          style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                        />
+                        {picture1.preview ? (
+                          ''
+                        ) : (
+                          <>
+                            <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 20 }}>Imagen de Portada</p>
+                            <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 10 }}>Imagen 300 x 500</p>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </center>
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <div
+                  style={{
+                    border: 'dashed gray',
+                    borderRadius: 10,
+                    borderWidth: 0.2,
+                    width: '100%',
+                    height: 190,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <center>
+                    <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
+                    <div htmlFor="picture2" id="picture2">
+                      <label htmlFor="picture2">
+                        <img
+                          src={picture2.preview || defaultImage}
+                          alt="Picture2"
+                          height={picture2.preview ? 170 : 100}
+                          style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                        />
+                        {picture2.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
+                      </label>
+                    </div>
+                  </center>
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <div
+                  style={{
+                    border: 'dashed gray',
+                    borderRadius: 10,
+                    borderWidth: 0.2,
+                    width: '100%',
+                    height: 190,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <center>
+                    <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
+                    <div htmlFor="picture3" id="picture3">
+                      <label htmlFor="picture3">
+                        <img
+                          src={picture3.preview || defaultImage}
+                          alt="Picture3"
+                          height={picture3.preview ? 170 : 100}
+                          style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                        />
+                        {picture3.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
+                      </label>
+                    </div>
+                  </center>
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <div
+                  style={{
+                    border: 'dashed gray',
+                    borderRadius: 10,
+                    borderWidth: 0.2,
+                    width: '100%',
+                    height: 190,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <center>
+                    <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
+                    <div htmlFor="picture4" id="picture4">
+                      <label htmlFor="picture4">
+                        <img
+                          src={picture4.preview || defaultImage}
+                          alt="Picture4"
+                          height={picture4.preview ? 170 : 100}
+                          style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                        />
+                        {picture4.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
+                      </label>
+                    </div>
+                  </center>
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <div
+                  style={{
+                    border: 'dashed gray',
+                    borderRadius: 10,
+                    borderWidth: 0.2,
+                    width: '100%',
+                    height: 190,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <center>
+                    <input type="file" id="picture5" style={{ display: 'none' }} onChange={handlePicture5Change} accept="image/*" />
+                    <div htmlFor="picture5" id="picture5">
+                      <label htmlFor="picture5">
+                        <img
+                          src={picture5.preview || defaultImage}
+                          alt="Picture5"
+                          height={picture5.preview ? 170 : 100}
+                          style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                        />
+                        {picture5.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
+                      </label>
+                    </div>
+                  </center>
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={12} md={4} lg={4}>
+                <div
+                  style={{
+                    border: 'dashed gray',
+                    borderRadius: 10,
+                    borderWidth: 0.2,
+                    width: '100%',
+                    height: 190,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <center>
+                    <input type="file" id="picture6" style={{ display: 'none' }} onChange={handlePicture6Change} accept="image/*" />
+                    <div htmlFor="picture6" id="picture6">
+                      <label htmlFor="picture6">
+                        <img
+                          src={picture6.preview || defaultImage}
+                          alt="Picture6"
+                          height={picture6.preview ? 170 : 100}
+                          style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                        />
+                        {picture6.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
+                      </label>
+                    </div>
+                  </center>
+                </div>
+              </Grid>
+              <Grid item xs={12} sx={{ mt: 2, mb: 2 }}>
+                <Typography variant="h5" style={{ color: '#3a3b3c', fontSize: 14, lineHeight: 'normal' }} textAlign="justify">
+                  Los artículos de KhuskaMarket son públicos, por lo que cualquier persona dentro y fuera de KhuskaMarket puede verlos. Los
+                  artículos como animales, drogas, armas, falsificaciones y otros que infringen derechos de propiedad intelectual no están
+                  permitidos en KhuskaMarket. Consulta nuestras Políticas de comercio.
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
                 <Button
                   disableElevation
                   fullWidth
@@ -488,310 +666,16 @@ export default function Item() {
                   type="submit"
                   variant="contained"
                   color="primary"
-                  style={{ borderRadius: 10, height: 45 }}
+                  style={{ borderRadius: 10, height: 55 }}
                   onClick={handleSaveProduct}
                 >
-                  Crear
+                  Crear Publicación
                 </Button>
-              </center>
-              <h5 style={{ textAlign: 'justify', textJustify: 'inter-word', color: '#3a3b3c' }}>
-                Los artículos de KhuskaMarket son públicos, por lo que cualquier persona dentro y fuera de KhuskaMarket puede verlos. Los
-                artículos como animales, drogas, armas, falsificaciones y otros que infringen derechos de propiedad intelectual no están
-                permitidos en KhuskaMarket. Consulta nuestras Políticas de comercio.
-              </h5>
-            </div>
-          </Grid>
-          <Grid item sm={12} xs={12} md={6} lg={6}>
-            <div style={uiStyles.main}>
-              <div style={uiStyles.sidebar}>
-                <div style={{ width: '100%', height: 280, backgroundColor: 'transparent', marginTop: 0 }}>
-                  <Typography
-                    variant="h4"
-                    noWrap
-                    component="div"
-                    style={{
-                      color: '#3a3b3c',
-                      paddingBottom: 0,
-                      paddingTop: 20,
-                      paddingLeft: 10,
-                      fontWeight: 'bold',
-                      textAlign: 'center'
-                    }}
-                  >
-                    Puedes agregar un máximo de 6 fotos.
-                  </Typography>
-                  <div
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: 520,
-                      borderWidth: 0.1,
-                      borderStyle: 'groove',
-                      borderColor: '#3a3b3c',
-                      borderRadius: 10,
-                      marginTop: 50,
-                      cursor: 'pointer',
-                      paddingTop: 5,
-                      paddingLeft: 10
-                    }}
-                  >
-                    <Grid container style={{ marginTop: 10, paddingLeft: 0 }}>
-                      <Grid item lg={12} xs={12}>
-                        <Grid container spacing={0.4}>
-                          <Grid item xs={6}>
-                            <center>
-                              <div
-                                style={{
-                                  border: 'dashed gray',
-                                  borderRadius: 10,
-                                  borderWidth: 0.2,
-                                  width: 140,
-                                  height: 160,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <center>
-                                  <input
-                                    type="file"
-                                    id="picture1"
-                                    style={{ display: 'none' }}
-                                    onChange={handlePicture1Change}
-                                    accept="image/*"
-                                  />
-                                  <div htmlFor="picture1" id="picture1">
-                                    <label htmlFor="picture1">
-                                      <img
-                                        src={picture1.preview || defaultImage}
-                                        alt="Picture1"
-                                        width={picture1.preview ? 130 : 80}
-                                        height={picture1.preview ? 150 : 80}
-                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
-                                      />
-                                      {picture1.preview ? (
-                                        ''
-                                      ) : (
-                                        <>
-                                          <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 20 }}>Imagen de Portada</p>
-                                          <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 10 }}>Imagen 300 x 500</p>
-                                        </>
-                                      )}
-                                    </label>
-                                  </div>
-                                </center>
-                              </div>
-                            </center>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <center>
-                              <div
-                                style={{
-                                  border: 'dashed gray',
-                                  borderRadius: 10,
-                                  borderWidth: 0.2,
-                                  width: 140,
-                                  height: 160,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <center>
-                                  <input
-                                    type="file"
-                                    id="picture2"
-                                    style={{ display: 'none' }}
-                                    onChange={handlePicture2Change}
-                                    accept="image/*"
-                                  />
-                                  <div htmlFor="picture2" id="picture2">
-                                    <label htmlFor="picture2">
-                                      <img
-                                        src={picture2.preview || defaultImage}
-                                        alt="Picture2"
-                                        width={picture2.preview ? 130 : 80}
-                                        height={picture2.preview ? 150 : 80}
-                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
-                                      />
-                                      {picture2.preview ? (
-                                        ''
-                                      ) : (
-                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
-                                      )}
-                                    </label>
-                                  </div>
-                                </center>
-                              </div>
-                            </center>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <center>
-                              <div
-                                style={{
-                                  border: 'dashed gray',
-                                  borderRadius: 10,
-                                  borderWidth: 0.2,
-                                  width: 140,
-                                  height: 160,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <center>
-                                  <input
-                                    type="file"
-                                    id="picture3"
-                                    style={{ display: 'none' }}
-                                    onChange={handlePicture3Change}
-                                    accept="image/*"
-                                  />
-                                  <div htmlFor="picture3" id="picture3">
-                                    <label htmlFor="picture3">
-                                      <img
-                                        src={picture3.preview || defaultImage}
-                                        alt="Picture3"
-                                        width={picture3.preview ? 130 : 80}
-                                        height={picture3.preview ? 150 : 80}
-                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
-                                      />
-                                      {picture3.preview ? (
-                                        ''
-                                      ) : (
-                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
-                                      )}
-                                    </label>
-                                  </div>
-                                </center>
-                              </div>
-                            </center>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <center>
-                              <div
-                                style={{
-                                  border: 'dashed gray',
-                                  borderRadius: 10,
-                                  borderWidth: 0.2,
-                                  width: 140,
-                                  height: 160,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <center>
-                                  <input
-                                    type="file"
-                                    id="picture4"
-                                    style={{ display: 'none' }}
-                                    onChange={handlePicture4Change}
-                                    accept="image/*"
-                                  />
-                                  <div htmlFor="picture4" id="picture4">
-                                    <label htmlFor="picture4">
-                                      <img
-                                        src={picture4.preview || defaultImage}
-                                        alt="Picture4"
-                                        width={picture4.preview ? 130 : 80}
-                                        height={picture4.preview ? 150 : 80}
-                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
-                                      />
-                                      {picture4.preview ? (
-                                        ''
-                                      ) : (
-                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
-                                      )}
-                                    </label>
-                                  </div>
-                                </center>
-                              </div>
-                            </center>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <center>
-                              <div
-                                style={{
-                                  border: 'dashed gray',
-                                  borderRadius: 10,
-                                  borderWidth: 0.2,
-                                  width: 140,
-                                  height: 160,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <center>
-                                  <input
-                                    type="file"
-                                    id="picture5"
-                                    style={{ display: 'none' }}
-                                    onChange={handlePicture5Change}
-                                    accept="image/*"
-                                  />
-                                  <div htmlFor="picture5" id="picture5">
-                                    <label htmlFor="picture5">
-                                      <img
-                                        src={picture5.preview || defaultImage}
-                                        alt="Picture5"
-                                        width={picture5.preview ? 130 : 80}
-                                        height={picture5.preview ? 150 : 80}
-                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
-                                      />
-                                      {picture5.preview ? (
-                                        ''
-                                      ) : (
-                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
-                                      )}
-                                    </label>
-                                  </div>
-                                </center>
-                              </div>
-                            </center>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <center>
-                              <div
-                                style={{
-                                  border: 'dashed gray',
-                                  borderRadius: 10,
-                                  borderWidth: 0.2,
-                                  width: 140,
-                                  height: 160,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                <center>
-                                  <input
-                                    type="file"
-                                    id="picture6"
-                                    style={{ display: 'none' }}
-                                    onChange={handlePicture6Change}
-                                    accept="image/*"
-                                  />
-                                  <div htmlFor="picture6" id="picture6">
-                                    <label htmlFor="picture6">
-                                      <img
-                                        src={picture6.preview || defaultImage}
-                                        alt="Picture6"
-                                        width={picture6.preview ? 130 : 80}
-                                        height={picture6.preview ? 150 : 80}
-                                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
-                                      />
-                                      {picture6.preview ? (
-                                        ''
-                                      ) : (
-                                        <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>
-                                      )}
-                                    </label>
-                                  </div>
-                                </center>
-                              </div>
-                            </center>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      </Paper>
       <Modal open={openLoader} aria-labelledby="modal-loader" aria-describedby="modal-loader">
         <center>
           <Box sx={uiStyles.modalLoader}>
@@ -799,6 +683,6 @@ export default function Item() {
           </Box>
         </center>
       </Modal>
-    </Grid>
+    </>
   );
 }

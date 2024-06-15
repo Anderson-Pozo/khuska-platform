@@ -5,7 +5,7 @@ import MainCard from 'components/cards/MainCard';
 const AuthCard = ({ children, ...other }) => (
   <MainCard
     sx={{
-      backgroundColor: '#242526',
+      backgroundColor: '#FFF',
       maxWidth: { xs: 400, lg: 475 },
       margin: { xs: 2.5, md: 3 },
       '& > *': {

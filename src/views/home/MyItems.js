@@ -15,7 +15,9 @@ import {
   CardActionArea,
   ButtonGroup,
   Button,
-  Modal
+  Modal,
+  Tooltip,
+  IconButton
 } from '@mui/material';
 import * as Msg from 'store/message';
 import { uiStyles } from './styles';
@@ -104,8 +106,8 @@ export default function MyItems() {
             <Grid container spacing={0.5}>
               {dataList.filter(searchingProductsByNameOrCategory(search)).map((item) => {
                 return (
-                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={2}>
-                    <Card sx={{ maxWidth: '100%', height: 300, borderRadius: 3, backgroundColor: '#242526', cursor: 'pointer' }}>
+                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={3}>
+                    <Card sx={{ maxWidth: '100%', height: 320, borderRadius: 3, backgroundColor: '#FFF', cursor: 'pointer' }}>
                       <CardMedia
                         sx={{ borderRadius: 3, padding: 0.5 }}
                         component="img"
@@ -113,16 +115,16 @@ export default function MyItems() {
                         image={item.picture1}
                         alt="Portada img"
                       />
-                      <CardContent sx={{ backgroundColor: '#242526', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
-                        <Typography variant="h4" color="#FFF">
+                      <CardContent sx={{ backgroundColor: '#FFF', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
+                        <Typography variant="h4" color="#000" align="center">
                           ${item.price}
                         </Typography>
                         <p
                           style={{
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
-                            color: '#FFF',
-                            fontSize: 11,
+                            color: '#000',
+                            fontSize: 13,
                             textOverflow: 'ellipsis',
                             maxWidth: '100%'
                           }}
@@ -132,43 +134,41 @@ export default function MyItems() {
                       </CardContent>
                       <CardActionArea style={{ marginTop: -20 }}>
                         <center>
-                          <ButtonGroup>
-                            <div
-                              aria-hidden="true"
+                          <Tooltip title="Ver Item">
+                            <IconButton
                               onClick={() => {
                                 navigate({
                                   pathname: '/market/item/',
                                   search: `?id=${item.id}`
                                 });
                               }}
-                              style={{ marginRight: 20 }}
                             >
-                              <IconEye color="#FFF" />
-                            </div>
-                            <div
-                              aria-hidden="true"
+                              <IconEye color={genConst.CONST_APPBAR} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Editar">
+                            <IconButton
                               onClick={() => {
                                 navigate({
                                   pathname: '/market/item/edit',
                                   search: `?id=${item.id}`
                                 });
                               }}
-                              style={{ marginRight: 20 }}
                             >
-                              <IconEdit color="#FFF" />
-                            </div>
-                            <div
-                              aria-hidden="true"
+                              <IconEdit color={genConst.CONST_APPBAR} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Eliminar">
+                            <IconButton
                               onClick={() => {
                                 setId(item.id);
                                 setName(item.name);
                                 handleOpenDelete();
                               }}
-                              style={{ marginRight: 20 }}
                             >
-                              <IconTrash color="#FFF" />
-                            </div>
-                          </ButtonGroup>
+                              <IconTrash color={genConst.CONST_APPBAR} />
+                            </IconButton>
+                          </Tooltip>
                         </center>
                       </CardActionArea>
                     </Card>
@@ -204,10 +204,10 @@ export default function MyItems() {
       )}
       <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.styleDelete}>
-          <Typography id="modal-modal-title" variant="h2" component="h2">
+          <Typography id="modal-modal-title" variant="h2" component="h2" align="center">
             {titles.modalDelete}
           </Typography>
-          <Typography id="modal-modal-title" variant="p" component="p" style={uiStyles.modalDeleteTitle}>
+          <Typography id="modal-modal-title" variant="p" component="p" align="center" style={uiStyles.modalDeleteTitle}>
             {titles.modaleDeleteDetail} <strong>{name}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
@@ -220,7 +220,7 @@ export default function MyItems() {
                         variant="contained"
                         startIcon={<IconTrash />}
                         size="large"
-                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_DELETE_COLOR }}
+                        style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                         onClick={handleDelete}
                       >
                         {titles.buttonDelete}
@@ -229,7 +229,7 @@ export default function MyItems() {
                         variant="contained"
                         startIcon={<IconCircleX />}
                         size="large"
-                        style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
                         onClick={handleCloseDelete}
                       >
                         {titles.buttonCancel}

@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, useMediaQuery, Divider, FormControl, TextField, Button, Stack } from '@mui/material';
+import { Grid, Typography, useMediaQuery, FormControl, Button, Stack, InputLabel, OutlinedInput } from '@mui/material';
 import AnimateButton from 'components/extended/AnimateButton';
 import AuthCard from './AuthCard';
 import Logo from 'components/Logo';
@@ -11,40 +10,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth';
 import { authentication } from 'config/firebase';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiInputBase-root': {
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root': {
-      backgroundColor: '#242526',
-      borderRadius: 10,
-      marginBottom: 15,
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root:hover': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      '@media (hover: none)': {
-        backgroundColor: '#242526'
-      }
-    },
-    '& .MuiFilledInput-root.Mui-focused': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      border: '1px solid #242526'
-    },
-    '& .MuiInputLabel-outlined': {
-      color: '#FFF'
-    }
-  }
-}));
+import { IconMail } from '@tabler/icons';
 
 export default function Recovery() {
   const theme = useTheme();
   let navigate = useNavigate();
-  const classes = useStyles();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const [email, setEmail] = useState();
   const auth = getAuth();
@@ -81,47 +51,40 @@ export default function Recovery() {
     <Grid container direction="column">
       <ToastContainer />
       <Grid item xs={12}>
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          sx={{ minHeight: 'calc(100vh - 60px)', backgroundColor: 'transparent' }}
-        >
-          <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
+        <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
+          <Grid item>
             <AuthCard>
               <Grid container spacing={2} alignItems="center" justifyContent="center">
-                <Grid item>
-                  <Logo />
+                <Grid item xs={12}>
+                  <center>
+                    <Logo />
+                  </center>
                 </Grid>
                 <Grid item xs={12}>
                   <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                     <Grid item>
                       <Stack alignItems="center" justifyContent="center" spacing={1}>
-                        <Typography color={theme.palette.secondary.light} gutterBottom variant={matchDownSM ? 'h5' : 'h4'}>
-                          Bienvenido a KHUSKA MARKET
-                        </Typography>
-                        <Typography variant="caption" fontSize="14px" color={theme.palette.secondary.contrastText}>
+                        <Typography variant="caption" fontSize="14px" color={theme.palette.secondary.dark}>
                           Ingresa tu correo electrónico para restablecer tu contraseña
                         </Typography>
                       </Stack>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
-                      id="outlined-adornment-email-login"
-                      variant="filled"
+                <Grid item xs={12} sm={12}>
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-email-register">Correo Electrónico</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-email-register"
                       type="email"
+                      value={email}
                       name="email"
-                      className={classes.root}
-                      fullWidth
-                      label="Correo Electrónico"
-                      color="info"
                       onChange={(ev) => setEmail(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={<IconMail />}
                     />
                   </FormControl>
+                </Grid>
+                <Grid item xs={12}>
                   <AnimateButton>
                     <Button
                       disableElevation
@@ -138,15 +101,12 @@ export default function Recovery() {
                   </AnimateButton>
                 </Grid>
                 <Grid item xs={12}>
-                  <Divider sx={{ borderColor: '#3E4042' }} />
-                </Grid>
-                <Grid item xs={12}>
                   <Grid item container direction="column" alignItems="center" xs={12}>
                     <Typography
                       component={Link}
                       to="/market/login"
                       variant="subtitle1"
-                      sx={{ textDecoration: 'none', color: theme.palette.secondary.light }}
+                      sx={{ textDecoration: 'none', color: theme.palette.secondary.dark }}
                     >
                       Volver
                     </Typography>

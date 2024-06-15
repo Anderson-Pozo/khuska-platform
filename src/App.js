@@ -11,7 +11,8 @@ import Loadable from 'components/Loadable';
 import MinimalLayout from 'layout/MinimalLayout';
 import MainLayout from 'layout/MainLayout';
 import HomeLayout from 'layout/HomeLayout';
-import MarketLayout from 'layout/MarketLayout';
+//import MarketLayout from 'layout/MarketLayout';
+import MarketPlaceLayout from 'layout/MarketPlaceLayout';
 import DefaultLayout from 'layout/DefaultLayout';
 import { genConst } from 'store/constant';
 //Firebase
@@ -34,6 +35,7 @@ const Item = Loadable(lazy(() => import('views/home/Item')));
 const ViewItem = Loadable(lazy(() => import('views/home/ViewItem')));
 const Messages = Loadable(lazy(() => import('views/home/Messages')));
 const Chat = Loadable(lazy(() => import('views/home/Chat')));
+const Favorites = Loadable(lazy(() => import('views/home/Favorites')));
 const Profile = Loadable(lazy(() => import('views/home/Profile')));
 const NotificationsMarket = Loadable(lazy(() => import('views/home/Notifications')));
 const BusinessMarket = Loadable(lazy(() => import('views/home/Business')));
@@ -137,7 +139,7 @@ const App = () => {
           <Route element={<HomeLayout />} path="/" exact>
             <Route element={<Home />} path="/" exact />
           </Route>
-          <Route element={<MarketLayout />} path="/market" exact>
+          <Route element={<MarketPlaceLayout />} path="/market" exact>
             <Route element={<Market />} path="main" exact />
             <Route element={<MarketFilter />} path="filter" exact />
             <Route element={<Profile />} path="profile" exact />
@@ -149,6 +151,7 @@ const App = () => {
             <Route element={<ViewItem />} path="item" exact />
             <Route element={<Messages />} path="messages" exact />
             <Route element={<Chat />} path="chat" exact />
+            <Route element={<Favorites />} path="favorites" exact />
             <Route element={<NotificationsMarket />} path="notifications" exact />
             <Route element={<BusinessMarket />} path="business" exact />
             <Route element={<BusinessInfoSearch />} path="business-info" exact />

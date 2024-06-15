@@ -26,12 +26,12 @@ export default function CreateProduct() {
     minHeight: 220,
     justifyContent: 'center',
     color: '#FFF',
-    backgroundColor: 'rgb(83, 51, 138, 0.7)',
+    backgroundColor: 'rgb(83, 51, 138, 0.9)',
     borderRadius: 8,
     //cursor: 'pointer',
     margin: 2,
     '&:hover': {
-      backgroundColor: 'rgb(83, 51, 138, 0.9)',
+      backgroundColor: 'rgb(83, 51, 138, 0.7)',
       color: '#FFF'
     }
   });
@@ -45,14 +45,14 @@ export default function CreateProduct() {
           justifyContent="center"
           alignItems="center"
           spacing={0.5}
-          sx={{ minHeight: 'calc(100vh - 57px)', borderRadius: 4 }}
+          sx={{ minHeight: 'calc(100vh - 150px)', borderRadius: 4 }}
         >
           <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
             <Grid container spacing={2} alignItems="center" justifyContent="center">
               <Grid item xs={12}>
                 <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
                   <Grid item>
-                    <h1 style={{ color: 'rgb(83, 51, 138)' }}>Crear Producto</h1>
+                    <h1 style={{ color: 'rgb(83, 51, 138)', fontSize: 25 }}>Crear Publicación</h1>
                   </Grid>
                 </Grid>
               </Grid>
@@ -71,12 +71,12 @@ export default function CreateProduct() {
                       <IconShoppingBag size={60} />
                     </Grid>
                     <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -2 }}>
-                      <Typography color={'#FFF'} variant={'h3'}>
-                        Articulo
+                      <Typography color={'#FFF'} variant={'h4'}>
+                        Producto
                       </Typography>
                     </Grid>
                     <Grid item lg={12} md={12} sm={12} xs={12}>
-                      <Typography color={'#FFF'} variant={'h5'}>
+                      <Typography color={'#FFF'} variant={'h6'}>
                         Crea una sola publicación para vender uno o más artículos.
                       </Typography>
                     </Grid>
@@ -97,12 +97,12 @@ export default function CreateProduct() {
                       <IconCar size={60} />
                     </Grid>
                     <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -2 }}>
-                      <Typography color={'#FFF'} variant={'h3'}>
+                      <Typography color={'#FFF'} variant={'h4'}>
                         Vehículo
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography color={'#FFF'} variant={'h5'}>
+                      <Typography color={'#FFF'} variant={'h6'}>
                         Vende un auto, camión u otro tipo de vehículo.
                       </Typography>
                     </Grid>
@@ -123,12 +123,12 @@ export default function CreateProduct() {
                       <IconHome size={60} />
                     </Grid>
                     <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: -2 }}>
-                      <Typography color={'#FFF'} variant={'h3'}>
+                      <Typography color={'#FFF'} variant={'h4'}>
                         Propiedad
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography color={'#FFF'} variant={'h5'}>
+                      <Typography color={'#FFF'} variant={'h6'}>
                         Publica una casa o departamente para vender o alquilar.
                       </Typography>
                     </Grid>

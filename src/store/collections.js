@@ -35,6 +35,7 @@ export const collUserPaymentMethod = 'UserPaymentMethod';
 export const collInbox = 'Inbox';
 export const collMail = 'Mail';
 export const collMessage = 'Message';
+export const collFav = 'Favorites';
 export const collChat = 'Chat';
 export const collNotifications = 'Notifications';
 export const collKhuskaBenefit = 'KhuskaBenefit';

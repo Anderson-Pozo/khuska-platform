@@ -1,9 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { styled } from '@mui/material/styles';
-import { Box, Grid, Modal, Button, TextField, Typography, Menu, MenuItem } from '@mui/material';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { styled, useTheme } from '@mui/material/styles';
+import {
+  Box,
+  Grid,
+  Modal,
+  Button,
+  Typography,
+  Menu,
+  MenuItem,
+  Paper,
+  AppBar,
+  Toolbar,
+  Tooltip,
+  IconButton,
+  FormControl,
+  InputLabel,
+  OutlinedInput
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './styles';
 //Notifications
@@ -13,38 +28,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Msg from 'store/message';
 import { fullDate } from 'utils/validations';
 import { collProducts } from 'store/collections';
-import { storage } from 'config/firebase';
+import { authentication, storage } from 'config/firebase';
 import { getCategories, getProductById, updateDocument } from 'config/firebaseEvents';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiInputBase-root': {
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root': {
-      backgroundColor: '#242526',
-      borderRadius: 10,
-      marginBottom: 15,
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root:hover': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      '@media (hover: none)': {
-        backgroundColor: '#242526'
-      }
-    },
-    '& .MuiFilledInput-root.Mui-focused': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      border: '1px solid #242526'
-    },
-    '& .MuiInputLabel-outlined': {
-      color: '#FFF'
-    }
-  }
-}));
+import { IconArrowLeft, IconCurrencyDollar, IconId, IconSquareRoundedLetterC } from '@tabler/icons';
+import { genConst } from 'store/constant';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -64,8 +53,10 @@ const StyledMenu = styled((props) => (
     borderRadius: 6,
     marginTop: theme.spacing(1),
     minWidth: '30%',
-    backgroundColor: '#242526',
-    color: '#FFF',
+    backgroundColor: '#d3d3d3',
+    border: 0.5,
+    borderColor: '#d3d3d3',
+    color: '#000',
     '& .MuiMenu-list': {
       padding: '4px 0'
     },
@@ -76,7 +67,7 @@ const StyledMenu = styled((props) => (
         marginRight: theme.spacing(1.5)
       },
       '&:active': {
-        backgroundColor: '#fff'
+        backgroundColor: '#000'
       }
     }
   }
@@ -84,14 +75,14 @@ const StyledMenu = styled((props) => (
 
 export default function ProductEdit() {
   let navigate = useNavigate();
+  const theme = useTheme();
   const [searchParams] = useSearchParams();
   const idProduct = searchParams.get('id');
-  const classes = useStyles();
   const [openLoader, setOpenLoader] = useState(false);
-  const [name, setName] = useState(null);
-  const [description, setDescription] = useState(null);
-  const [price, setPrice] = useState(null);
-  const [quantity, setQuantity] = useState(null);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState('');
   const [category, setCategory] = useState('');
   const [categoryValue, setCategoryValue] = useState('');
   const [categories, setCategories] = useState([]);
@@ -125,6 +116,13 @@ export default function ProductEdit() {
   };
 
   useEffect(() => {
+    onAuthStateChanged(authentication, async (user) => {
+      if (user) {
+        console.log('User');
+      } else {
+        navigate('/market/main');
+      }
+    });
     getProductById(idProduct).then((data) => {
       setName(data[0].name);
       setDescription(data[0].description);
@@ -154,6 +152,7 @@ export default function ProductEdit() {
         price: price,
         quantity: quantity,
         category: categoryValue,
+        categoryDesc: category,
         picture1: url0,
         picture2: url1,
         picture3: url2,
@@ -257,8 +256,7 @@ export default function ProductEdit() {
           }
         }
         setOpenLoader(false);
-        navigate('/main/products');
-        toast.success(Msg.coucresucc, { position: toast.POSITION.TOP_RIGHT });
+        navigate('/market/my-items');
         clearData();
       }, 3000);
     }
@@ -387,65 +385,84 @@ export default function ProductEdit() {
   };
 
   return (
-    <div>
+    <Paper>
       <ToastContainer />
-      <Grid container style={{ marginTop: 10, paddingLeft: 0 }}>
+      <Grid container spacing={0}>
         <Grid item lg={12} xs={12}>
-          <Grid container spacing={0.4}>
-            <Grid item xs={12} sx={{ mb: 2, mt: 2 }}>
-              <Typography component={Link} to="/market/my-items" variant="h5" sx={{ textDecoration: 'none', color: '#3a3b3c' }}>
-                Regresar
-              </Typography>
+          <Grid container spacing={1} style={{ padding: 10 }}>
+            <Grid item xs={12} lg={12}>
+              <AppBar position="static" style={uiStyles.appbar}>
+                <Toolbar>
+                  <Tooltip title="Regresar">
+                    <IconButton
+                      onClick={() => {
+                        navigate('/market/my-items');
+                      }}
+                    >
+                      <IconArrowLeft color={genConst.CONST_APPBAR} />
+                    </IconButton>
+                  </Tooltip>
+                  <Typography variant="h4" component="div" sx={{ flexGrow: 1, color: genConst.CONST_APPBAR }} align="center">
+                    {name}
+                  </Typography>
+                  <Tooltip title={idProduct}>
+                    <IconButton>
+                      <IconId color={genConst.CONST_APPBAR} />
+                    </IconButton>
+                  </Tooltip>
+                </Toolbar>
+              </AppBar>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="filled"
-                type="text"
-                className={classes.root}
-                fullWidth
-                label="Título"
-                color="info"
-                value={name || ''}
-                onChange={(ev) => setName(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
+            <Grid item xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <InputLabel htmlFor="outlined-adornment-title">Título</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-title"
+                  type="text"
+                  name="title"
+                  value={name}
+                  onChange={(ev) => setName(ev.target.value)}
+                  endAdornment={<IconId />}
+                />
+              </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="filled"
-                className={classes.root}
-                fullWidth
-                label="Descripción"
-                color="info"
-                value={description || ''}
-                multiline
-                rows={5}
-                rowsMax={10}
-                inputProps={{ style: { color: '#FFF' } }}
-                onChange={(ev) => setDescription(ev.target.value)}
-              />
+            <Grid item xs={12} sm={12} md={12} lg={12}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <InputLabel htmlFor="outlined-adornment-description">Descripción</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-description"
+                  type="text"
+                  name="description"
+                  multiline
+                  rows={5}
+                  rowsMax={10}
+                  value={description}
+                  inputProps={{ style: { color: '#000' } }}
+                  onChange={(ev) => setDescription(ev.target.value)}
+                />
+              </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
               <Button
                 id="demo-customized-button"
                 fullWidth
+                variant="outlined"
                 onClick={handleClick}
                 style={{
-                  backgroundColor: '#242526',
                   display: 'flex',
                   justifyContent: 'flex-start',
-                  color: '#697586',
-                  marginBottom: 18,
-                  borderRadius: 10,
-                  height: 50
+                  color: '#000',
+                  marginTop: 8,
+                  borderRadius: 14,
+                  height: 55
                 }}
               >
                 {category ? (
                   <>
-                    <p style={{ color: '#FFF', fontSize: 14, marginLeft: 5 }}>{category}</p>
+                    <p style={{ color: '#000', fontSize: 14, marginLeft: 5 }}>{category}</p>
                   </>
                 ) : (
-                  <span>Seleccione Categoría</span>
+                  <span style={{ color: '#000', fontSize: 14 }}>Seleccione Categoría</span>
                 )}
               </Button>
               <StyledMenu
@@ -473,111 +490,196 @@ export default function ProductEdit() {
                 ))}
               </StyledMenu>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="filled"
-                type="number"
-                className={classes.root}
-                fullWidth
-                label="Precio"
-                color="info"
-                value={price || ''}
-                onChange={(ev) => setPrice(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <InputLabel htmlFor="outlined-adornment-price">Precio</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-price"
+                  type="number"
+                  name="price"
+                  value={price}
+                  onChange={(ev) => setPrice(ev.target.value)}
+                  endAdornment={<IconCurrencyDollar />}
+                />
+              </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="filled"
-                type="number"
-                className={classes.root}
-                fullWidth
-                label="Cantidad"
-                color="info"
-                value={quantity || ''}
-                onChange={(ev) => setQuantity(ev.target.value)}
-                sx={{ input: { color: '#FFF' } }}
-              />
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                <InputLabel htmlFor="outlined-adornment-quantity">Cantidad</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-quantity"
+                  type="number"
+                  name="quantity"
+                  value={quantity}
+                  onChange={(ev) => setQuantity(ev.target.value)}
+                  endAdornment={<IconSquareRoundedLetterC />}
+                />
+              </FormControl>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  width: '100%',
+                  height: 190,
+                  cursor: 'pointer'
+                }}
+              >
                 <center>
                   <input type="file" id="picture1" style={{ display: 'none' }} onChange={handlePicture1Change} accept="image/*" />
                   <div htmlFor="picture1" id="picture1">
                     <label htmlFor="picture1">
-                      <img src={picture1.preview || url0} alt="picture1" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
-                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                      <img
+                        src={picture1.preview || url0}
+                        alt="picture1"
+                        height={picture1.preview ? 170 : 100}
+                        style={{ borderRadius: 15, paddingTop: 5 }}
+                      />
+                      {picture1.preview ? (
+                        ''
+                      ) : (
+                        <>
+                          <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 20 }}>Imagen de Portada</p>
+                          <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 10 }}>Imagen 300 x 500</p>
+                        </>
+                      )}
                     </label>
                   </div>
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  width: '100%',
+                  height: 190,
+                  cursor: 'pointer'
+                }}
+              >
                 <center>
                   <input type="file" id="picture2" style={{ display: 'none' }} onChange={handlePicture2Change} accept="image/*" />
                   <div htmlFor="picture2" id="picture2">
                     <label htmlFor="picture2">
-                      <img src={picture2.preview || url1} alt="picture2" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
-                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                      <img
+                        src={picture2.preview || url1}
+                        alt="Picture2"
+                        height={picture2.preview ? 170 : 100}
+                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                      />
+                      {picture2.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
                     </label>
                   </div>
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  width: '100%',
+                  height: 190,
+                  cursor: 'pointer'
+                }}
+              >
                 <center>
                   <input type="file" id="picture3" style={{ display: 'none' }} onChange={handlePicture3Change} accept="image/*" />
                   <div htmlFor="picture3" id="picture3">
                     <label htmlFor="picture3">
-                      <img src={picture3.preview || url2} alt="picture3" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
-                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                      <img
+                        src={picture3.preview || url2}
+                        alt="Picture3"
+                        height={picture3.preview ? 170 : 100}
+                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                      />
+                      {picture3.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
                     </label>
                   </div>
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  width: '100%',
+                  height: 190,
+                  cursor: 'pointer'
+                }}
+              >
                 <center>
                   <input type="file" id="picture4" style={{ display: 'none' }} onChange={handlePicture4Change} accept="image/*" />
                   <div htmlFor="picture4" id="picture4">
                     <label htmlFor="picture4">
-                      <img src={picture4.preview || url3} alt="picture4" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
-                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                      <img
+                        src={picture4.preview || url3}
+                        alt="Picture4"
+                        height={picture4.preview ? 170 : 100}
+                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                      />
+                      {picture4.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
                     </label>
                   </div>
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  width: '100%',
+                  height: 190,
+                  cursor: 'pointer'
+                }}
+              >
                 <center>
                   <input type="file" id="picture5" style={{ display: 'none' }} onChange={handlePicture5Change} accept="image/*" />
                   <div htmlFor="picture5" id="picture5">
                     <label htmlFor="picture5">
-                      <img src={picture5.preview || url4} alt="picture5" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
-                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                      <img
+                        src={picture5.preview || url4}
+                        alt="Picture5"
+                        height={picture5.preview ? 170 : 100}
+                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                      />
+                      {picture5.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
                     </label>
                   </div>
                 </center>
               </div>
             </Grid>
-            <Grid item xs={6} lg={3} style={{ marginTop: 20 }}>
-              <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: 180, cursor: 'pointer' }}>
+            <Grid item xs={12} sm={12} md={4} lg={4}>
+              <div
+                style={{
+                  border: 'dashed gray',
+                  borderRadius: 10,
+                  borderWidth: 0.2,
+                  width: '100%',
+                  height: 190,
+                  cursor: 'pointer'
+                }}
+              >
                 <center>
                   <input type="file" id="picture6" style={{ display: 'none' }} onChange={handlePicture6Change} accept="image/*" />
                   <div htmlFor="picture6" id="picture6">
                     <label htmlFor="picture6">
-                      <img src={picture6.preview || url5} alt="picture6" height={140} style={{ borderRadius: 15, paddingTop: 5 }} />
-                      <p style={{ fontSize: 12, color: '#FFF' }}>{'Click para agregar imagen'}</p>
-                      <p style={{ fontSize: 11, color: '#FFF' }}>{'400x400'}</p>
+                      <img
+                        src={picture6.preview || url5}
+                        alt="Picture6"
+                        height={picture6.preview ? 170 : 100}
+                        style={{ borderRadius: 15, paddingTop: 5, cursor: 'pointer' }}
+                      />
+                      {picture6.preview ? '' : <p style={{ fontSize: 10, color: '#3a3b3c', marginTop: 30 }}>Imagen 300 x 500</p>}
                     </label>
                   </div>
                 </center>
@@ -609,6 +711,6 @@ export default function ProductEdit() {
           </Box>
         </center>
       </Modal>
-    </div>
+    </Paper>
   );
 }

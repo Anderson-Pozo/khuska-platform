@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { Grid, Typography, useMediaQuery, Divider, FormControl, Button, Modal, Box, TextField } from '@mui/material';
-import { makeStyles } from '@material-ui/core/styles';
+import { Grid, Typography, FormControl, Button, Modal, Box, InputLabel, OutlinedInput, InputAdornment, IconButton } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import AnimateButton from 'components/extended/AnimateButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AuthCard from './AuthCard';
 import Logo from 'components/Logo';
 import google from 'assets/images/google.webp';
@@ -29,47 +30,18 @@ import {
   collUsers
 } from 'store/collections';
 import { generateOwnReferalNumber } from 'utils/idGenerator';
+import { IconUser } from '@tabler/icons';
 
 const provider = new GoogleAuthProvider();
-
-const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiInputBase-root': {
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root': {
-      backgroundColor: '#242526',
-      borderRadius: 10,
-      marginBottom: 15,
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root:hover': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      '@media (hover: none)': {
-        backgroundColor: '#242526'
-      }
-    },
-    '& .MuiFilledInput-root.Mui-focused': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      border: '1px solid #242526'
-    },
-    '& .MuiInputLabel-outlined': {
-      color: '#FFF'
-    }
-  }
-}));
 
 export default function Login() {
   const theme = useTheme();
   let navigate = useNavigate();
   const auth = getAuth();
-  const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [open, setOpen] = useState(false);
-  const classes = useStyles();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -78,6 +50,14 @@ export default function Login() {
       }
     });
   }, []);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const createUserAditionalData = (uid, email) => {
     //Subscription
@@ -257,54 +237,48 @@ export default function Login() {
     <Grid container direction="column">
       <ToastContainer />
       <Grid item xs={12}>
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          sx={{ minHeight: 'calc(100vh - 60px)', backgroundColor: 'transparent' }}
-        >
-          <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
+        <Grid container justifyContent="center" alignItems="center" sx={{ mt: 4 }}>
+          <Grid item>
             <AuthCard>
               <Grid container spacing={2} alignItems="center" justifyContent="center">
                 <Grid item>
                   <Logo />
                 </Grid>
                 <Grid item xs={12}>
-                  <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
-                    <Grid item>
-                      <Typography color={theme.palette.secondary.light} gutterBottom variant={matchDownSM ? 'h5' : 'h4'}>
-                        Bienvenido KHUSKA MARKET
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-email-login">Correo Electrónico / Username</InputLabel>
+                    <OutlinedInput
                       id="outlined-adornment-email-login"
-                      variant="filled"
                       type="email"
+                      value={email}
                       name="email"
-                      className={classes.root}
-                      fullWidth
-                      label="Correo Electrónico"
-                      color="info"
                       onChange={(ev) => setEmail(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={<IconUser />}
                     />
                   </FormControl>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
-                      id="outlined-adornment-password-login"
-                      variant="filled"
-                      type="password"
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-password-register">Contraseña</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-password-register"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
                       name="password"
-                      className={classes.root}
-                      fullWidth
                       label="Contraseña"
-                      color="info"
                       onChange={(ev) => setPassword(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                            size="large"
+                          >
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      inputProps={{}}
                     />
                   </FormControl>
                   <AnimateButton>
@@ -315,7 +289,7 @@ export default function Login() {
                       type="submit"
                       variant="contained"
                       color="secondary"
-                      style={{ borderRadius: 10 }}
+                      style={{ borderRadius: 10, height: 50 }}
                       onClick={handleLogin}
                     >
                       Iniciar Sesión
@@ -323,41 +297,33 @@ export default function Login() {
                   </AnimateButton>
                 </Grid>
                 <Grid item xs={12}>
-                  <Divider sx={{ borderColor: '#3E4042' }} />
-                </Grid>
-                <Grid item xs={12}>
                   <Grid item container direction="column" alignItems="center" xs={12}>
                     <Typography
                       component={Link}
                       to="/market/recovery"
                       variant="h5"
-                      sx={{ textDecoration: 'none', color: theme.palette.secondary.light }}
+                      sx={{ textDecoration: 'none', color: theme.palette.secondary.dark }}
                     >
                       Olvidaste tu contraseña?
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="h4" style={{ textAlign: 'center', marginBottom: 10, color: '#FFF' }}>
+                  <Typography variant="h5" style={{ textAlign: 'center', marginBottom: 10, color: '#000' }}>
                     Aún no tienes una cuenta?
-                  </Typography>
-                  <Grid item container direction="column" alignItems="center" xs={12}>
                     <Typography
                       component={Link}
                       to="/market/register"
                       variant="subtitle1"
-                      sx={{ textDecoration: 'none', color: theme.palette.secondary.contrastText }}
+                      sx={{ textDecoration: 'none', color: theme.palette.secondary.dark, ml: 1 }}
                     >
                       Regístrate
                     </Typography>
-                  </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                  <Divider sx={{ borderColor: '#3E4042' }} />
+                  </Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <center>
-                    <Typography variant="subtitle1" sx={{ textDecoration: 'none', color: '#FFF' }}>
+                    <Typography variant="h5" style={{ textAlign: 'center', marginBottom: 10, color: '#000' }}>
                       o inicia sesión con:
                     </Typography>
                   </center>
@@ -368,7 +334,7 @@ export default function Login() {
                     type="submit"
                     variant="outlined"
                     startIcon={<img src={google} alt="brand google" width={22} />}
-                    style={{ color: theme.palette.secondary.light, height: 50, borderRadius: 12, marginTop: 10 }}
+                    style={{ color: theme.palette.secondary.dark, height: 50, borderRadius: 12, marginTop: 10 }}
                     onClick={handleLoginGoogle}
                   >
                     Inicia sesión con Google

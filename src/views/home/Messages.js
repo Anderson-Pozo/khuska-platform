@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Box, Grid, Modal, ListItemButton } from '@mui/material';
@@ -77,6 +78,8 @@ export default function Messages() {
         getRecibeMessageByUserId(user.uid).then((data) => {
           setRecibeMessages(data);
         });
+      } else {
+        navigate('/market/main');
       }
     });
     setOpenLoader(false);

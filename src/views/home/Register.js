@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { useTheme } from '@mui/material/styles';
-import { Grid, Typography, useMediaQuery, Divider, FormControl, Button, Modal, Box, TextField } from '@mui/material';
+import { Grid, Typography, FormControl, Button, Modal, Box, InputLabel, OutlinedInput, InputAdornment, IconButton } from '@mui/material';
 import AnimateButton from 'components/extended/AnimateButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import AuthCard from './AuthCard';
@@ -24,50 +23,23 @@ import {
   collUserPhone,
   collUsers
 } from 'store/collections';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { fullDate, generateDate } from 'utils/validations';
 import { uiStyles } from './styles';
 import { genConst } from 'store/constant';
 import { createDocument } from 'config/firebaseEvents';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiInputBase-root': {
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root': {
-      backgroundColor: '#242526',
-      borderRadius: 10,
-      marginBottom: 15,
-      color: '#FFF'
-    },
-    '& .MuiFilledInput-root:hover': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      '@media (hover: none)': {
-        backgroundColor: '#242526'
-      }
-    },
-    '& .MuiFilledInput-root.Mui-focused': {
-      backgroundColor: '#242526',
-      color: '#FFF',
-      border: '1px solid #242526'
-    },
-    '& .MuiInputLabel-outlined': {
-      color: '#FFF'
-    }
-  }
-}));
+import { IconMail, IconUser } from '@tabler/icons';
 
 export default function Register() {
   const theme = useTheme();
   let navigate = useNavigate();
-  const classes = useStyles();
-  const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [openLoader, setOpenLoader] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -76,6 +48,14 @@ export default function Register() {
       }
     });
   }, []);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const createUserAditionalData = (uid, email) => {
     //Subscription
@@ -222,84 +202,82 @@ export default function Register() {
     <Grid container direction="column">
       <ToastContainer />
       <Grid item xs={12}>
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          sx={{ minHeight: 'calc(100vh - 60px)', backgroundColor: 'transparent' }}
-        >
-          <Grid item sx={{ m: { xs: 1, sm: 3 }, mb: 0 }}>
+        <Grid container justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
+          <Grid item>
             <AuthCard>
               <Grid container spacing={2} alignItems="center" justifyContent="center">
-                <Grid item>
-                  <Logo />
+                <Grid item xs={12} sm={12}>
+                  <center>
+                    <Logo />
+                  </center>
                 </Grid>
-                <Grid item xs={12}>
-                  <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">
-                    <Grid item>
-                      <Typography color={theme.palette.secondary.light} gutterBottom variant={matchDownSM ? 'h5' : 'h4'}>
-                        Bienvenido KHUSKA MARKET
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
-                      id="outlined-adornment-name-login"
-                      variant="filled"
+                <Grid item xs={6} sm={6}>
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-name-register">Nombre</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-name-register"
                       type="text"
+                      value={name}
                       name="name"
-                      className={classes.root}
-                      fullWidth
-                      label="Nombre"
-                      color="info"
                       onChange={(ev) => setName(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={<IconUser />}
                     />
                   </FormControl>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
-                      id="outlined-adornment-lastname-login"
-                      variant="filled"
+                </Grid>
+                <Grid item xs={6} sm={6}>
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-lastName-register">Apellido</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-lastName-register"
                       type="text"
-                      name="lastname"
-                      className={classes.root}
-                      fullWidth
-                      label="Apellido"
-                      color="info"
+                      value={lastName}
+                      name="lastName"
                       onChange={(ev) => setLastName(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={<IconUser />}
                     />
                   </FormControl>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
-                      id="outlined-adornment-email-login"
-                      variant="filled"
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-email-register">Correo Electrónico</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-email-register"
                       type="email"
+                      value={email}
                       name="email"
-                      className={classes.root}
-                      fullWidth
-                      label="Correo Electrónico"
-                      color="info"
                       onChange={(ev) => setEmail(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={<IconMail />}
                     />
                   </FormControl>
-                  <FormControl fullWidth sx={{ ...theme.typography.customInputAuth }}>
-                    <TextField
-                      id="outlined-adornment-password-login"
-                      variant="filled"
-                      type="password"
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
+                    <InputLabel htmlFor="outlined-adornment-password-register">Contraseña</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-password-register"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
                       name="password"
-                      className={classes.root}
-                      fullWidth
                       label="Contraseña"
-                      color="info"
                       onChange={(ev) => setPassword(ev.target.value)}
-                      sx={{ input: { color: '#FFF' } }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                            size="large"
+                          >
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      inputProps={{}}
                     />
                   </FormControl>
+                </Grid>
+                <Grid item xs={12}>
                   <AnimateButton>
                     <Button
                       disableElevation
@@ -316,10 +294,7 @@ export default function Register() {
                   </AnimateButton>
                 </Grid>
                 <Grid item xs={12}>
-                  <Divider sx={{ borderColor: '#3E4042' }} />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h4" style={{ textAlign: 'center', marginBottom: 10, color: '#FFF' }}>
+                  <Typography variant="h4" style={{ textAlign: 'center', marginBottom: 10, color: '#000' }}>
                     Ya tienes una cuenta?
                   </Typography>
                   <Grid item container direction="column" alignItems="center" xs={12}>
@@ -327,7 +302,7 @@ export default function Register() {
                       component={Link}
                       to="/market/login"
                       variant="subtitle1"
-                      sx={{ textDecoration: 'none', color: theme.palette.secondary.light }}
+                      sx={{ textDecoration: 'none', color: theme.palette.secondary.dark }}
                     >
                       Iniciar Sesión
                     </Typography>

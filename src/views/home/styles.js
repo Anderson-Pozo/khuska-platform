@@ -1,6 +1,7 @@
 export const uiStyles = {
+  appbar: { borderRadius: 10, height: 60, backgroundColor: '#ededed' },
   box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
-  paper: { width: '100%', overflow: 'hidden', marginTop: 2 },
+  paper: { width: '100%', overflow: 'hidden', padding: 2 },
   modalLogin: {
     position: 'absolute',
     top: '50%',

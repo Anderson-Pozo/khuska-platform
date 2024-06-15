@@ -5,7 +5,7 @@ import { getProducts } from 'config/firebaseEvents';
 import { searchingProducts } from 'utils/search';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './styles';
-import logo from 'assets/images/khuska/logo.png';
+import { genConst } from 'store/constant';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -26,11 +26,6 @@ const Home = () => {
   return (
     <>
       <Grid container spacing={1.5}>
-        <Grid xs={12} sm={12} md={12} lg={12} sx={{ mt: 2 }}>
-          <center>
-            <img src={logo} alt="Logo Market" width={100} />
-          </center>
-        </Grid>
         <Grid xs={12} sm={12} md={12} lg={12} sx={{ mt: 0, pl: 1 }}>
           <OutlinedInput
             id={'search'}
@@ -52,7 +47,7 @@ const Home = () => {
           <Grid container spacing={0.5}>
             {products.filter(searchingProducts(search)).map((item) => {
               return (
-                <Grid key={item.id} item xs={6} sm={6} md={3} lg={2}>
+                <Grid key={item.id} item xs={6} sm={6} md={3} lg={3}>
                   <div
                     aria-hidden="true"
                     onClick={() => {
@@ -62,24 +57,24 @@ const Home = () => {
                       });
                     }}
                   >
-                    <Card sx={{ height: 265, borderRadius: 3, backgroundColor: '#242526', cursor: 'pointer' }}>
+                    <Card sx={{ height: 265, borderRadius: 3, backgroundColor: '#FFF', cursor: 'pointer' }}>
                       <CardMedia
-                        sx={{ borderRadius: 3, padding: 0.5 }}
+                        sx={{ borderRadius: 3, padding: 0.5, resize: 'cover' }}
                         component="img"
-                        height={180}
+                        height={170}
                         image={item.picture1}
                         alt="Portada img"
                       />
-                      <CardContent sx={{ backgroundColor: '#242526', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
-                        <Typography variant="h4" color="#FFF">
+                      <CardContent sx={{ backgroundColor: '#fff', marginTop: -3, paddingLeft: 1, paddingRight: 1 }}>
+                        <Typography variant="h3" color={genConst.CONST_APPBAR} align="center">
                           ${Number.parseFloat(item.price).toFixed(2)}
                         </Typography>
                         <p
                           style={{
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
-                            color: '#FFF',
-                            fontSize: 11,
+                            color: '#000',
+                            fontSize: 13,
                             textOverflow: 'ellipsis',
                             maxWidth: '100%'
                           }}
