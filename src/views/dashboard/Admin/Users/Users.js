@@ -17,14 +17,15 @@ import {
   Box,
   Toolbar,
   Typography,
-  Container,
   Modal,
   Grid,
   InputLabel,
   OutlinedInput,
   FormControl,
   ButtonGroup,
-  Select
+  Select,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MuiAccordion from '@mui/material/Accordion';
@@ -44,20 +45,21 @@ import {
   IconNetwork,
   IconUserCircle,
   IconCheck,
-  IconCalendar
+  IconCalendar,
+  IconSearch
 } from '@tabler/icons';
 //Firebase Events
 import {
-  createDocument,
+  //createDocument,
   createLogRecord,
   deleteDocument,
   getDad,
   getUserDataSubscription,
   getUserReferalDad,
   getUsersList,
-  saveKhuskaBenefit,
-  savePaymentRecord,
-  saveUserBenefit,
+  //saveKhuskaBenefit,
+  //savePaymentRecord,
+  //saveUserBenefit,
   updateDocument
 } from 'config/firebaseEvents';
 //Notifications
@@ -134,7 +136,7 @@ export default function Users() {
   const [endDate, setEndDate] = useState(null);
   //VOUCHER
   const [picture, setPicture] = useState({ preview: '', raw: '' });
-
+  const [showSearch, setShowSearch] = useState(false);
   const [subData, setSubData] = useState({
     cancelData: null,
     description: null,
@@ -278,24 +280,21 @@ export default function Users() {
     }, 2000);
   };
 
-  const handleActiveSubscription = () => {
+  const handleActiveSubscription = async () => {
     setOpenLoader(true);
     getUserReferalDad(id).then((code) => {
-      if (code !== null) {
-        subscribeUser(id, name + ' ' + lastName, email, code, type, 200);
-      } else {
-        subscribeUser(id, name + ' ' + lastName, email, code, type, 200);
-      }
+      console.log('getUserReferalDad', code);
+      subscribeUser(id, name + ' ' + lastName, email, code, type);
     });
   };
 
-  const subscribeUser = (id, userName, userEmail, ref, type, result) => {
+  const subscribeUser = (id, userName, userEmail, ref, type) => {
     const subObject = {
       idUser: id,
       nameUser: userName,
       emailUser: userEmail,
       refCode: ref ? ref : null,
-      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
+      state: genConst.CONST_STATE_AC,
       startDate: shortDateFormat(),
       endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
       endDateFormat: type == 1 ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS) : endDateFormatWithParam(genConst.CONST_YEAR_DAYS),
@@ -306,17 +305,14 @@ export default function Users() {
       totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : genConst.CONST_YEAR_DAYS
     };
     const usrObject = {
-      subState: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN,
-      state: result == 200 ? genConst.CONST_STATE_AC : genConst.CONST_STATE_IN
+      subState: genConst.CONST_STATE_AC,
+      state: genConst.CONST_STATE_AC
     };
-    if (result === 200) {
-      createDocument(collSubscription, id, subObject);
-      updateDocument(collUsers, id, usrObject);
-      paymentDistribution(id, userName, userEmail, ref);
-    } else {
-      toast.error('Algo salio mal!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-      setOpenLoader(false);
-    }
+    console.log('createDocument', collSubscription, id, subObject);
+    //createDocument(collSubscription, id, subObject);
+    console.log('updateDocument', collUsers, id, usrObject);
+    //updateDocument(collUsers, id, usrObject);
+    paymentDistribution(id, userName, userEmail, ref);
   };
 
   const paymentDistribution = async (id, name, email, ref) => {
@@ -326,8 +322,10 @@ export default function Users() {
     let SUB = Number.parseFloat(total).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
     let referCode;
     if (ref === null) {
-      savePaymentRecord(id, name, email, total, IVA, SUB);
-      saveKhuskaBenefit(id, name, email, total);
+      console.log('savePaymentRecord', id, name, email, total, IVA, SUB);
+      //savePaymentRecord(id, name, email, total, IVA, SUB);
+      console.log('saveKhuskaBenefit', id, name, email, total);
+      //saveKhuskaBenefit(id, name, email, total);
     } else {
       referCode = ref;
       for (let i = 0; i < 4; i++) {
@@ -340,16 +338,17 @@ export default function Users() {
           }
         });
       }
-      savePaymentRecord(id, name, email, total, IVA, SUB);
-      saveKhuskaBenefit(id, name, email, globalTotal);
+      //savePaymentRecord(id, name, email, total, IVA, SUB);
+      console.log(id, name, email, total, IVA, SUB);
+      //saveKhuskaBenefit(id, name, email, globalTotal);
+      console.log(id, name, email, globalTotal);
     }
     setTimeout(function () {
       setOpenLoader(false);
       setOpenSub(false);
       setOpenCreate(false);
-      reloadData();
       toast.success('Suscripción ha sido activada!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-      navigate('/main/dashboard');
+      reloadData();
     }, 4000);
   };
 
@@ -359,22 +358,26 @@ export default function Users() {
       //LEVEL 1
       t = total * genConst.CONST_LVL1;
       globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      console.log(id, name, email, i, resid, resfullname, resemail, t);
+      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
     } else if (i === 1) {
       //LEVEL 2
       t = total * genConst.CONST_LVL2;
       globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      console.log(id, name, email, i, resid, resfullname, resemail, t);
     } else if (i === 2) {
       //LEVEL 3
       t = total * genConst.CONST_LVL3;
       globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      console.log(id, name, email, i, resid, resfullname, resemail, t);
     } else if (i === 3) {
       //LEVEL 4
       t = total * genConst.CONST_LVL4;
       globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      console.log(id, name, email, i, resid, resfullname, resemail, t);
     }
   };
 
@@ -412,36 +415,54 @@ export default function Users() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconUserCircle color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
-            <IconPlus
-              color="#FFF"
-              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconUserCircle color="#FFF" />
+          </IconButton>
+          <Tooltip title="Agregar Usuario">
+            <IconButton
+              color="inherit"
               onClick={() => {
                 setTitle(titles.titleCreate);
                 cleanData();
                 setIsEdit(false);
                 handleOpenCreate();
               }}
-            />
-          </Toolbar>
-        </Container>
+            >
+              <IconPlus />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Usuarios
+          </Typography>
+          <Tooltip title="Buscar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setShowSearch(!showSearch);
+              }}
+            >
+              <IconSearch />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
-      <Box sx={{ flexGrow: 0 }}>
-        {usersList.length > 0 ? (
-          <OutlinedInput
-            id={inputLabels.search}
-            type="text"
-            name={inputLabels.search}
-            onChange={(ev) => setSearch(ev.target.value)}
-            placeholder={inputLabels.placeHolderSearch}
-            style={{ width: '100%', marginTop: 10 }}
-          />
-        ) : (
-          <></>
-        )}
-      </Box>
+      {showSearch && (
+        <Box sx={{ flexGrow: 0 }}>
+          {usersList.length > 0 ? (
+            <OutlinedInput
+              id={inputLabels.search}
+              type="text"
+              name={inputLabels.search}
+              onChange={(ev) => setSearch(ev.target.value)}
+              placeholder={inputLabels.placeHolderSearch}
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
       {usersList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 500 }}>
@@ -820,6 +841,13 @@ export default function Users() {
                                     endIcon={<IconCalendar />}
                                     onClick={() => {
                                       setType(2);
+                                      let subtotal = Math.round((genConst.CONST_YEAR_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
+                                      let ivaValue = genConst.CONST_YEAR_VALUE - subtotal;
+                                      let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
+                                      setIva(ivaRound);
+                                      setSubtotal(subtotal);
+                                      setTotal(genConst.CONST_YEAR_VALUE);
+                                      setEndDate(endDateWithParam(genConst.CONST_YEAR_DAYS));
                                       handleOpenSub();
                                     }}
                                     variant="outlined"

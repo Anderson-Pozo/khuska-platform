@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
 // material-ui
 import { styled } from '@mui/material/styles';
 import { Box, Grid, Typography, Modal } from '@mui/material';
@@ -12,64 +12,49 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 //Firebase
 import { db, storage, authentication } from 'config/firebase';
-import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { updateProfile } from 'firebase/auth';
+import { onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { collUsers } from 'store/collections';
 
-const CardWrapper = styled(MainCard)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.dark,
+const CardWrapper = styled(MainCard)(() => ({
+  backgroundColor: '#FFF',
   color: '#fff',
   overflow: 'hidden',
-  position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: theme.palette.secondary[800],
-    borderRadius: '50%',
-    top: -85,
-    right: -95,
-    [theme.breakpoints.down('sm')]: {
-      top: -105,
-      right: -140
-    }
-  },
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: theme.palette.secondary[800],
-    borderRadius: '50%',
-    top: -125,
-    right: -15,
-    opacity: 0.5,
-    [theme.breakpoints.down('sm')]: {
-      top: -155,
-      right: -70
-    }
-  }
+  position: 'relative'
 }));
 
-const ProfileAvatar = ({ id, name, email }) => {
-  const [userList, setUserList] = React.useState([]);
-  const [open, setOpen] = React.useState(false);
+const ProfileAvatar = () => {
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [avatar, setAvatar] = useState('');
+  const [ownReferal, setOwnReferal] = useState('');
+  const [createAt, setCreateAt] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const getData = () => {
+    onAuthStateChanged(authentication, async (user) => {
+      if (user) {
+        setId(user.uid);
+        const q = query(collection(db, collUsers), where('id', '==', user.uid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          setName(doc.data().name);
+          setLastName(doc.data().lastName);
+          setEmail(doc.data().email);
+          setAvatar(doc.data().avatar);
+          setOwnReferal(doc.data().ownReferal);
+          setCreateAt(doc.data().createAt);
+        });
+      }
+    });
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      const list = [];
-      const querySnapshot = await getDocs(collection(db, collUsers));
-      querySnapshot.forEach((doc) => {
-        if (id === doc.data().id) {
-          list.push(doc.data());
-          setUserList(list);
-        }
-      });
-    }
-    fetchData();
-  }, [id]);
+    getData();
+  }, []);
 
   const imageChange0 = (e) => {
     if (e.target.files.length) {
@@ -94,7 +79,7 @@ const ProfileAvatar = ({ id, name, email }) => {
                 position: toast.POSITION.TOP_RIGHT
               });
               setTimeout(() => {
-                window.location.reload();
+                getData();
                 setOpen(false);
               }, 2000);
             })
@@ -117,59 +102,52 @@ const ProfileAvatar = ({ id, name, email }) => {
               <Grid container justifyContent="center">
                 <input type="file" id="upload-avatar" style={{ display: 'none' }} onChange={imageChange0} />
                 <label htmlFor="upload-avatar" style={{ marginRight: 10 }}>
-                  {userList.map((user, key) => (
-                    <div key={key}>
-                      <center>
-                        <img
-                          src={user.avatar || defaultUser}
-                          alt="profile-avatar"
-                          style={{
-                            width: 180,
-                            height: 180,
-                            cursor: 'pointer',
-                            borderRadius: '50%'
-                          }}
-                        />
-                      </center>
-                    </div>
-                  ))}
+                  <center>
+                    <img
+                      src={avatar || defaultUser}
+                      alt="profile-avatar"
+                      style={{
+                        width: 180,
+                        height: 180,
+                        objectFit: 'cover',
+                        cursor: 'pointer',
+                        borderRadius: '50%'
+                      }}
+                    />
+                  </center>
                 </label>
               </Grid>
             </Grid>
             <Grid item>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h5" sx={{ fontWeight: 500, color: '#FFF', marginTop: 1 }}>
-                  {name}
+                <Typography component="span" variant="h5" sx={{ fontWeight: 500, color: '#000', marginTop: 1 }}>
+                  {name + ' ' + lastName}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h5" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1 }}>
+                <Typography component="span" variant="h5" sx={{ fontWeight: 400, color: '#000', marginTop: 1 }}>
                   {email}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h5" sx={{ fontWeight: 'bold', color: '#FFF', marginTop: 1 }}>
+                <Typography component="span" variant="h5" sx={{ fontWeight: 'bold', color: '#000', marginTop: 1 }}>
                   {'Código de Referido:'}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                {userList.map((user, key) => (
-                  <Typography key={key} component="span" variant="h5" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1 }}>
-                    {user.ownReferal}
-                  </Typography>
-                ))}
+                <Typography component="span" variant="h5" sx={{ fontWeight: 400, color: '#000', marginTop: 1 }}>
+                  {ownReferal}
+                </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h5" sx={{ fontWeight: 'bold', color: '#FFF', marginTop: 1 }}>
+                <Typography component="span" variant="h5" sx={{ fontWeight: 'bold', color: '#000', marginTop: 1 }}>
                   Usuario desde:
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                {userList.map((user, key) => (
-                  <Typography key={key} component="span" variant="h5" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1 }}>
-                    {user.createAt}
-                  </Typography>
-                ))}
+                <Typography component="span" variant="h5" sx={{ fontWeight: 400, color: '#000', marginTop: 1 }}>
+                  {createAt}
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -198,12 +176,6 @@ const style = {
   borderRadius: 6,
   boxShadow: 0,
   p: 4
-};
-
-ProfileAvatar.propTypes = {
-  id: PropTypes.string,
-  email: PropTypes.string,
-  name: PropTypes.string
 };
 
 export default ProfileAvatar;

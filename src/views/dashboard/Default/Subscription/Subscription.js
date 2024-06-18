@@ -228,7 +228,7 @@ const Subscription = () => {
     let SUB = Number.parseFloat(total).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
     let referCode;
     if (ref === null) {
-      savePaymentRecord(id, name, email, total, IVA, SUB);
+      savePaymentRecord(id, name, email, total, IVA, SUB, 'C');
       saveKhuskaBenefit(id, name, email, total);
     } else {
       referCode = ref;
@@ -242,7 +242,7 @@ const Subscription = () => {
           }
         });
       }
-      savePaymentRecord(id, name, email, total, IVA, SUB);
+      savePaymentRecord(id, name, email, total, IVA, SUB, 'C');
       saveKhuskaBenefit(id, name, email, globalTotal);
     }
     setTimeout(function () {
@@ -460,7 +460,7 @@ const Subscription = () => {
                                 <div style={{ width: '50%' }}>
                                   <PayPalButton
                                     invoice={type == 1 ? 'Suscripción mensual Khuska' : 'Suscripción anual Khuska'}
-                                    totalValue={total}
+                                    totalValue={total + ''}
                                     object={object}
                                   />
                                 </div>

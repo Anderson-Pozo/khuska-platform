@@ -8,11 +8,12 @@ import {
   IconBuilding,
   IconNetwork,
   IconMoneybag,
-  IconTicket
+  IconTicket,
+  IconCash
 } from '@tabler/icons';
 
 // constant
-const icons = { IconDashboard, IconUsers, IconFriends, IconBell, IconShare, IconBuilding, IconNetwork, IconMoneybag, IconTicket };
+const icons = { IconDashboard, IconUsers, IconFriends, IconBell, IconShare, IconBuilding, IconNetwork, IconMoneybag, IconTicket, IconCash };
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -65,6 +66,13 @@ const dashboard = {
       type: 'item',
       url: '/main/vouchers',
       icon: icons.IconTicket
+    },
+    {
+      id: 'orders',
+      title: 'Orden de Pago',
+      type: 'item',
+      url: '/main/orders',
+      icon: icons.IconCash
     }
   ]
 };

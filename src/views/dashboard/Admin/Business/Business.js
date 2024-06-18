@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper,
@@ -15,15 +15,16 @@ import {
   Box,
   Toolbar,
   Typography,
-  Container,
   Modal,
   Grid,
   OutlinedInput,
-  ButtonGroup
+  ButtonGroup,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Business.styles';
-import { IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive } from '@tabler/icons';
+import { IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive, IconSearch } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -46,14 +47,15 @@ function searchingData(search) {
 
 export default function Business() {
   let navigate = useNavigate();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [openDelete, setOpenDelete] = React.useState(false);
-  const [id, setId] = React.useState(null);
-  const [name, setName] = React.useState(null);
-  const [search, setSearch] = React.useState('');
-  const [openLoader, setOpenLoader] = React.useState(false);
-  const [dataList, setDataList] = React.useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [id, setId] = useState(null);
+  const [name, setName] = useState(null);
+  const [search, setSearch] = useState('');
+  const [openLoader, setOpenLoader] = useState(false);
+  const [dataList, setDataList] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
 
   const getData = () => {
     getBusinessList().then((data) => {
@@ -61,7 +63,7 @@ export default function Business() {
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getData();
   }, []);
 
@@ -103,33 +105,51 @@ export default function Business() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconBuilding color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
-            <IconPlus
-              color="#FFF"
-              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconBuilding color="#FFF" />
+          </IconButton>
+          <Tooltip title="Agregar Negocio">
+            <IconButton
+              color="inherit"
               onClick={() => {
                 navigate('/main/add-business');
               }}
-            />
-          </Toolbar>
-        </Container>
+            >
+              <IconPlus />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Negocios
+          </Typography>
+          <Tooltip title="Buscar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setShowSearch(!showSearch);
+              }}
+            >
+              <IconSearch />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
-      <Box sx={{ flexGrow: 0 }}>
-        {dataList.length > 0 ? (
-          <OutlinedInput
-            id={inputLabels.search}
-            type="text"
-            name={inputLabels.search}
-            onChange={(ev) => setSearch(ev.target.value)}
-            placeholder={inputLabels.placeHolderSearch}
-            style={{ width: '100%', marginTop: 10 }}
-          />
-        ) : (
-          <></>
-        )}
-      </Box>
+      {showSearch && (
+        <Box sx={{ flexGrow: 0 }}>
+          {dataList.length > 0 ? (
+            <OutlinedInput
+              id={inputLabels.search}
+              type="text"
+              name={inputLabels.search}
+              onChange={(ev) => setSearch(ev.target.value)}
+              placeholder={inputLabels.placeHolderSearch}
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
       {dataList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 400 }}>

@@ -66,6 +66,8 @@ const ProductEdit = Loadable(lazy(() => import('views/dashboard/Admin/Products/P
 const ProductView = Loadable(lazy(() => import('views/dashboard/Admin/Products/ProductView')));
 // dashboard Comprobantes
 const Vouchers = Loadable(lazy(() => import('views/dashboard/Admin/Vouchers/Vouchers')));
+// dashboard Ordenes
+const Orders = Loadable(lazy(() => import('views/dashboard/Admin/Orders/Orders')));
 // dashboard Network
 const Network = Loadable(lazy(() => import('views/dashboard/Admin/Network/Network')));
 // dashboard Mail
@@ -115,6 +117,7 @@ const ProductsEditDefault = Loadable(lazy(() => import('views/dashboard/Default/
 const ProductsViewDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductView')));
 const ProductMessagesDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductMessage')));
 const ProductMessagesChatDefault = Loadable(lazy(() => import('views/dashboard/Default/Products/ProductMessageChat')));
+const WalletDefault = Loadable(lazy(() => import('views/dashboard/Default/Profile/UserWallet')));
 const SuccessDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Success')));
 const FailedDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Failed')));
 
@@ -184,6 +187,7 @@ const App = () => {
               <Route element={<BusinessInfo />} path="info-business" exact />
               <Route element={<Network />} path="network" exact />
               <Route element={<Vouchers />} path="vouchers" exact />
+              <Route element={<Orders />} path="orders" exact />
               <Route element={<Benefits />} path="benefits" exact />
               <Route element={<Products />} path="products" exact />
               <Route element={<ProductAdd />} path="add-product" exact />
@@ -226,6 +230,7 @@ const App = () => {
               <Route element={<UserPaymentMethodsDefault />} path="user-payment-methods" exact />
               <Route element={<UserSecurityDefault />} path="user-security" exact />
               <Route element={<UserSubscriptionDefault />} path="user-subscription" exact />
+              <Route element={<WalletDefault />} path="wallet" exact />
               <Route element={<SuccessDefault />} path="success" exact />
               <Route element={<FailedDefault />} path="failed" exact />
               <Route element={<NotFoundDefault />} path="404" exact />

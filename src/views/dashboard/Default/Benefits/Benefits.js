@@ -29,7 +29,13 @@ import 'react-toastify/dist/ReactToastify.css';
 //Collections
 import { inputLabels, titles } from './Benefits.texts';
 //Utils
-import { createDocument, getTotalPaidBenefitByUserId, getTotalPendinBenefitByUserId, getUserBenefits } from 'config/firebaseEvents';
+import {
+  createDocument,
+  getOrdersByUserId,
+  getTotalPaidBenefitByUserId,
+  getTotalPendinBenefitByUserId,
+  getUserBenefits
+} from 'config/firebaseEvents';
 import SubscriptionState from 'components/message/SubscriptionState';
 //types array
 import MessageDark from 'components/message/MessageDark';
@@ -60,9 +66,14 @@ export default function Benefits() {
   const [userId, setUserId] = useState('');
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [hasOrders, setHasOrders] = useState(false);
   const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = () => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         setOpen(true);
@@ -78,12 +89,21 @@ export default function Benefits() {
         getTotalPaidBenefitByUserId(user.uid).then((res) => {
           setTotalP(Number.parseFloat(res).toFixed(2));
         });
+        getOrdersByUserId(user.uid).then((res) => {
+          if (res.length > 0) {
+            console.log('Tiene ordenes pendientes');
+            setHasOrders(true);
+          } else {
+            console.log('No tiene ordenes pendientes');
+            setHasOrders(false);
+          }
+        });
       }
       setTimeout(() => {
         setOpen(false);
       }, 1000);
     });
-  }, []);
+  };
 
   const handleOpenOrder = () => {
     setOpenOrder(true);
@@ -110,7 +130,7 @@ export default function Benefits() {
     } else if (amount < 9) {
       toast.info('El monto mínimo debe ser $9!', { position: toast.POSITION.TOP_RIGHT });
     } else {
-      toast.success('Orden generada correctamente!', { position: toast.POSITION.TOP_RIGHT });
+      setOpen(true);
       const idOrder = generateId(10);
       const object = {
         id: idOrder,
@@ -122,8 +142,12 @@ export default function Benefits() {
         userEmail: userEmail,
         state: 1
       };
-      console.log(object);
       createDocument(collOrders, idOrder, object);
+      setTimeout(function () {
+        setOpen(false);
+        toast.success('Orden generada correctamente!', { position: toast.POSITION.TOP_RIGHT });
+        getData();
+      }, 2000);
     }
   };
 
@@ -287,40 +311,67 @@ export default function Benefits() {
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <OutlinedInput
-                    id={inputLabels.orderValue}
-                    type="text"
-                    name="order"
-                    onChange={(ev) => setAmount(ev.target.value)}
-                    placeholder={inputLabels.placeHolderAmount}
-                    style={{ width: '100%', marginTop: 10 }}
-                  />
-                </Grid>
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <center>
-                    <ButtonGroup>
-                      <Button
-                        variant="contained"
-                        startIcon={<IconCheck />}
-                        size="large"
-                        style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
-                        onClick={handleGenerateOrder}
-                      >
-                        {titles.buttonAccept}
-                      </Button>
-                      <Button
-                        variant="contained"
-                        startIcon={<IconCircleX />}
-                        size="large"
-                        style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
-                        onClick={handleCloseOrder}
-                      >
-                        {titles.buttonCancel}
-                      </Button>
-                    </ButtonGroup>
-                  </center>
-                </Grid>
+                {hasOrders ? (
+                  <>
+                    <Grid item lg={12} md={12} sm={12} xs={12}>
+                      <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
+                        Actualmente ya tiene una orden de pago pendiente de procesar!
+                      </Typography>
+                    </Grid>
+                    <Grid item lg={12} md={12} sm={12} xs={12}>
+                      <center>
+                        <ButtonGroup>
+                          <Button
+                            variant="contained"
+                            startIcon={<IconCircleX />}
+                            size="large"
+                            style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                            onClick={handleCloseOrder}
+                          >
+                            {titles.buttonCancel}
+                          </Button>
+                        </ButtonGroup>
+                      </center>
+                    </Grid>
+                  </>
+                ) : (
+                  <>
+                    <Grid item lg={12} md={12} sm={12} xs={12}>
+                      <OutlinedInput
+                        id={inputLabels.orderValue}
+                        type="text"
+                        name="order"
+                        onChange={(ev) => setAmount(ev.target.value)}
+                        placeholder={inputLabels.placeHolderAmount}
+                        style={{ width: '100%', marginTop: 10 }}
+                      />
+                    </Grid>
+                    <Grid item lg={12} md={12} sm={12} xs={12}>
+                      <center>
+                        <ButtonGroup>
+                          <Button
+                            variant="contained"
+                            startIcon={<IconCheck />}
+                            size="large"
+                            style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
+                            onClick={handleGenerateOrder}
+                          >
+                            {titles.buttonAccept}
+                          </Button>
+                          <Button
+                            variant="contained"
+                            startIcon={<IconCircleX />}
+                            size="large"
+                            style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
+                            onClick={handleCloseOrder}
+                          >
+                            {titles.buttonCancel}
+                          </Button>
+                        </ButtonGroup>
+                      </center>
+                    </Grid>
+                  </>
+                )}
               </Grid>
             </Grid>
           </Grid>

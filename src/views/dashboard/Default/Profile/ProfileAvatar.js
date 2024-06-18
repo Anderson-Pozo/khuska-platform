@@ -22,9 +22,9 @@ import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
 
-const CardWrapper = styled(MainCard)(({ theme }) => ({
-  backgroundColor: theme.palette.secondary.dark,
-  color: '#fff',
+const CardWrapper = styled(MainCard)(() => ({
+  backgroundColor: '#FFF',
+  color: '#000',
   overflow: 'hidden',
   position: 'relative'
 }));
@@ -115,35 +115,35 @@ const ProfileAvatar = ({ id, name, email }) => {
             </Grid>
             <Grid item>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h3" sx={{ fontWeight: 500, color: '#FFF', marginTop: 1, fontSize: 14 }}>
+                <Typography component="span" variant="h3" sx={{ fontWeight: 500, color: '#000', marginTop: 1, fontSize: 14 }}>
                   {name}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h4" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1, fontSize: 14 }}>
+                <Typography component="span" variant="h4" sx={{ fontWeight: 400, color: '#000', marginTop: 1, fontSize: 14 }}>
                   {email}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h4" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1, fontSize: 14 }}>
+                <Typography component="span" variant="h4" sx={{ fontWeight: 400, color: '#000', marginTop: 1, fontSize: 14 }}>
                   {'Código de Referido:'}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
                 {userList.map((user, key) => (
-                  <Typography key={key} component="span" variant="h4" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1, fontSize: 14 }}>
+                  <Typography key={key} component="span" variant="h4" sx={{ fontWeight: 400, color: '#000', marginTop: 1, fontSize: 14 }}>
                     {user.ownReferal}
                   </Typography>
                 ))}
               </Grid>
               <Grid container justifyContent="center">
-                <Typography component="span" variant="h4" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1, fontSize: 14 }}>
+                <Typography component="span" variant="h4" sx={{ fontWeight: 400, color: '#000', marginTop: 1, fontSize: 14 }}>
                   {'Usuario desde:'}
                 </Typography>
               </Grid>
               <Grid container justifyContent="center">
                 {userList.map((user, key) => (
-                  <Typography key={key} component="span" variant="h4" sx={{ fontWeight: 400, color: '#FFF', marginTop: 1, fontSize: 14 }}>
+                  <Typography key={key} component="span" variant="h4" sx={{ fontWeight: 400, color: '#000', marginTop: 1, fontSize: 14 }}>
                     {user.createAt}
                   </Typography>
                 ))}

@@ -16,19 +16,20 @@ import {
   Box,
   Toolbar,
   Typography,
-  Container,
   Modal,
   Grid,
   InputLabel,
   OutlinedInput,
   FormControl,
   ButtonGroup,
-  Select
+  Select,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import User1 from 'assets/images/profile/profile-picture-6.jpg';
 import MessageDark from 'components/message/MessageDark';
-import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUserCircle } from '@tabler/icons';
+import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconUserCircle, IconSearch } from '@tabler/icons';
 
 //Firebase Events
 import { createLogRecord, deleteDocument, updateDocument } from 'config/firebaseEvents';
@@ -56,7 +57,7 @@ export default function Users() {
   const [openDelete, setOpenDelete] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState(null);
-
+  const [showSearch, setShowSearch] = useState(false);
   const [id, setId] = useState(null);
   const [name, setName] = useState(null);
   const [email, setEMail] = useState(null);
@@ -184,36 +185,54 @@ export default function Users() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconUserCircle color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
-            <IconPlus
-              color="#FFF"
-              style={{ marginLeft: 20, marginRight: 20, cursor: 'pointer' }}
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconUserCircle color="#FFF" />
+          </IconButton>
+          <Tooltip title="Agregar Administrador">
+            <IconButton
+              color="inherit"
               onClick={() => {
                 setTitle(titles.titleCreate);
                 cleanData();
                 setIsEdit(false);
                 handleOpenCreate();
               }}
-            />
-          </Toolbar>
-        </Container>
+            >
+              <IconPlus />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Administradores
+          </Typography>
+          <Tooltip title="Buscar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setShowSearch(!showSearch);
+              }}
+            >
+              <IconSearch />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
-      <Box sx={{ flexGrow: 0 }}>
-        {usersList.length > 0 ? (
-          <OutlinedInput
-            id={inputLabels.search}
-            type="text"
-            name={inputLabels.search}
-            onChange={(ev) => setSearch(ev.target.value)}
-            placeholder={inputLabels.placeHolderSearch}
-            style={{ width: '100%', marginTop: 10 }}
-          />
-        ) : (
-          <></>
-        )}
-      </Box>
+      {showSearch && (
+        <Box sx={{ flexGrow: 0 }}>
+          {usersList.length > 0 ? (
+            <OutlinedInput
+              id={inputLabels.search}
+              type="text"
+              name={inputLabels.search}
+              onChange={(ev) => setSearch(ev.target.value)}
+              placeholder={inputLabels.placeHolderSearch}
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
       {usersList.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 500 }}>

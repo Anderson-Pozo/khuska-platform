@@ -38,6 +38,7 @@ export const collMessage = 'Message';
 export const collFav = 'Favorites';
 export const collChat = 'Chat';
 export const collNotifications = 'Notifications';
+export const collWallet = 'Wallet';
 export const collKhuskaBenefit = 'KhuskaBenefit';
 export const collPayment = 'Payments';
 export const collUserBenefit = 'UserBenefit';

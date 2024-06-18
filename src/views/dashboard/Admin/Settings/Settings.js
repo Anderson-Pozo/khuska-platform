@@ -11,26 +11,24 @@ import {
   TablePagination,
   TableRow,
   Button,
-  Menu,
   MenuItem,
   AppBar,
   Box,
   Toolbar,
   IconButton,
   Typography,
-  Container,
   Modal,
   Grid,
   InputLabel,
   OutlinedInput,
   FormControl,
   TextField,
-  ButtonGroup
+  ButtonGroup,
+  Tooltip
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Settings.styles';
-import { IconApps, IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconSettings } from '@tabler/icons';
+import { IconPlus, IconDeviceFloppy, IconTrash, IconEdit, IconCircleX, IconPencil, IconSettings, IconSearch } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -57,10 +55,7 @@ function searchingData(search) {
 export default function Settings() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
   const theme = useTheme();
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [openCreate, setOpenCreate] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [isEdit, setIsEdit] = React.useState(false);
@@ -81,6 +76,8 @@ export default function Settings() {
   const [search, setSearch] = React.useState('');
   const [openLoader, setOpenLoader] = React.useState(false);
   const [listData, setListData] = React.useState([]);
+
+  const [showSearch, setShowSearch] = React.useState(false);
 
   React.useEffect(() => {
     async function fetchData() {
@@ -107,21 +104,6 @@ export default function Settings() {
   };
   const handleCloseDelete = () => {
     setOpenDelete(false);
-  };
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   const handleChangePage = (newPage) => {
@@ -242,101 +224,54 @@ export default function Settings() {
     <div>
       <ToastContainer />
       <AppBar position="static" style={uiStyles.appbar}>
-        <Container maxWidth="xl" style={uiStyles.container}>
-          <Toolbar disableGutters>
-            <IconSettings />
-            <Box sx={uiStyles.box}>
-              <IconButton
-                size="medium"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={uiStyles.menu}
-              >
-                <MenuItem
-                  key="id-1"
-                  onClick={() => {
-                    setTitle(titles.modalCreate);
-                    cleanData();
-                    setIsEdit(false);
-                    handleOpenCreate();
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 4 }} />
-                  <Typography textAlign="center">{titles.addMenu}</Typography>
-                </MenuItem>
-              </Menu>
-            </Box>
-            <Box sx={uiStyles.box2}>
-              <Button
-                variant="primary"
-                startIcon={<IconApps />}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                {titles.actions}
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button'
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    setTitle(titles.modalCreate);
-                    cleanData();
-                    setIsEdit(false);
-                    handleOpenCreate();
-                  }}
-                >
-                  <IconPlus style={{ marginRight: 10 }} />
-                  {titles.addMenu}
-                </MenuItem>
-              </Menu>
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              {listData.length > 0 ? (
-                <OutlinedInput
-                  id="searchField"
-                  type="text"
-                  name="searchField"
-                  onChange={(ev) => setSearch(ev.target.value)}
-                  placeholder={inputLabels.search}
-                  style={{ width: 300 }}
-                />
-              ) : (
-                <></>
-              )}
-            </Box>
-          </Toolbar>
-        </Container>
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconSettings color="#FFF" />
+          </IconButton>
+          <Tooltip title="Agregar Parámetro">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setTitle(titles.modalCreate);
+                cleanData();
+                setIsEdit(false);
+                handleOpenCreate();
+              }}
+            >
+              <IconPlus />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Parámetros
+          </Typography>
+          <Tooltip title="Buscar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setShowSearch(!showSearch);
+              }}
+            >
+              <IconSearch />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
+      {showSearch && (
+        <Box sx={{ flexGrow: 0 }}>
+          {listData.length > 0 ? (
+            <OutlinedInput
+              id="searchField"
+              type="text"
+              name="searchField"
+              onChange={(ev) => setSearch(ev.target.value)}
+              placeholder={inputLabels.search}
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
       {listData.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 600 }}>
@@ -540,28 +475,15 @@ export default function Settings() {
                   <center>
                     <ButtonGroup>
                       {!isEdit ? (
-                        <Button
-                          variant="contained"
-                          startIcon={<IconDeviceFloppy />}
-                          size="large"
-                          style={{ margin: 5 }}
-                          onClick={handleCreate}
-                        >
+                        <Button variant="contained" startIcon={<IconDeviceFloppy />} size="large" onClick={handleCreate}>
                           {titles.buttonCreate}
                         </Button>
                       ) : (
-                        <Button variant="contained" startIcon={<IconPencil />} size="large" style={{ margin: 5 }} onClick={handleEdit}>
+                        <Button variant="contained" startIcon={<IconPencil />} size="large" onClick={handleEdit}>
                           {titles.buttonEdit}
                         </Button>
                       )}
-                      <Button
-                        variant="contained"
-                        color="error"
-                        startIcon={<IconCircleX />}
-                        size="large"
-                        style={{ margin: 5 }}
-                        onClick={handleCloseCreate}
-                      >
+                      <Button variant="contained" color="error" startIcon={<IconCircleX />} size="large" onClick={handleCloseCreate}>
                         {titles.buttonCancel}
                       </Button>
                     </ButtonGroup>
@@ -575,38 +497,26 @@ export default function Settings() {
 
       <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.styleDelete}>
-          <Typography id="modal-modal-title" variant="h2" component="h2">
+          <Typography id="modal-modal-title" variant="h2" component="h2" textAlign={'center'}>
             {titles.modalDelete}
           </Typography>
-          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
+          <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }} textAlign="center">
             {titles.modaleDeleteDetail} <strong>{name}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
-                <Grid item lg={6} md={6} sm={6} xs={6}>
-                  <ButtonGroup>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      startIcon={<IconTrash />}
-                      size="large"
-                      style={{ margin: 5 }}
-                      onClick={handleDelete}
-                    >
-                      {titles.buttonDelete}
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      startIcon={<IconCircleX />}
-                      size="large"
-                      style={{ margin: 5 }}
-                      onClick={handleCloseDelete}
-                    >
-                      {titles.buttonCancel}
-                    </Button>
-                  </ButtonGroup>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <center>
+                    <ButtonGroup>
+                      <Button variant="contained" color="success" startIcon={<IconTrash />} size="large" onClick={handleDelete}>
+                        {titles.buttonDelete}
+                      </Button>
+                      <Button variant="contained" color="error" startIcon={<IconCircleX />} size="large" onClick={handleCloseDelete}>
+                        {titles.buttonCancel}
+                      </Button>
+                    </ButtonGroup>
+                  </center>
                 </Grid>
               </Grid>
             </Grid>

@@ -23,40 +23,53 @@ import {
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CircularProgress from '@mui/material/CircularProgress';
-import { IconCheck, IconCircleX, IconDownload, IconEdit, IconFile, IconPlus, IconSearch, IconTicket, IconTrash } from '@tabler/icons';
-import { uiStyles } from './Voucher.styles';
-import { inputLabels, titles } from './Vouchers.texts';
-import { getVouchers } from 'config/firebaseEvents';
+import { IconCash, IconCheck, IconCircleX, IconPlus, IconSearch, IconTrash } from '@tabler/icons';
+import { uiStyles } from './Orders.styles';
+import { inputLabels, titles } from './Orders.texts';
+import { getOrders, getUserAmountFromWallet, savePaymentRecord, updateDocument } from 'config/firebaseEvents';
 import MessageDark from 'components/message/MessageDark';
 import { searchingVoucher } from 'utils/search';
 import { genConst } from 'store/constant';
-import { saveAs } from 'file-saver';
+import { collOrders, collWallet } from 'store/collections';
+import { onAuthStateChanged } from 'firebase/auth';
+import { authentication } from 'config/firebase';
+import { fullDate } from 'utils/validations';
 
-const Vouchers = () => {
+const Orders = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [openView, setOpenView] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openActivation, setOpenActivation] = useState(false);
   const [openLoader, setOpenLoader] = useState(false);
-  const [vouchers, setVouchers] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState('');
   const [title, setTitle] = useState(null);
   const [id, setId] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
-  const [total, setTotal] = useState(null);
-  const [type, setType] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [ctaAmount, setCtaAmount] = useState(0);
+  const [walletAmount, setWalletAmount] = useState(0);
   const [createAt, setCreateAt] = useState(null);
-  const [image, setImage] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
-    getVouchers().then((vou) => {
-      setVouchers(vou);
-    });
+    getData();
   }, []);
+
+  const getData = () => {
+    getOrders().then((vou) => {
+      setOrders(vou);
+    });
+    onAuthStateChanged(authentication, (user) => {
+      if (user) {
+        getUserAmountFromWallet(user.uid).then((res) => {
+          setWalletAmount(res);
+        });
+      }
+    });
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -75,38 +88,27 @@ const Vouchers = () => {
     setOpenDelete(false);
   };
 
-  const handleOpenActivation = () => {
-    setOpenActivation(true);
-  };
-
   const handleCloseActivation = () => {
     setOpenActivation(false);
   };
 
-  const handleOpenView = () => {
-    setOpenView(true);
-  };
-
-  const handleCloseView = () => {
-    setOpenView(false);
-  };
-
-  const handleDownload = () => {
-    saveAs(image, createAt + 'voucher.jpg');
-  };
-
-  const handleActivation = () => {
-    if (type == 1) {
-      console.log('Activación Mes');
-    } else if (type == 2) {
-      console.log('Activación Año');
-    } else {
-      console.log('No valid value');
-    }
-  };
-
   const handleDelete = () => {
     setOpenLoader(true);
+  };
+
+  const handleAprobeAmount = () => {
+    //Generar acreditación
+    let COMISION = 1.25;
+    let TOTAL = Number.parseFloat(total) - Number.parseFloat(COMISION);
+    let IVA = Number.parseFloat(TOTAL).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
+    let SUB = Number.parseFloat(TOTAL).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
+    savePaymentRecord(userId, userName, userEmail, TOTAL, IVA, SUB, 'D');
+    //Generar comisión por transacción
+    //Actualizar saldos Usuario
+    let NEWAMOUNT = Number.parseFloat(walletAmount) + TOTAL;
+    updateDocument(collWallet, userId, { amount: NEWAMOUNT, updateAt: fullDate() });
+    //Actualizar estado de orden
+    updateDocument(collOrders, id, { state: 2 });
   };
 
   return (
@@ -115,7 +117,7 @@ const Vouchers = () => {
       <AppBar position="static" style={uiStyles.appbar}>
         <Toolbar>
           <IconButton color="inherit">
-            <IconTicket color="#FFF" />
+            <IconCash color="#FFF" />
           </IconButton>
           <Tooltip title="Agregar Voucher">
             <IconButton
@@ -128,7 +130,7 @@ const Vouchers = () => {
             </IconButton>
           </Tooltip>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
-            Comprobantes
+            Ordenes de Pago
           </Typography>
           <Tooltip title="Buscar">
             <IconButton
@@ -144,7 +146,7 @@ const Vouchers = () => {
       </AppBar>
       {showSearch && (
         <Box sx={{ flexGrow: 0 }}>
-          {vouchers.length > 0 ? (
+          {orders.length > 0 ? (
             <OutlinedInput
               id={inputLabels.search}
               type="text"
@@ -158,7 +160,7 @@ const Vouchers = () => {
           )}
         </Box>
       )}
-      {vouchers.length > 0 ? (
+      {orders.length > 0 ? (
         <Paper sx={uiStyles.paper}>
           <TableContainer sx={{ maxHeight: 500 }}>
             <Table stickyHeader aria-label="sticky table">
@@ -170,65 +172,62 @@ const Vouchers = () => {
                   <TableCell key="id-user" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
                     {titles.tableCell2}
                   </TableCell>
-                  <TableCell key="id-email" align="left" style={{ minWidth: 150, fontWeight: 'bold' }}>
-                    {titles.tableCell3}
+                  <TableCell key="id-amount" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                    {titles.tableCell5}
                   </TableCell>
-                  <TableCell key="id-date" align="left" style={{ minWidth: 75, fontWeight: 'bold' }}>
+                  <TableCell key="id-date" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {titles.tableCell4}
                   </TableCell>
-                  <TableCell key="id-actions" align="center" style={{ minWidth: 125, fontWeight: 'bold' }}>
+                  <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                    {titles.tableCell6}
+                  </TableCell>
+                  <TableCell key="id-actions" align="center" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {titles.tableCellActions}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {vouchers
+                {orders
                   .filter(searchingVoucher(search))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((r) => (
                     <TableRow hover key={r.id}>
                       <TableCell align="left">{r.id}</TableCell>
                       <TableCell align="left">{r.userName}</TableCell>
-                      <TableCell align="left">{r.userEmail}</TableCell>
+                      <TableCell align="left">$ {r.amount}</TableCell>
                       <TableCell align="left">{r.createAt}</TableCell>
+                      <TableCell align="left">{r.state == 1 ? 'Pendiente' : 'Aprobado'}</TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
-                          <Button
-                            style={{ backgroundColor: genConst.CONST_INFO_COLOR }}
-                            onClick={() => {
-                              setTitle(titles.titleVoucher);
-                              setId(r.id);
-                              setUserId(r.userId);
-                              setUserName(r.userName);
-                              setUserEmail(r.userEmail);
-                              setTotal(r.total);
-                              setType(r.type);
-                              setCreateAt(r.createAt);
-                              setImage(r.picture);
-                              handleOpenView();
-                            }}
-                          >
-                            <IconFile />
-                          </Button>
-                          <Button
-                            style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                            onClick={() => {
-                              setId(r.id);
-                              setTitle(titles.titleUpdate);
-                            }}
-                          >
-                            <IconEdit />
-                          </Button>
-                          <Button
-                            style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
-                            onClick={() => {
-                              setTitle(titles.titleDelete);
-                              setId(r.id);
-                              handleOpenDelete();
-                            }}
-                          >
-                            <IconTrash />
-                          </Button>
+                          <Tooltip title="Aprobar">
+                            <Button
+                              style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
+                              onClick={() => {
+                                setId(r.id);
+                                setUserId(r.userId);
+                                setUserName(r.userName);
+                                setUserEmail(r.userEmail);
+                                setTotal(r.amount);
+                                setCtaAmount(r.ctaAmount);
+                                setCreateAt(r.createAt);
+                                setOpenActivation(true);
+                              }}
+                            >
+                              <IconCheck />
+                            </Button>
+                          </Tooltip>
+                          <Tooltip title="Eliminar">
+                            <Button
+                              style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
+                              onClick={() => {
+                                setTitle(titles.titleDelete);
+                                setId(r.id);
+                                handleOpenDelete();
+                              }}
+                            >
+                              <IconTrash />
+                            </Button>
+                          </Tooltip>
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>
@@ -240,7 +239,7 @@ const Vouchers = () => {
             rowsPerPageOptions={[10, 25, 50, 100]}
             labelRowsPerPage={titles.maxRecords}
             component="div"
-            count={vouchers.length}
+            count={orders.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -256,67 +255,6 @@ const Vouchers = () => {
           </Grid>
         </Grid>
       )}
-
-      <Modal open={openView} onClose={handleCloseView} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
-        <Box sx={uiStyles.modalStylesView}>
-          <Typography id="modal-modal-title" variant="h2" component="h2" align="center">
-            {title}
-          </Typography>
-          <Typography id="modal-modal-title" variant="p" component="p" align="center" style={{ marginTop: 20, fontSize: 16 }}>
-            {'Comprobante: '} <strong>{id}</strong>
-          </Typography>
-          <Typography id="modal-modal-title" variant="p" component="p" align="center" style={{ marginTop: 20, fontSize: 16 }}>
-            <p style={{ fontSize: 13 }}>ID Usuario: {userId}</p>
-            <p style={{ fontSize: 13 }}>Usuario: {userName}</p>
-            <p style={{ fontSize: 13 }}>Email: {userEmail}</p>
-            <p style={{ fontSize: 13 }}>Total: ${Number.parseFloat(total).toFixed(2)}</p>
-            <p style={{ fontSize: 13 }}>Tipo: {type == 1 ? genConst.CONST_MONTH_TXT : genConst.CONST_YEAR_TXT}</p>
-            <p style={{ fontSize: 13 }}>Fecha: {createAt}</p>
-          </Typography>
-          <Grid container spacing={1}>
-            <Grid item lg={12} md={12} sm={12} xs={12}>
-              <center>
-                <div style={{ border: 'dashed gray', borderRadius: 10, borderWidth: 0.2, height: '100%', cursor: 'pointer' }}>
-                  <img src={image} alt="Voucher Img" width={100} />
-                </div>
-              </center>
-            </Grid>
-            <Grid item lg={12} md={12} sm={12} xs={12} sx={{ mt: 2 }}>
-              <center>
-                <ButtonGroup>
-                  <Button
-                    variant="contained"
-                    startIcon={<IconCheck />}
-                    size="large"
-                    style={{ backgroundColor: genConst.CONST_SUCCESS_COLOR }}
-                    onClick={handleOpenActivation}
-                  >
-                    {titles.buttonActive}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<IconDownload />}
-                    size="large"
-                    style={{ backgroundColor: genConst.CONST_CREATE_COLOR }}
-                    onClick={handleDownload}
-                  >
-                    {titles.buttonDownload}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={<IconCircleX />}
-                    size="large"
-                    style={{ backgroundColor: genConst.CONST_CANCEL_COLOR }}
-                    onClick={handleCloseView}
-                  >
-                    {titles.buttonCancel}
-                  </Button>
-                </ButtonGroup>
-              </center>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
 
       <Modal open={openDelete} onClose={handleCloseDelete} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
         <Box sx={uiStyles.modalStylesDelete}>
@@ -370,12 +308,12 @@ const Vouchers = () => {
             <Typography id="modal-modal-title" variant="p" component="p">
               {titles.titleActivationModal}
             </Typography>
-            <Typography id="modal-modal-title" variant="p" component="p">
-              <p style={{ fontSize: 13 }}>Usuario: {userName}</p>
-              <p style={{ fontSize: 13 }}>Email: {userEmail}</p>
-              <p style={{ fontSize: 13 }}>Total: ${Number.parseFloat(total).toFixed(2)}</p>
-              <p style={{ fontSize: 13 }}>Tipo: {type == 1 ? genConst.CONST_MONTH_TXT : genConst.CONST_YEAR_TXT}</p>
-            </Typography>
+            <p style={{ fontSize: 13 }}>Usuario: {userId}</p>
+            <p style={{ fontSize: 13 }}>Usuario: {userName}</p>
+            <p style={{ fontSize: 13 }}>Email: {userEmail}</p>
+            <p style={{ fontSize: 13 }}>Fecha: {createAt}</p>
+            <p style={{ fontSize: 13 }}>Saldo Usuario: ${Number.parseFloat(ctaAmount).toFixed(2)}</p>
+            <p style={{ fontSize: 13 }}>Total: ${Number.parseFloat(total).toFixed(2)}</p>
             <Grid container style={{ marginTop: 10 }}>
               <Grid item xs={12}>
                 <Grid container spacing={1}>
@@ -387,7 +325,7 @@ const Vouchers = () => {
                           startIcon={<IconCheck />}
                           size="large"
                           style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
-                          onClick={handleActivation}
+                          onClick={handleAprobeAmount}
                         >
                           {titles.buttonActive}
                         </Button>
@@ -420,4 +358,4 @@ const Vouchers = () => {
   );
 };
 
-export default Vouchers;
+export default Orders;

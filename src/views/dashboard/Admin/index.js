@@ -10,7 +10,7 @@ import {
   countBusiness,
   countProducts,
   countUser,
-  getTotalBenefit,
+  getTotalDebits,
   getTotalPayments
 } from 'config/firebaseEvents';
 //Components
@@ -29,6 +29,7 @@ const Dashboard = () => {
   const [totalBusiness, setTotalBusiness] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPayments, setTotalPayments] = useState(0);
+  const [totalDebits, setTotalDebits] = useState(0);
   const [totalBenefit, setTotalBenefit] = useState(0);
 
   useEffect(() => {
@@ -49,10 +50,14 @@ const Dashboard = () => {
     });
     getTotalPayments().then((res) => {
       setTotalPayments(Number.parseFloat(res).toFixed(2));
+      getTotalDebits().then((result) => {
+        setTotalDebits(Number.parseFloat(result).toFixed(2));
+        setTotalBenefit(Number.parseFloat(res).toFixed(2) - Number.parseFloat(result).toFixed(2));
+      });
     });
-    getTotalBenefit().then((res) => {
+    /*getTotalBenefit().then((res) => {
       setTotalBenefit(Number.parseFloat(res).toFixed(2));
-    });
+    });*/
   }, []);
 
   return (
@@ -78,7 +83,7 @@ const Dashboard = () => {
             <EarningGreenCard total={totalBenefit} detail="Beneficio" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningBlueCard total={0} detail="Pagado" />
+            <EarningBlueCard total={totalDebits} detail="Pagado" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
             <EarningRedCard total={0} detail="Pendiente" />

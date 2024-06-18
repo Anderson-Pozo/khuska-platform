@@ -16,19 +16,9 @@ import { authentication } from 'config/firebase';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { uiStyles } from './styles';
 import { genConst } from 'store/constant';
-import { fullDate, generateDate } from 'utils/validations';
-import { createDocument, isExistUser } from 'config/firebaseEvents';
-import {
-  collInbox,
-  collNotifications,
-  collSubscription,
-  collUserAddress,
-  collUserBillData,
-  collUserLog,
-  collUserPaymentMethod,
-  collUserPhone,
-  collUsers
-} from 'store/collections';
+import { fullDate } from 'utils/validations';
+import { createDocument, createUserAditionalData, isExistUser } from 'config/firebaseEvents';
+import { collUsers } from 'store/collections';
 import { generateOwnReferalNumber } from 'utils/idGenerator';
 import { IconUser } from '@tabler/icons';
 
@@ -57,86 +47,6 @@ export default function Login() {
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
-  };
-
-  const createUserAditionalData = (uid, email) => {
-    //Subscription
-    const objSubscription = {
-      idUser: uid,
-      startDate: null,
-      endDate: null,
-      cancelDate: null,
-      state: genConst.CONST_STATE_IN
-    };
-    createDocument(collSubscription, uid, objSubscription);
-    //Log
-    const userLog = {
-      idUser: uid,
-      loginDate: fullDate(),
-      email: email,
-      state: genConst.CONST_STATE_IN,
-      message: 'Registro de nuevo usuario.'
-    };
-    createDocument(collUserLog, uid, userLog);
-    //Address
-    const userAddress = {
-      idUser: uid,
-      principal: '',
-      secondary: '',
-      number: '',
-      city: '',
-      province: '',
-      reference: ''
-    };
-    createDocument(collUserAddress, uid, userAddress);
-    //Phone
-    const userPhone = {
-      idUser: uid,
-      phone: ''
-    };
-    createDocument(collUserPhone, uid, userPhone);
-    //BillData
-    const userBillData = {
-      idUser: uid,
-      name: '',
-      ci: '',
-      address: '',
-      email: '',
-      city: '',
-      phone: '',
-      postal: ''
-    };
-    createDocument(collUserBillData, uid, userBillData);
-    //Payment Data
-    const userPaymentData = {
-      idUser: uid,
-      name: '',
-      number: '',
-      numberMask: null,
-      date: '',
-      cvc: '',
-      cvcmd5: null
-    };
-    createDocument(collUserPaymentMethod, uid, userPaymentData);
-    //Inbox
-    const inbox = {
-      to: email,
-      from: 'Khuska Admin',
-      date: generateDate(),
-      message: 'Bienvenido a Khuska',
-      subject: 'Bienvenida'
-    };
-    createDocument(collInbox, uid, inbox);
-    //Notifications
-    const notifications = {
-      to: email,
-      from: 'Khuska Admin',
-      date: generateDate(),
-      message: 'No olvides actualizar tu información de perfil.',
-      subject: 'Notificación',
-      state: genConst.CONST_NOTIF_NL
-    };
-    createDocument(collNotifications, uid, notifications);
   };
 
   const handleLogin = () => {
@@ -180,11 +90,7 @@ export default function Login() {
     setOpen(true);
     signInWithPopup(auth, provider)
       .then((result) => {
-        //const credential = GoogleAuthProvider.credentialFromResult(result);
-        //const token = credential.accessToken;
         const user = result.user;
-        //console.log(user);
-        //console.log(token);
         isExistUser(user.uid).then((res) => {
           if (res) {
             console.log(res, 'User valid');

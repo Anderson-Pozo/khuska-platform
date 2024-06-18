@@ -17,7 +17,7 @@ import AnimateButton from 'components/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { fullDate, shortDate, shortDateFormat, validateEmail } from 'utils/validations';
-import { isEmpty, size } from 'lodash';
+import { size } from 'lodash';
 import {
   createDocument,
   createLogRecord,
@@ -70,27 +70,39 @@ const AuthRegister = () => {
   };
 
   const handleRegister = async () => {
-    if (isEmpty(firstName) || isEmpty(lastName)) {
-      toast.info('Por favor, ingresa tus nombres y apellidos.', { position: toast.POSITION.TOP_RIGHT });
-    } else if (isEmpty(phone)) {
-      toast.info('Por favor, ingresa un número de teléfono.', { position: toast.POSITION.TOP_RIGHT });
-    } else if (isEmpty(email) || isEmpty(password)) {
-      toast.info('Por favor, ingresa un correo electrónico y una contraseña.', { position: toast.POSITION.TOP_RIGHT });
-    } else if (!validateEmail(email)) {
-      toast.info('Por favor, ingresa una dirección de correo electrónico válida.', { position: toast.POSITION.TOP_RIGHT });
-    } else if (size(password) < 6) {
-      toast.info('La contraseña debe tener al menos 6 caracteres.', { position: toast.POSITION.TOP_RIGHT });
-    } else {
-      if (isEmpty(emailRef)) {
-        handleCreateAccount(firstName, lastName, email, password, null);
+    try {
+      if (!firstName || !lastName) {
+        toast.info('Por favor, ingresa tus nombres y apellidos.', { position: toast.POSITION.TOP_RIGHT });
+      } else if (!phone) {
+        toast.info('Por favor, ingresa un número de teléfono.', { position: toast.POSITION.TOP_RIGHT });
+      } else if (!email || !password) {
+        toast.info('Por favor, ingresa un correo electrónico y una contraseña.', { position: toast.POSITION.TOP_RIGHT });
+      } else if (!validateEmail(email)) {
+        toast.info('Por favor, ingresa una dirección de correo electrónico válida.', { position: toast.POSITION.TOP_RIGHT });
+      } else if (size(password) < 6) {
+        toast.info('La contraseña debe tener al menos 6 caracteres.', { position: toast.POSITION.TOP_RIGHT });
       } else {
-        if (isNaN(emailRef)) {
-          if (!validateEmail(emailRef)) {
-            toast.info('Por favor, ingresa una dirección de correo electrónico de referido válida.', {
-              position: toast.POSITION.TOP_RIGHT
-            });
+        if (!emailRef) {
+          handleCreateAccount(firstName, lastName, phone, email, password, null);
+          console.log(firstName, lastName, email, password, null);
+        } else {
+          if (isNaN(emailRef)) {
+            if (!validateEmail(emailRef)) {
+              toast.info('Por favor, ingresa una dirección de correo electrónico de referido válida.', {
+                position: toast.POSITION.TOP_RIGHT
+              });
+            } else {
+              isExistUserReferalEmail(emailRef).then((res) => {
+                if (res !== null) {
+                  toast.success('Persona referida encontrada! ' + res, { position: toast.POSITION.TOP_RIGHT });
+                  handleCreateAccount(firstName, lastName, phone, email, password, res);
+                } else {
+                  toast.info('Persona referida no encontrada!', { position: toast.POSITION.TOP_RIGHT });
+                }
+              });
+            }
           } else {
-            isExistUserReferalEmail(emailRef).then((res) => {
+            isExistUserReferalCode(Number.parseInt(emailRef)).then((res) => {
               if (res !== null) {
                 toast.success('Persona referida encontrada! ' + res, { position: toast.POSITION.TOP_RIGHT });
                 handleCreateAccount(firstName, lastName, phone, email, password, res);
@@ -99,78 +111,80 @@ const AuthRegister = () => {
               }
             });
           }
-        } else {
-          isExistUserReferalCode(Number.parseInt(emailRef)).then((res) => {
-            if (res !== null) {
-              toast.success('Persona referida encontrada! ' + res, { position: toast.POSITION.TOP_RIGHT });
-              handleCreateAccount(firstName, lastName, phone, email, password, res);
-            } else {
-              toast.info('Persona referida no encontrada!', { position: toast.POSITION.TOP_RIGHT });
-            }
-          });
         }
       }
+    } catch (error) {
+      toast.error(error, { position: toast.POSITION.TOP_RIGHT });
     }
   };
 
   const handleCreateAccount = (name, lastname, phone, mail, pass, ref) => {
-    setOpenLoader(true);
-    createUserWithEmailAndPassword(authentication, mail, pass)
-      .then((credentials) => {
-        const userObject = {
-          avatar: null,
-          birthday: null,
-          ci: null,
-          city: null,
-          createAt: fullDate(),
-          date: shortDate(),
-          description: null,
-          email: mail,
-          fullName: name + ' ' + lastname,
-          gender: null,
-          id: credentials.user.uid,
-          lastName: lastname,
-          name: name,
-          ownReferal: Number.parseInt(generateId(6)),
-          phone: phone,
-          profile: genConst.CONST_PRO_DEF,
-          refer: ref ? ref : null,
-          registerDate: shortDateFormat(),
-          state: genConst.CONST_STATE_IN,
-          subState: genConst.CONST_STATE_IN,
-          url: null
-        };
-        createDocument(collUsers, credentials.user.uid, userObject);
-        updateProfile(authentication.currentUser, {
-          displayName: name + ' ' + lastname
-        });
-        createUserAditionalData(credentials.user.uid, mail);
-        createLogRecord(collLog, process.LOG_USER_REGISTER, userObject);
-        sendWelcomeEmail(mail, name + ' ' + lastname);
-        handleCleanFields();
-        toast.success('Usuario registrado correctamente!.', { position: toast.POSITION.TOP_RIGHT });
-        setTimeout(() => {
-          setOpenLoader(false);
-          navigate('/app/dashboard');
-        }, 3000);
-      })
-      .catch((error) => {
-        if (error.code === 'auth/user-not-found') {
-          toast.error('Upsss! Usuario no encontrado. Por favor regístrate.', { position: toast.POSITION.TOP_RIGHT });
-        } else if (error.code === 'auth/wrong-password') {
-          toast.error('Upsss! Contraseña incorrecta.', { position: toast.POSITION.TOP_RIGHT });
-        } else if (error.code === 'auth/user-disabled') {
-          toast.error('Upsss! Tu cuenta se encuentra inhabilitada!.', { position: toast.POSITION.TOP_RIGHT });
-        } else if (error.code === 'auth/internal-error') {
-          toast.error('Error interno, por favor comuniquese con el administrador del sistema!.', {
-            position: toast.POSITION.TOP_RIGHT
+    try {
+      setOpenLoader(true);
+      console.log(authentication, mail, pass);
+      const userCredentials = createUserWithEmailAndPassword(authentication, mail, pass);
+      userCredentials
+        .then(() => {
+          const userObject = {
+            avatar: null,
+            birthday: null,
+            ci: null,
+            city: null,
+            createAt: fullDate(),
+            date: shortDate(),
+            description: null,
+            email: mail,
+            fullName: name + ' ' + lastname,
+            gender: null,
+            id: userCredentials.user.uid,
+            lastName: lastname,
+            name: name,
+            ownReferal: Number.parseInt(generateId(6)),
+            phone: phone,
+            profile: genConst.CONST_PRO_DEF,
+            refer: ref ? ref : null,
+            registerDate: shortDateFormat(),
+            state: genConst.CONST_STATE_IN,
+            subState: genConst.CONST_STATE_IN,
+            url: null
+          };
+          createDocument(collUsers, userCredentials.user.uid, userObject);
+          updateProfile(authentication.currentUser, {
+            displayName: name + ' ' + lastname
           });
-        } else if (error.code === 'auth/network-request-failed') {
-          toast.error('Error en la red, por favor intente más tarde!.', { position: toast.POSITION.TOP_RIGHT });
-        } else {
-          toast.error(error);
-        }
-      });
+          createUserAditionalData(userCredentials.user.uid, mail);
+          createLogRecord(collLog, process.LOG_USER_REGISTER, userObject);
+          sendWelcomeEmail(mail, name + ' ' + lastname);
+          handleCleanFields();
+          toast.success('Usuario registrado correctamente!.', { position: toast.POSITION.TOP_RIGHT });
+          setTimeout(() => {
+            setOpenLoader(false);
+            navigate('/app/dashboard');
+          }, 3000);
+        })
+        .catch((error) => {
+          if (error.code === 'auth/user-not-found') {
+            toast.error('Upsss! Usuario no encontrado. Por favor regístrate.', { position: toast.POSITION.TOP_RIGHT });
+          } else if (error.code === 'auth/wrong-password') {
+            toast.error('Upsss! Contraseña incorrecta.', { position: toast.POSITION.TOP_RIGHT });
+          } else if (error.code === 'auth/user-disabled') {
+            toast.error('Upsss! Tu cuenta se encuentra inhabilitada!.', { position: toast.POSITION.TOP_RIGHT });
+          } else if (error.code === 'auth/internal-error') {
+            toast.error('Error interno, por favor comuniquese con el administrador del sistema!.', {
+              position: toast.POSITION.TOP_RIGHT
+            });
+          } else if (error.code === 'auth/network-request-failed') {
+            toast.error('Error en la red, por favor intente más tarde!.', { position: toast.POSITION.TOP_RIGHT });
+          } else if (error.code == 'auth/missing-password)') {
+            toast.error('Error en autenticación!.', { position: toast.POSITION.TOP_RIGHT });
+          } else {
+            toast.error(error);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+      toast.error(error, { position: toast.POSITION.TOP_RIGHT });
+    }
   };
 
   return (
@@ -183,7 +197,6 @@ const AuthRegister = () => {
             <OutlinedInput
               id="outlined-adornment-firstName-register"
               type="text"
-              value={firstName}
               name="firstName"
               onChange={(ev) => setFirstName(ev.target.value)}
               endAdornment={<IconUser />}
@@ -196,7 +209,6 @@ const AuthRegister = () => {
             <OutlinedInput
               id="outlined-adornment-lastName-register"
               type="text"
-              value={lastName}
               name="lastName"
               onChange={(ev) => setLastName(ev.target.value)}
               endAdornment={<IconUser />}
@@ -209,7 +221,6 @@ const AuthRegister = () => {
             <OutlinedInput
               id="outlined-adornment-phone-register"
               type="number"
-              value={phone}
               name="phone"
               onChange={(ev) => setPhone(ev.target.value)}
               endAdornment={<IconDeviceMobile />}
@@ -222,7 +233,6 @@ const AuthRegister = () => {
             <OutlinedInput
               id="outlined-adornment-email-register"
               type="email"
-              value={email}
               name="email"
               onChange={(ev) => setEmail(ev.target.value)}
               endAdornment={<IconMail />}
@@ -235,7 +245,6 @@ const AuthRegister = () => {
             <OutlinedInput
               id="outlined-adornment-password-register"
               type={showPassword ? 'text' : 'password'}
-              value={password}
               name="password"
               label="Contraseña"
               onChange={(ev) => setPassword(ev.target.value)}

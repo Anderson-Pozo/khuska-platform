@@ -15,6 +15,7 @@ import {
   collMail,
   collMessage,
   collNotifications,
+  collOrders,
   collPayment,
   collProducts,
   collSettings,
@@ -26,7 +27,8 @@ import {
   collUserPhone,
   collUsers,
   collUsrNoti,
-  collVoucher
+  collVoucher,
+  collWallet
 } from 'store/collections';
 import { genConst, process } from 'store/constant';
 import { labels } from 'store/labels';
@@ -433,6 +435,15 @@ export const getVouchers = async () => {
   });
   return list;
 };
+//Obtenemos la Lista de Ordenes de Pago
+export const getOrders = async () => {
+  const list = [];
+  const querySnapshot = await getDocuments(collOrders);
+  querySnapshot.forEach((doc) => {
+    list.push(doc.data());
+  });
+  return list;
+};
 //Obtenemos el nombre y apellido de Usuario por ID
 export async function getUserName(id) {
   let name = null;
@@ -525,10 +536,25 @@ export async function getTotalBenefitPay() {
 //Total Ingresos
 export async function getTotalPayments() {
   let total = 0;
-  const querySnapshot = await getDocuments(collPayment);
-  querySnapshot.forEach((doc) => {
-    total = total + doc.data().total;
-  });
+  const q = query(collection(db, collPayment), where('type', '==', genConst.CONST_STA_CRE));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
+  return total;
+}
+//Debitos
+export async function getTotalDebits() {
+  let total = 0;
+  const q = query(collection(db, collPayment), where('type', '==', genConst.CONST_STA_DEB));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.size > 0) {
+    querySnapshot.forEach((doc) => {
+      total = total + doc.data().total;
+    });
+  }
   return total;
 }
 export async function getBusinessListByUser(id) {
@@ -648,6 +674,16 @@ export async function getUserState(id) {
   return state;
 }
 
+export async function getUserAmountFromWallet(id) {
+  let amount = null;
+  const q = query(collection(db, collWallet), where('id', '==', id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    amount = doc.data().amount;
+  });
+  return amount;
+}
+
 export async function getUserReferalDad(id) {
   let code = null;
   const q = query(collection(db, collUsers), where('id', '==', id));
@@ -681,6 +717,16 @@ export async function getUserData(id) {
 export async function getUserChilds(refer) {
   let data = [];
   const q = query(collection(db, collUsers), where('refer', '==', refer));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  return data;
+}
+//Orders
+export async function getOrdersByUserId(id) {
+  let data = [];
+  const q = query(collection(db, collOrders), where('userId', '==', id), where('state', '==', 1));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     data.push(doc.data());
@@ -816,9 +862,18 @@ export const createUserAditionalData = (uid, email) => {
     state: genConst.CONST_NOTIF_NL
   };
   createDocument(collNotifications, idNot, notifications);
+  //Wallet
+  const walletObject = {
+    id: uid,
+    userId: uid,
+    userEmail: email,
+    amount: 0,
+    createAt: fullDate()
+  };
+  createDocument(collWallet, uid, walletObject);
 };
 //SAVE PAYMENT
-export const savePaymentRecord = (id, name, email, total, IVA, SUB) => {
+export const savePaymentRecord = async (id, name, email, total, IVA, SUB, type) => {
   const idPayment = generateId(10);
   const obj = {
     id: idPayment,
@@ -828,7 +883,8 @@ export const savePaymentRecord = (id, name, email, total, IVA, SUB) => {
     total: total,
     iva: IVA,
     sub: SUB,
-    createAt: fullDate()
+    createAt: fullDate(),
+    type: type
   };
   createDocument(collPayment, idPayment, obj);
   createLogRecord(collLog, process.LOG_CREATE_TRAN, obj);

@@ -13,12 +13,13 @@ import {
   Box,
   Toolbar,
   Grid,
-  Container,
   OutlinedInput,
   ButtonGroup,
   Button,
   Modal,
-  Typography
+  Typography,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 //Notifications
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,7 +27,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getDocuments } from 'config/firebaseEvents';
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
-import { IconCircleX, IconEye, IconHistory } from '@tabler/icons';
+import { IconCircleX, IconEye, IconHistory, IconSearch } from '@tabler/icons';
 import ReactJson from 'react-json-view';
 
 function searchingData(search) {
@@ -43,6 +44,7 @@ export default function Logs() {
   const [object, setObject] = useState(null);
   const [openJSON, setOpenJSON] = useState(false);
   const [logList, setLogList] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -74,28 +76,43 @@ export default function Logs() {
 
   return (
     <div>
-      <AppBar position="static" style={{ borderRadius: 15, height: 60, backgroundColor: genConst.CONST_APPBAR }}>
-        <Container maxWidth="xl" style={{ marginTop: 0 }}>
-          <Toolbar disableGutters>
-            <IconHistory color="#FFF" style={{ marginLeft: 0, marginRight: 20 }} />
-            <span style={{ marginRight: 20, fontSize: 14, fontWeight: 'bold' }}>Logs Generales</span>
-          </Toolbar>
-        </Container>
+      <AppBar position="static" style={uiStyles.appbar}>
+        <Toolbar>
+          <IconButton color="inherit">
+            <IconHistory color="#FFF" />
+          </IconButton>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
+            Logs Plataforma
+          </Typography>
+          <Tooltip title="Buscar">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                setShowSearch(!showSearch);
+              }}
+            >
+              <IconSearch />
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
       </AppBar>
-      <Box sx={{ flexGrow: 0, mt: 1 }}>
-        {logList.length > 0 ? (
-          <OutlinedInput
-            id="searchField"
-            type="text"
-            name="searchField"
-            fullWidth
-            onChange={(ev) => setSearch(ev.target.value)}
-            placeholder="Buscar por detalle"
-          />
-        ) : (
-          <></>
-        )}
-      </Box>
+      {showSearch && (
+        <Box sx={{ flexGrow: 0 }}>
+          {logList.length > 0 ? (
+            <OutlinedInput
+              id="searchField"
+              type="text"
+              name="searchField"
+              fullWidth
+              onChange={(ev) => setSearch(ev.target.value)}
+              placeholder="Buscar por detalle"
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          ) : (
+            <></>
+          )}
+        </Box>
+      )}
       {logList.length > 0 ? (
         <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: 2 }}>
           <TableContainer sx={{ maxHeight: 600 }}>
@@ -204,5 +221,6 @@ const uiStyles = {
     borderRadius: 6,
     boxShadow: 24,
     p: 4
-  }
+  },
+  appbar: { borderRadius: 15, height: 60, backgroundColor: genConst.CONST_APPBAR }
 };
