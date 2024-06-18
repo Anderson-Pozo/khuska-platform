@@ -168,7 +168,7 @@ export default function Register() {
             city: null,
             ci: null,
             refer: null,
-            ownReferal: refCode,
+            ownReferal: Number.parseInt(refCode),
             url: null
           };
           createDocument(collUsers, user.uid, userObject);

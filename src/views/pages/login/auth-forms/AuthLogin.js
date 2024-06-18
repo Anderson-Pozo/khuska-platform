@@ -176,7 +176,7 @@ const AuthLogin = () => {
               city: null,
               ci: null,
               refer: null,
-              ownReferal: refCode,
+              ownReferal: Number.parseInt(refCode),
               url: user.photoURL
             };
             createDocument(collUsers, user.uid, userObject);

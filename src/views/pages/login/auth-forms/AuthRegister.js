@@ -122,9 +122,8 @@ const AuthRegister = () => {
     try {
       setOpenLoader(true);
       console.log(authentication, mail, pass);
-      const userCredentials = createUserWithEmailAndPassword(authentication, mail, pass);
-      userCredentials
-        .then(() => {
+      createUserWithEmailAndPassword(authentication, mail, pass)
+        .then((userCredentials) => {
           const userObject = {
             avatar: null,
             birthday: null,
@@ -155,10 +154,10 @@ const AuthRegister = () => {
           createUserAditionalData(userCredentials.user.uid, mail);
           createLogRecord(collLog, process.LOG_USER_REGISTER, userObject);
           sendWelcomeEmail(mail, name + ' ' + lastname);
-          handleCleanFields();
           toast.success('Usuario registrado correctamente!.', { position: toast.POSITION.TOP_RIGHT });
           setTimeout(() => {
             setOpenLoader(false);
+            handleCleanFields();
             navigate('/app/dashboard');
           }, 3000);
         })

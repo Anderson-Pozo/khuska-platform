@@ -50,23 +50,23 @@ import {
 } from '@tabler/icons';
 //Firebase Events
 import {
-  //createDocument,
+  createDocument,
   createLogRecord,
   deleteDocument,
   getDad,
   getUserDataSubscription,
   getUserReferalDad,
   getUsersList,
-  //saveKhuskaBenefit,
-  //savePaymentRecord,
-  //saveUserBenefit,
+  saveKhuskaBenefit,
+  savePaymentRecord,
+  saveUserBenefit,
   updateDocument
 } from 'config/firebaseEvents';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { genConst, process } from 'store/constant';
-import { collLog, collSubscription, collUsers } from 'store/collections';
+import { collLog, collSubscription, collUsers, collVoucher } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
 //Utils
@@ -74,6 +74,8 @@ import { endDateFormatWithParam, endDateWithParam, fullDate, fullDateFormat, ini
 import { generateId } from 'utils/idGenerator';
 import { searchingData } from 'utils/search';
 import defaultImage from 'assets/images/addImgB.png';
+import { storage } from 'config/firebase';
+import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
 
 let globalTotal = 0;
 
@@ -283,17 +285,17 @@ export default function Users() {
   const handleActiveSubscription = async () => {
     setOpenLoader(true);
     getUserReferalDad(id).then((code) => {
-      console.log('getUserReferalDad', code);
+      //console.log('getUserReferalDad', code);
       subscribeUser(id, name + ' ' + lastName, email, code, type);
     });
   };
 
-  const subscribeUser = (id, userName, userEmail, ref, type) => {
+  const subscribeUser = (id, userName, userEmail, code, type) => {
     const subObject = {
       idUser: id,
       nameUser: userName,
       emailUser: userEmail,
-      refCode: ref ? ref : null,
+      refCode: code ? code : null,
       state: genConst.CONST_STATE_AC,
       startDate: shortDateFormat(),
       endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
@@ -308,26 +310,27 @@ export default function Users() {
       subState: genConst.CONST_STATE_AC,
       state: genConst.CONST_STATE_AC
     };
-    console.log('createDocument', collSubscription, id, subObject);
-    //createDocument(collSubscription, id, subObject);
-    console.log('updateDocument', collUsers, id, usrObject);
-    //updateDocument(collUsers, id, usrObject);
-    paymentDistribution(id, userName, userEmail, ref);
+    //console.log('createDocument', collSubscription, id, subObject);
+    createDocument(collSubscription, id, subObject);
+    //console.log('updateDocument', collUsers, id, usrObject);
+    updateDocument(collUsers, id, usrObject);
+    paymentDistribution(id, userName, userEmail, code);
   };
 
-  const paymentDistribution = async (id, name, email, ref) => {
+  const paymentDistribution = async (id, name, email, code) => {
     globalTotal = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
     let total = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
     let IVA = Number.parseFloat(total).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
     let SUB = Number.parseFloat(total).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
     let referCode;
-    if (ref === null) {
-      console.log('savePaymentRecord', id, name, email, total, IVA, SUB);
-      //savePaymentRecord(id, name, email, total, IVA, SUB);
-      console.log('saveKhuskaBenefit', id, name, email, total);
-      //saveKhuskaBenefit(id, name, email, total);
+    //console.log('referCode', code);
+    if (code === null) {
+      //console.log('savePaymentRecord', id, name, email, total, IVA, SUB);
+      savePaymentRecord(id, name, email, total, IVA, SUB);
+      //console.log('saveKhuskaBenefit', id, name, email, total);
+      saveKhuskaBenefit(id, name, email, total);
     } else {
-      referCode = ref;
+      referCode = code;
       for (let i = 0; i < 4; i++) {
         //PAGAR BENEFICIOS
         await getDad(referCode).then((res) => {
@@ -338,10 +341,38 @@ export default function Users() {
           }
         });
       }
-      //savePaymentRecord(id, name, email, total, IVA, SUB);
-      console.log(id, name, email, total, IVA, SUB);
-      //saveKhuskaBenefit(id, name, email, globalTotal);
-      console.log(id, name, email, globalTotal);
+      savePaymentRecord(id, name, email, total, IVA, SUB);
+      //console.log('savePaymentRecord', id, name, email, total, IVA, SUB, 'C');
+      saveKhuskaBenefit(id, name, email, globalTotal);
+      //console.log('saveKhuskaBenefit', id, name, email, globalTotal);
+      if (picture.preview) {
+        const idComp = generateId(10);
+        const object = {
+          id: idComp,
+          userId: id,
+          userName: name,
+          userEmail: email,
+          total: total,
+          type: type,
+          createAt: fullDate(),
+          picture: null
+        };
+        createDocument(collVoucher, idComp, object);
+        //console.log('createDocument', collVoucher, idComp, object);
+        if (picture.raw !== null) {
+          const imageName = idComp + 'voucher.jpg';
+          const imageRef = ref(storage, `vouchers/${imageName}`);
+          uploadBytes(imageRef, picture.raw).then((snap) => {
+            getDownloadURL(snap.ref).then((url) => {
+              const obj = {
+                picture: url
+              };
+              updateDocument(collVoucher, idComp, obj);
+              //console.log('updateDocument', collVoucher, idComp, obj);
+            });
+          });
+        }
+      }
     }
     setTimeout(function () {
       setOpenLoader(false);
@@ -349,6 +380,7 @@ export default function Users() {
       setOpenCreate(false);
       toast.success('Suscripción ha sido activada!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
       reloadData();
+      cleanData();
     }, 4000);
   };
 
@@ -358,26 +390,26 @@ export default function Users() {
       //LEVEL 1
       t = total * genConst.CONST_LVL1;
       globalTotal = globalTotal - t;
-      console.log(id, name, email, i, resid, resfullname, resemail, t);
-      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
     } else if (i === 1) {
       //LEVEL 2
       t = total * genConst.CONST_LVL2;
       globalTotal = globalTotal - t;
-      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-      console.log(id, name, email, i, resid, resfullname, resemail, t);
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
     } else if (i === 2) {
       //LEVEL 3
       t = total * genConst.CONST_LVL3;
       globalTotal = globalTotal - t;
-      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-      console.log(id, name, email, i, resid, resfullname, resemail, t);
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
     } else if (i === 3) {
       //LEVEL 4
       t = total * genConst.CONST_LVL4;
       globalTotal = globalTotal - t;
-      //saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-      console.log(id, name, email, i, resid, resfullname, resemail, t);
+      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
+      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
     }
   };
 
