@@ -1,19 +1,34 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { IconButton, Grid, Button } from '@mui/material';
+import { IconButton, Grid, Button, Typography } from '@mui/material';
 import { uiStyles } from './styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link as Scroll } from 'react-scroll';
 
 export default function Hero() {
   let navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <div style={uiStyles.container}>
       <div style={{ padding: 20 }}>
-        <p style={uiStyles.title}>JUNTOS HACIA LA CONSTRUCCIÓN</p>
-        <p style={uiStyles.colorText}> DE UN FUTURO PROSPERO</p>
+        <Typography
+          color={theme.palette.secondary.dark}
+          variant={'h1'}
+          sx={{
+            background: '#FFF',
+            borderRadius: 10,
+            p: 2,
+            [theme.breakpoints.down('sm')]: {
+              fontSize: 25,
+              mt: 4
+            }
+          }}
+        >
+          JUNTOS HACIA LA CONSTRUCCIÓN DE UN FUTURO PROSPERO
+        </Typography>
       </div>
       <Grid container spacing={1}>
         <Grid item xs={12}>

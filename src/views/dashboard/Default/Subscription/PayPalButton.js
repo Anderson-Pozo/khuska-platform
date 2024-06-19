@@ -14,6 +14,7 @@ import {
   updateDocument
 } from 'config/firebaseEvents';
 import { collSubscription, collUsers } from 'store/collections';
+import { sendSubscriptionEmail } from 'utils/sendEmail';
 
 let globalTotal = 0;
 
@@ -69,6 +70,7 @@ const PayPalButton = (props) => {
             createDocument(collSubscription, userId, subObject);
             //console.log('updateDocument', collUsers, userId, usrObject);
             updateDocument(collUsers, userId, usrObject);
+            sendSubscriptionEmail(userEmail, userName, type, object.startDate, object.endDate);
             paymentDistribution(userId, userName, userEmail, code, type);
           };
 

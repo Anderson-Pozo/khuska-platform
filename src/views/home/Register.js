@@ -201,7 +201,7 @@ export default function Register() {
                     <Logo />
                   </center>
                 </Grid>
-                <Grid item xs={6} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
                     <InputLabel htmlFor="outlined-adornment-name-register">Nombre</InputLabel>
                     <OutlinedInput
@@ -214,7 +214,7 @@ export default function Register() {
                     />
                   </FormControl>
                 </Grid>
-                <Grid item xs={6} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <FormControl fullWidth sx={{ ...theme.typography.customInput, padding: 0, paddingRight: 0 }}>
                     <InputLabel htmlFor="outlined-adornment-lastName-register">Apellido</InputLabel>
                     <OutlinedInput

@@ -33,7 +33,9 @@ const Signup = () => {
               <AuthCardWrapper>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                   <Grid item xs={12}>
-                    <Logo />
+                    <center>
+                      <Logo />
+                    </center>
                   </Grid>
                   <Grid item xs={12}>
                     <Grid container direction={matchDownSM ? 'column-reverse' : 'row'} alignItems="center" justifyContent="center">

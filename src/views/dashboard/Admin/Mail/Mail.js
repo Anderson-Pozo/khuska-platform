@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Tooltip } from '@mui/material';
+import { ButtonGroup, IconButton, Paper, Tooltip } from '@mui/material';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
 import { Button, Grid, Modal, Box } from '@mui/material';
-import { IconMessage2 } from '@tabler/icons';
+import { IconMail, IconMessage2 } from '@tabler/icons';
 import { uiStyles } from './Mail.styles';
 import MessageDark from 'components/message/MessageDark';
 import { collMail } from 'store/collections';
@@ -12,7 +12,8 @@ import { titles, inputLabels } from './Mail.text';
 import CircularProgress from '@mui/material/CircularProgress';
 //Notifications
 import 'react-toastify/dist/ReactToastify.css';
-import { fullDate } from 'utils/validations';
+import { endDateMonth, fullDate } from 'utils/validations';
+import { sendPaymentEmail, sendSubscriptionEmail, sendWelcomeEmail } from 'utils/sendEmail';
 
 const Mail = () => {
   const [dataList, setDataList] = useState([]);
@@ -134,6 +135,40 @@ const Mail = () => {
           </Grid>
         </Grid>
       )}
+
+      <ButtonGroup sx={{ mt: 2 }} style={{ display: 'none' }}>
+        <Tooltip title="Enviar Bienvenida">
+          <IconButton
+            color="inherit"
+            onClick={async () => {
+              sendWelcomeEmail('gaturno15@gmail.com', 'Paul Alvarez');
+            }}
+          >
+            <IconMail color="#FFF" size={40} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Enviar Suscripción">
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              sendSubscriptionEmail('gaturno15@gmail.com', 'Paul Alvarez', 1, fullDate(), endDateMonth());
+            }}
+          >
+            <IconMail color="#FFF" size={40} />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Enviar Confirmación Pago">
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              sendPaymentEmail('gaturno15@gmail.com', 'Paul Alvarez', fullDate(), fullDate(), 50);
+            }}
+          >
+            <IconMail color="#FFF" size={40} />
+          </IconButton>
+        </Tooltip>
+      </ButtonGroup>
+
       <Modal open={openLoader} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <center>
           <Box sx={uiStyles.styleLoader}>

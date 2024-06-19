@@ -76,6 +76,7 @@ import { searchingData } from 'utils/search';
 import defaultImage from 'assets/images/addImgB.png';
 import { storage } from 'config/firebase';
 import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
+import { sendSubscriptionEmail } from 'utils/sendEmail';
 
 let globalTotal = 0;
 
@@ -315,6 +316,13 @@ export default function Users() {
     //console.log('updateDocument', collUsers, id, usrObject);
     updateDocument(collUsers, id, usrObject);
     paymentDistribution(id, userName, userEmail, code);
+    sendSubscriptionEmail(
+      userEmail,
+      userName,
+      type,
+      shortDateFormat(),
+      type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS)
+    );
   };
 
   const paymentDistribution = async (id, name, email, code) => {
@@ -441,6 +449,45 @@ export default function Users() {
         });
       };
     }
+  };
+
+  const handleActiveFreeAccount = () => {
+    setOpenLoader(true);
+    getUserReferalDad(id).then((code) => {
+      const subObject = {
+        idUser: id,
+        nameUser: name + ' ' + lastName,
+        emailUser: email,
+        refCode: code ? code : null,
+        state: genConst.CONST_STATE_AC,
+        startDate: shortDateFormat(),
+        endDate:
+          type == 1
+            ? endDateWithParam(genConst.CONST_MONTH_DAYS)
+            : type == 2
+            ? endDateWithParam(genConst.CONST_YEAR_DAYS)
+            : endDateWithParam(genConst.CONST_3_MONTH_DAYS),
+        endDateFormat:
+          type == 1
+            ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS)
+            : type == 2
+            ? endDateFormatWithParam(genConst.CONST_YEAR_DAYS)
+            : endDateFormatWithParam(genConst.CONST_3_MONTH_DAYS),
+        date: fullDate(),
+        dateFormat: fullDateFormat(),
+        price: type == 1 ? genConst.CONST_1_MONTH_VALUE : type == 2 ? genConst.CONST_1_YEAR_VALUE : genConst.CONST_3_MONTH_VALUE,
+        description: type == 1 ? 'Gratuita (30 días)' : type == 2 ? 'Gratuita (365 días)' : 'Gratuita (90 días)',
+        totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : type == 2 ? genConst.CONST_YEAR_DAYS : genConst.CONST_3_MONTH_DAYS
+      };
+      const usrObject = {
+        subState: genConst.CONST_STATE_AC,
+        state: genConst.CONST_STATE_AC
+      };
+      //console.log('createDocument', collSubscription, id, subObject);
+      createDocument(collSubscription, id, subObject);
+      //console.log('updateDocument', collUsers, id, usrObject);
+      updateDocument(collUsers, id, usrObject);
+    });
   };
 
   return (
@@ -790,11 +837,6 @@ export default function Users() {
                                 <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
                                   <FormControl fullWidth>
                                     <InputLabel>
-                                      <strong style={{ fontSize: 16 }}>Usuario</strong>
-                                    </InputLabel>
-                                  </FormControl>
-                                  <FormControl fullWidth>
-                                    <InputLabel>
                                       <strong>Usuario desde: </strong>
                                       {createAt}
                                     </InputLabel>
@@ -885,6 +927,117 @@ export default function Users() {
                                     variant="outlined"
                                   >
                                     AÑO
+                                  </Button>
+                                </ButtonGroup>
+                              </center>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+                    <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
+                      <Typography>Suscripción Gratuita</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid container style={{ marginTop: 10 }}>
+                        <Grid item xs={12}>
+                          <Grid container spacing={1}>
+                            {isEdit ? (
+                              <>
+                                <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong>Usuario desde: </strong>
+                                      {createAt}
+                                    </InputLabel>
+                                  </FormControl>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong>Código: </strong>
+                                      {code}
+                                    </InputLabel>
+                                  </FormControl>
+                                </Grid>
+                                <Grid item lg={6} md={6} sm={6} xs={6} style={{ marginBottom: 30 }}>
+                                  <FormControl fullWidth>
+                                    <InputLabel>
+                                      <strong style={{ fontSize: 16 }}>Suscripción Actual</strong>
+                                    </InputLabel>
+                                  </FormControl>
+                                  {subData.state == genConst.CONST_STATE_AC ? (
+                                    <>
+                                      <FormControl fullWidth>
+                                        <InputLabel>
+                                          <strong>Plan Actual: </strong>
+                                          {subData.description}
+                                        </InputLabel>
+                                      </FormControl>
+                                      <FormControl fullWidth>
+                                        <InputLabel>
+                                          <strong>Precio: </strong>
+                                          {'$ ' + subData.price}
+                                        </InputLabel>
+                                      </FormControl>
+                                      <FormControl fullWidth>
+                                        <InputLabel>
+                                          <strong>Fecha hasta: </strong>
+                                          {subData.endDate}
+                                        </InputLabel>
+                                      </FormControl>
+                                    </>
+                                  ) : (
+                                    <FormControl fullWidth>
+                                      <InputLabel>
+                                        <strong>ESTADO: </strong>
+                                        {subData.state == genConst.CONST_STATE_AC
+                                          ? genConst.CONST_SUB_STATE_ACT_TEXT
+                                          : genConst.CONST_SUB_STATE_INA_TEXT}
+                                      </InputLabel>
+                                    </FormControl>
+                                  )}
+                                </Grid>
+                              </>
+                            ) : (
+                              <></>
+                            )}
+                            <Grid item lg={12} md={12} sm={12} xs={12}>
+                              <center>
+                                <h5>Seleccione el periodo de suscripción</h5>
+                                <ButtonGroup variant="outlined" aria-label="outlined button group">
+                                  <Button
+                                    startIcon={<IconCalendar />}
+                                    onClick={() => {
+                                      setType(1);
+                                      setEndDate(endDateWithParam(genConst.CONST_MONTH_DAYS));
+                                      handleActiveFreeAccount();
+                                    }}
+                                    variant="outlined"
+                                  >
+                                    1 MES
+                                  </Button>
+                                  <Button
+                                    startIcon={<IconCalendar />}
+                                    onClick={() => {
+                                      setType(3);
+                                      setEndDate(endDateWithParam(genConst.CONST_3_MONTH_DAYS));
+                                      handleActiveFreeAccount();
+                                    }}
+                                    variant="contained"
+                                  >
+                                    3 MESES
+                                  </Button>
+                                  <Button
+                                    endIcon={<IconCalendar />}
+                                    onClick={() => {
+                                      setType(2);
+                                      setEndDate(endDateWithParam(genConst.CONST_YEAR_DAYS));
+                                      handleActiveFreeAccount();
+                                    }}
+                                    variant="outlined"
+                                  >
+                                    1 AÑO
                                   </Button>
                                 </ButtonGroup>
                               </center>

@@ -349,16 +349,22 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
           }}
         >
           <ListMenuMarket />
-          <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
+          <Stack direction="row" justifyContent="center" sx={{ mb: 1 }}>
             <Chip label={config.version} disabled chipcolor="secondary" size="small" sx={{ cursor: 'pointer' }} />
+          </Stack>
+          <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
+            <Chip label={config.developer} disabled chipcolor="secondary" size="small" sx={{ cursor: 'pointer' }} />
           </Stack>
         </PerfectScrollbar>
       </BrowserView>
       <MobileView>
         <Box sx={{ px: 2 }}>
           <ListMenuMarket />
-          <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
+          <Stack direction="row" justifyContent="center" sx={{ mb: 1 }}>
             <Chip label={config.version} disabled chipcolor="secondary" size="small" sx={{ cursor: 'pointer' }} />
+          </Stack>
+          <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
+            <Chip label={config.developer} disabled chipcolor="secondary" size="small" sx={{ cursor: 'pointer' }} />
           </Stack>
         </Box>
       </MobileView>

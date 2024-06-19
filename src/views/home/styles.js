@@ -1,5 +1,7 @@
+import { genConst } from 'store/constant';
+
 export const uiStyles = {
-  appbar: { borderRadius: 10, height: 60, backgroundColor: '#ededed' },
+  appbar: { borderRadius: 10, height: 60, backgroundColor: genConst.CONST_APPBAR },
   box: { flexGrow: 1, display: { xs: 'flex', md: 'none' } },
   paper: { width: '100%', overflow: 'hidden', padding: 2 },
   modalLogin: {

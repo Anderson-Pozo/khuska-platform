@@ -40,7 +40,9 @@ import { authentication } from 'config/firebase';
 import { collChat, collFav, collMessage } from 'store/collections';
 import { serverTimestamp } from 'firebase/firestore';
 import { genConst } from 'store/constant';
-import { IconArrowLeft, IconBrandWhatsapp, IconHeart, IconId, IconMessage } from '@tabler/icons';
+import cards from 'assets/images/cards.png';
+import paypal from 'assets/images/paypal2.png';
+import { IconArrowLeft, IconBrandWhatsapp, IconCash, IconHeart, IconId, IconSend } from '@tabler/icons';
 
 let images = [];
 
@@ -65,6 +67,7 @@ export default function ViewItem() {
   const [userName, setUserName] = useState(null);
   const [userLogo, setUserLogo] = useState(null);
   const [userCreateAt, setUserCreateAt] = useState(null);
+  const [userPhone, setUserPhone] = useState(null);
   const [businessId, setBusinessId] = useState(null);
   const [businessName, setBusinessName] = useState(null);
   const [businessLogo, setBusinessLogo] = useState(null);
@@ -116,9 +119,10 @@ export default function ViewItem() {
       setBusinessId(data[0].idBusiness);
       getUserById(data[0].userId).then((dat) => {
         setUserIdd(dat[0].id);
-        setUserName(dat[0].name + '' + dat[0].lastName);
+        setUserName(dat[0].name + ' ' + dat[0].lastName);
         setUserLogo(dat[0].avatar);
         setUserCreateAt(dat[0].createAt);
+        setUserPhone(dat[0].phone);
         getBusinessById(data[0].idBusiness).then((dataa) => {
           if (dataa.length > 0) {
             setBusinessName(dataa[0].name);
@@ -209,24 +213,93 @@ export default function ViewItem() {
                         navigate('/market/main');
                       }}
                     >
-                      <IconArrowLeft color={genConst.CONST_APPBAR} />
+                      <IconArrowLeft color={genConst.CONST_COLOR_W} />
                     </IconButton>
                   </Tooltip>
-                  <Typography variant="h4" component="div" sx={{ flexGrow: 1, color: genConst.CONST_APPBAR }} align="center">
+                  <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: genConst.CONST_COLOR_W }} align="center">
                     {name}
                   </Typography>
                   <Tooltip title={id}>
                     <IconButton>
-                      <IconId color={genConst.CONST_APPBAR} />
+                      <IconId color={genConst.CONST_COLOR_W} />
                     </IconButton>
                   </Tooltip>
                 </Toolbar>
               </AppBar>
             </Grid>
-            <Grid item lg={8} xs={12} sx={{ mt: 1 }}>
+            <Grid item lg={8} xs={12} sx={{ mt: 0 }}>
               <div style={{ background: '#FFF', marginTop: 20, height: 400, marginRight: 10 }}>
                 <center>{images.length > 0 ? <Gallery images={images} width={'100%'} /> : <span>...Cargando</span>}</center>
               </div>
+            </Grid>
+            <Grid item lg={4} xs={12} style={{ marginTop: 10 }}>
+              <Paper sx={{ p: 3, backgroundColor: '#FFF', height: 400, border: '1px solid rgba(0,0,0,.2)', borderWidth: 0.2 }}>
+                <Typography variant="h4" sx={{ color: genConst.CONST_APPBAR, fontSize: 14 }} textAlign="justify">
+                  {name}
+                </Typography>
+                <br />
+                <Typography variant="span" sx={{ color: genConst.CONST_APPBAR, fontSize: 26 }} textAlign="center">
+                  $ {Number.parseFloat(price).toFixed(2)}
+                </Typography>
+                <br />
+                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 1 }}>
+                  {quantity} Disponibles
+                </Typography>
+                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 0, pb: 2, fontSize: 13 }}>
+                  Entrega a acordar con el vendedor
+                </Typography>
+                {!businessCity ? (
+                  <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 0, pb: 2, fontSize: 13 }}>
+                    Publicado en: {businessCity}
+                  </Typography>
+                ) : (
+                  <></>
+                )}
+                <Typography variant="h4" textAlign="left" sx={{ color: '#000', pt: 0 }}>
+                  Agregar a Favoritos
+                </Typography>
+                {fromId ? (
+                  favorite ? (
+                    <Tooltip title="Eliminar de Favoritos">
+                      <IconButton
+                        onClick={() => {
+                          handleDeleteFavorites();
+                        }}
+                      >
+                        <IconHeart size={30} color={genConst.CONST_DELETE_COLOR} />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Agregar a Favoritos">
+                      <IconButton
+                        onClick={() => {
+                          handleAddFavorites();
+                        }}
+                      >
+                        <IconHeart size={30} color={genConst.CONST_APPBAR} />
+                      </IconButton>
+                    </Tooltip>
+                  )
+                ) : (
+                  <></>
+                )}
+                <Button
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  style={{ borderRadius: 10, height: 50, marginTop: 5, marginBottom: 10 }}
+                  onClick={handleBuyNow}
+                >
+                  Comprar ahora
+                </Button>
+                <Typography variant="h5" textAlign="justify" sx={{ color: '#3a3b3c', pt: 1, pb: 2, fontSize: 11 }}>
+                  Compra Protegida. Se abrirá en una nueva ventana, recibe el producto que esperabas o te devolvemos tu dinero.
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item lg={8} xs={12} sx={{ mt: 0 }}>
               <div style={{ padding: 10 }}>
                 <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, fontSize: 16 }}>
                   Detalles
@@ -260,7 +333,16 @@ export default function ViewItem() {
                     <span style={{ margin: 15, color: '#3a3b3c', fontSize: 14 }}>{businessPhone}</span>
                   </ButtonGroup>
                 ) : (
-                  <></>
+                  <ButtonGroup sx={{ mt: 1 }}>
+                    <IconButton
+                      onClick={() => {
+                        window.open('https://wa.me/593984741026?text=Hola...', '_blank');
+                      }}
+                    >
+                      <IconBrandWhatsapp size={60} color={genConst.CONST_SUCCESS_COLOR} />
+                    </IconButton>
+                    <span style={{ marginTop: 26, marginLeft: 10, color: '#3a3b3c', fontSize: 14 }}>{userPhone}</span>
+                  </ButtonGroup>
                 )}
                 <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 14 }}>
                   <strong>Se unió a Khuska Market en </strong>
@@ -269,89 +351,34 @@ export default function ViewItem() {
                 <Divider sx={{ borderColor: '#ededed' }} />
               </div>
             </Grid>
-            <Grid item lg={4} xs={12} style={{ marginTop: 30 }}>
-              <Paper sx={{ p: 3, backgroundColor: '#FFF', height: 400, border: '1px solid rgba(0,0,0,.1)', borderWidth: 0.2 }}>
-                <Typography variant="h5" sx={{ color: genConst.CONST_APPBAR, fontSize: 14 }} textAlign="justify">
-                  {name}
-                </Typography>
-                <br />
-                <Typography variant="span" sx={{ color: genConst.CONST_APPBAR, fontSize: 26 }} textAlign="center">
-                  $ {Number.parseFloat(price).toFixed(2)}
-                </Typography>
-                <br />
-                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 1 }}>
-                  {quantity} Disponibles
-                </Typography>
-                <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 1, pb: 2, fontSize: 12 }}>
-                  Entrega a acordar con el vendedor
-                </Typography>
-                {businessCity ? (
-                  <Typography variant="h5" textAlign="left" sx={{ color: '#3a3b3c', pt: 1, pb: 2, fontSize: 12 }}>
-                    Publicado en: {businessCity || ' sin información'}
-                  </Typography>
-                ) : (
-                  <></>
-                )}
-                <Typography variant="h5" textAlign="left" sx={{ color: '#000', pt: 0 }}>
-                  Agregar a Favoritos
-                </Typography>
-                {fromId ? (
-                  favorite ? (
-                    <Tooltip title="Eliminar de Favoritos">
-                      <IconButton
-                        onClick={() => {
-                          handleDeleteFavorites();
-                        }}
-                      >
-                        <IconHeart size={30} color={genConst.CONST_DELETE_COLOR} />
-                      </IconButton>
-                    </Tooltip>
-                  ) : (
-                    <Tooltip title="Agregar a Favoritos">
-                      <IconButton
-                        onClick={() => {
-                          handleAddFavorites();
-                        }}
-                      >
-                        <IconHeart size={30} color={genConst.CONST_APPBAR} />
-                      </IconButton>
-                    </Tooltip>
-                  )
-                ) : (
-                  <></>
-                )}
-                <Button
-                  fullWidth
-                  size="large"
-                  type="submit"
-                  variant="outlined"
-                  color="primary"
-                  style={{ borderRadius: 10, height: 50, marginTop: 5, marginBottom: 10 }}
-                  onClick={handleBuyNow}
-                >
-                  Comprar ahora
-                </Button>
-                <Typography variant="h5" textAlign="justify" sx={{ color: '#3a3b3c', pt: 1, pb: 2, fontSize: 11 }}>
-                  Compra Protegida. Se abrirá en una nueva ventana, recibe el producto que esperabas o te devolvemos tu dinero.
-                </Typography>
-              </Paper>
-              <Paper sx={{ p: 3, mt: 2, backgroundColor: '#FFF', height: 400, border: '1px solid rgba(0,0,0,.1)', borderWidth: 0.2 }}>
+            <Grid item lg={4} xs={12}>
+              <Paper sx={{ p: 3, mt: 2, backgroundColor: '#FFF', height: 400, border: '1px solid rgba(0,0,0,.2)', borderWidth: 0.2 }}>
                 <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 16 }}>
                   Medios de pago
                 </Typography>
+                <Typography variant="h5" textAlign="left" sx={{ color: '#000', pt: 2, pb: 2, fontSize: 15 }}>
+                  Tarjetas crédito / débito
+                </Typography>
+                <img src={cards} alt="cards payment method" width={100} />
+                <Typography variant="h5" textAlign="left" sx={{ color: '#000', pt: 2, pb: 2, fontSize: 15 }}>
+                  PayPal
+                </Typography>
+                <img src={paypal} alt="paypal payment method" width={100} />
+                <Typography variant="h5" textAlign="left" sx={{ color: '#000', pt: 2, pb: 2, fontSize: 15 }}>
+                  Efectivo
+                </Typography>
+                <IconCash size={40} />
               </Paper>
             </Grid>
-            <Grid item lg={12} xs={12} style={{ marginTop: 30 }}>
-              <div>
-                <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 2, pb: 2, fontSize: 16 }}>
-                  Pregunta tus dudas al vendedor
-                </Typography>
-              </div>
+            <Grid item lg={12} xs={12} style={{ marginTop: 10 }}>
+              <Typography variant="h2" textAlign="left" sx={{ color: '#3a3b3c', pt: 0, pb: 2, ml: 1, fontSize: 16 }}>
+                Pregunta tus dudas al vendedor
+              </Typography>
             </Grid>
             <Grid item lg={8} xs={12}>
               {fromId ? (
-                <Grid container spacing={1}>
-                  <Grid item xs={8}>
+                <Grid container spacing={0.5}>
+                  <Grid item xs={10}>
                     <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                       <InputLabel htmlFor="outlined-adornment-msg">Mensaje</InputLabel>
                       <OutlinedInput
@@ -360,11 +387,10 @@ export default function ViewItem() {
                         name="msg"
                         value={message}
                         onChange={(ev) => setMessage(ev.target.value)}
-                        endAdornment={<IconMessage />}
                       />
                     </FormControl>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={1}>
                     <Button
                       disableElevation
                       fullWidth
@@ -372,10 +398,10 @@ export default function ViewItem() {
                       type="submit"
                       variant="contained"
                       color="primary"
-                      style={{ borderRadius: 10, height: 50, marginTop: 10 }}
+                      style={{ borderRadius: 10, height: 60, marginTop: 5 }}
                       onClick={handleSendMessage}
                     >
-                      Preguntar
+                      <IconSend />
                     </Button>
                   </Grid>
                 </Grid>

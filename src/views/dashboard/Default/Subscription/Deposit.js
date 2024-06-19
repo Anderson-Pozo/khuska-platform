@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Grid, Typography, Button, Modal, Box, ButtonGroup } from '@mui/material';
-import { createDocument, getCtaList, updateDocument } from 'config/firebaseEvents';
+import { createDocument, getCtaList, getUserById, updateDocument } from 'config/firebaseEvents';
 import { IconCircleX, IconFile, IconSend } from '@tabler/icons';
 import { genConst } from 'store/constant';
 import defaultImage from 'assets/images/addImgB.png';
@@ -27,6 +27,7 @@ const Deposit = (props) => {
   const [userId, setUserId] = useState('');
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userPhone, setUserPhone] = useState('');
 
   useEffect(() => {
     onAuthStateChanged(authentication, async (user) => {
@@ -34,6 +35,9 @@ const Deposit = (props) => {
         setUserId(user.uid);
         setUserName(user.displayName);
         setUserEmail(user.email);
+        getUserById(user.uid).then((usr) => {
+          setUserPhone(usr[0].phone);
+        });
       }
     });
     getCtaList().then((data) => {
@@ -58,6 +62,7 @@ const Deposit = (props) => {
         userEmail: userEmail,
         total: total,
         type: type,
+        phone: userPhone ? userPhone : null,
         createAt: fullDate(),
         picture: null
       };
@@ -105,7 +110,7 @@ const Deposit = (props) => {
           <Grid container spacing={2}>
             <Grid xs={12}>
               <center>
-                <img src={ct.url} alt="Bank Brand" width={100} />
+                <img src={ct.url} alt="Bank Brand" width={75} />
               </center>
             </Grid>
             <Grid lg={12} md={12} sm={12} xs={12}>
@@ -132,8 +137,8 @@ const Deposit = (props) => {
         </Grid>
       ))}
       <Grid xs={12} sx={{ marginTop: 2 }}>
-        <Button variant="contained" startIcon={<IconFile />} onClick={() => setOpen(true)}>
-          Comprobante
+        <Button variant="outlined" startIcon={<IconFile />} onClick={() => setOpen(true)} style={{ height: 50 }}>
+          Adjuntar Comprobante
         </Button>
       </Grid>
 

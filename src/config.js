@@ -1,5 +1,6 @@
 const config = {
   version: '1.0.0',
+  developer: 'ALCORP TECH',
   basename: '/',
   defaultPath: '/',
   fontFamily: `'Montserrat', sans-serif`,
