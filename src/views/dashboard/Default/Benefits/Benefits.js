@@ -124,18 +124,18 @@ export default function Benefits() {
 
   const handleGenerateOrder = () => {
     if (!amount) {
-      toast.info('Ingrese un valor!', { position: toast.POSITION.TOP_RIGHT });
-    } else if (Number.parseFloat(totalPN) <= 0) {
+      toast.info('Ingrese el monto a retirar!', { position: toast.POSITION.TOP_RIGHT });
+    } else if (Number(amount) > Number(totalPN)) {
       toast.info('Saldo no disponible!', { position: toast.POSITION.TOP_RIGHT });
-    } else if (amount < 9) {
-      toast.info('El monto mínimo debe ser $9!', { position: toast.POSITION.TOP_RIGHT });
+    } else if (amount < 30) {
+      toast.info('El monto mínimo debe ser $30!', { position: toast.POSITION.TOP_RIGHT });
     } else {
       setOpen(true);
       const idOrder = generateId(10);
       const object = {
         id: idOrder,
-        amount: Number.parseFloat(amount).toFixed(2),
-        ctaAmount: Number.parseFloat(totalPN).toFixed(2),
+        amount: Number.parseFloat(amount),
+        ctaAmount: Number.parseFloat(totalPN),
         createAt: fullDate(),
         userId: userId,
         userName: userName,
@@ -143,8 +143,10 @@ export default function Benefits() {
         state: 1
       };
       createDocument(collOrders, idOrder, object);
+      //console.log(collOrders, idOrder, object);
       setTimeout(function () {
         setOpen(false);
+        setOpenOrder(false);
         toast.success('Orden generada correctamente!', { position: toast.POSITION.TOP_RIGHT });
         getData();
       }, 2000);

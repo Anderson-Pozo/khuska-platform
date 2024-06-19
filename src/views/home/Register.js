@@ -18,7 +18,6 @@ import {
   collSubscription,
   collUserAddress,
   collUserBillData,
-  collUserLog,
   collUserPaymentMethod,
   collUserPhone,
   collUsers
@@ -67,15 +66,6 @@ export default function Register() {
       state: genConst.CONST_STATE_IN
     };
     createDocument(collSubscription, uid, objSubscription);
-    //Log
-    const userLog = {
-      idUser: uid,
-      loginDate: fullDate(),
-      email: email,
-      state: genConst.CONST_STATE_IN,
-      message: 'Registro de nuevo usuario.'
-    };
-    createDocument(collUserLog, uid, userLog);
     //Address
     const userAddress = {
       idUser: uid,

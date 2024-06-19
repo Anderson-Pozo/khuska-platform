@@ -326,7 +326,7 @@ export default function Users() {
     //console.log('referCode', code);
     if (code === null) {
       //console.log('savePaymentRecord', id, name, email, total, IVA, SUB);
-      savePaymentRecord(id, name, email, total, IVA, SUB);
+      savePaymentRecord(id, name, email, total, IVA, SUB, 'C');
       //console.log('saveKhuskaBenefit', id, name, email, total);
       saveKhuskaBenefit(id, name, email, total);
     } else {
@@ -341,7 +341,7 @@ export default function Users() {
           }
         });
       }
-      savePaymentRecord(id, name, email, total, IVA, SUB);
+      savePaymentRecord(id, name, email, total, IVA, SUB, 'C');
       //console.log('savePaymentRecord', id, name, email, total, IVA, SUB, 'C');
       saveKhuskaBenefit(id, name, email, globalTotal);
       //console.log('saveKhuskaBenefit', id, name, email, globalTotal);

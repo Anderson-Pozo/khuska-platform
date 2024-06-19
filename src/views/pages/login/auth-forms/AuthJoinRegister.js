@@ -41,7 +41,6 @@ import { genConst } from 'store/constant';
 import {
   collUsers,
   collSubscription,
-  collUserLog,
   collUserAddress,
   collUserPhone,
   collUserBillData,
@@ -93,15 +92,6 @@ const AuthJoinRegister = ({ code }) => {
       state: genConst.CONST_STATE_IN
     };
     createDocument(collSubscription, uid, objSubscription);
-    //Log
-    const userLog = {
-      idUser: uid,
-      loginDate: fullDate(),
-      email: email,
-      state: genConst.CONST_STATE_IN,
-      message: 'Registro de nuevo usuario.'
-    };
-    createDocument(collUserLog, uid, userLog);
     //Address
     const userAddress = {
       idUser: uid,
@@ -209,8 +199,8 @@ const AuthJoinRegister = ({ code }) => {
                 date: fullDate(),
                 city: null,
                 ci: null,
-                refer: code,
-                ownReferal: refCode,
+                refer: Number.parseInt(code),
+                ownReferal: Number.parseInt(refCode),
                 url: null
               });
               createUserAditionalData(user.uid, values.email);

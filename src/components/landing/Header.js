@@ -21,7 +21,8 @@ import { Link as Scroll } from 'react-scroll';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuIcon from '@mui/icons-material/Menu';
 import Hero from './Hero';
-import logo from 'assets/images/khuska/logoW.png';
+import logoW from 'assets/images/khuska/logoW.png';
+import logo from 'assets/images/khuska/logo.png';
 import { useAuth } from 'hooks/useAuth';
 import { isSessionActive } from 'config/firebaseEvents';
 
@@ -108,7 +109,7 @@ const Header = (props) => {
         <Toolbar style={uiStyles.appbarWrapper}>
           <div style={uiStyles.appbarTitle}>
             <Link to="/">
-              <img src={logo} alt="logobrand" width={130} />
+              <img src={logoW} alt="logobrand" width={130} />
             </Link>
           </div>
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>

@@ -43,6 +43,8 @@ import {
   createDocument,
   getDad,
   getUserReferalDad,
+  getUserSubscription,
+  getUserSubscriptionEndDate,
   saveKhuskaBenefit,
   savePaymentRecord,
   saveUserBenefit,
@@ -87,6 +89,8 @@ const Subscription = () => {
   const [total, setTotal] = useState(null);
   const [iva, setIva] = useState(null);
   const [subtotal, setSubtotal] = useState(null);
+  const [state, setState] = useState('');
+  const [days, setDays] = useState(0);
   //DATE PARAMS
   const [startDate] = useState(initDate());
   const [endDate, setEndDate] = useState(null);
@@ -115,6 +119,20 @@ const Subscription = () => {
         setUserId(user.uid);
         setUserName(user.displayName);
         setUserEmail(user.email);
+        getUserSubscription(user.uid).then((st) => {
+          setState(st);
+        });
+        getUserSubscriptionEndDate(user.uid).then((date) => {
+          if (date === null || date === undefined || date === '') {
+            setState(0);
+          } else {
+            let end = new Date(date).getTime();
+            let now = new Date().getTime();
+            var diff = end - now;
+            var newDiff = Math.floor(diff / (1000 * 60 * 60 * 24));
+            setDays(newDiff);
+          }
+        });
       }
     });
   }, []);
@@ -124,8 +142,8 @@ const Subscription = () => {
     if (event.target.value == 1) {
       setIsType(true);
       setType(1);
-      const newStartDate = calculateNewDateAddingDays(23);
-      const newEndDate = calculateNewDateAddingDays(23 + 30);
+      const newStartDate = calculateNewDateAddingDays(Number(days));
+      const newEndDate = calculateNewDateAddingDays(Number(days) + 30);
       setNewStartDate(newStartDate);
       setNewEndDate(newEndDate);
       let subtotal = Math.round((genConst.CONST_MONTH_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
@@ -144,14 +162,14 @@ const Subscription = () => {
           code: code ? code : null,
           startDate: newStartDate,
           endDate: newEndDate,
-          endDateFormat: endDateFormatWithParam(genConst.CONST_MONTH_DAYS + 23)
+          endDateFormat: endDateFormatWithParam(genConst.CONST_MONTH_DAYS + Number(days))
         });
       });
     } else if (event.target.value == 2) {
       setIsType(true);
       setType(2);
-      const newStartDate = calculateNewDateAddingDays(23);
-      const newEndDate = calculateNewDateAddingDays(23 + 365);
+      const newStartDate = calculateNewDateAddingDays(Number(days));
+      const newEndDate = calculateNewDateAddingDays(Number(days) + 365);
       setNewStartDate(newStartDate);
       setNewEndDate(newEndDate);
       let subtotal = Math.round((genConst.CONST_YEAR_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
@@ -170,7 +188,7 @@ const Subscription = () => {
           code: code ? code : null,
           startDate: newStartDate,
           endDate: newEndDate,
-          endDateFormat: endDateFormatWithParam(genConst.CONST_YEAR_DAYS + 23)
+          endDateFormat: endDateFormatWithParam(genConst.CONST_YEAR_DAYS + Number(days))
         });
       });
     }
@@ -283,6 +301,27 @@ const Subscription = () => {
   return (
     <center>
       <ToastContainer />
+      <Grid container spacing={1} style={{ display: 'none' }}>
+        <Grid item xs={12}>
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sm={12}
+            xs={12}
+            style={{ height: 50, backgroundColor: '#FFF', borderRadius: 10, padding: 15, marginBottom: 10 }}
+          >
+            <center>
+              <span>
+                Días restantes <strong>{days}</strong>.
+              </span>
+              <span>
+                Estado <strong>{state}</strong>.
+              </span>
+            </center>
+          </Grid>
+        </Grid>
+      </Grid>
       <Grid container justifyContent="center" alignItems="center">
         <Grid item lg={12}>
           <Box sx={{ maxWidth: '100%' }}>

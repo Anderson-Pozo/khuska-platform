@@ -194,7 +194,7 @@ const Orders = () => {
                     <TableRow hover key={r.id}>
                       <TableCell align="left">{r.id}</TableCell>
                       <TableCell align="left">{r.userName}</TableCell>
-                      <TableCell align="left">$ {r.amount}</TableCell>
+                      <TableCell align="left">$ {Number.parseFloat(r.amount).toFixed(2)}</TableCell>
                       <TableCell align="left">{r.createAt}</TableCell>
                       <TableCell align="left">{r.state == 1 ? 'Pendiente' : 'Aprobado'}</TableCell>
                       <TableCell align="center">
