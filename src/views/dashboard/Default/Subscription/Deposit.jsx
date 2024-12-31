@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Grid, Typography, Button, Modal, Box, ButtonGroup } from '@mui/material';
 import { createDocument, getCtaList, getUserById, updateDocument } from 'config/firebaseEvents';
 import { IconCircleX, IconFile, IconSend } from '@tabler/icons';
-import { genConst } from 'store/constant';
+import { genConst, VOUCHER_STATUS } from 'store/constant';
 import defaultImage from 'assets/images/addImgB.png';
 import CircularProgress from '@mui/material/CircularProgress';
 import { generateId } from 'utils/idGenerator';
@@ -62,6 +62,8 @@ const Deposit = (props) => {
         userEmail: userEmail,
         total: total,
         type: type,
+        status: VOUCHER_STATUS.PENDIENTE,
+        observation: null,
         phone: userPhone ? userPhone : null,
         createAt: fullDate(),
         picture: null
@@ -106,29 +108,29 @@ const Deposit = (props) => {
     <Grid container spacing={2} sx={{ marginTop: 2 }}>
       <ToastContainer />
       {ctas.map((ct) => (
-        <Grid lg={6} md={6} sm={12} xs={12} key={ct.id} sx={{ marginTop: 2, marginBottom: 2 }}>
+        <Grid lg={6} md={6} sm={12} xs={12} key={ct.id} sx={{ marginTop: 2, marginBottom: 2 }} item={true}>
           <Grid container spacing={2}>
-            <Grid xs={12}>
+            <Grid xs={12} item={true}>
               <center>
                 <img src={ct.url} alt="Bank Brand" width={75} />
               </center>
             </Grid>
-            <Grid lg={12} md={12} sm={12} xs={12}>
+            <Grid lg={12} md={12} sm={12} xs={12} item={true}>
               <Typography variant={'h5'} style={{ textAlign: 'center', marginLeft: 20 }}>
                 {ct.ctaBankName}
               </Typography>
             </Grid>
-            <Grid lg={12} md={12} sm={12} xs={12}>
+            <Grid lg={12} md={12} sm={12} xs={12} item={true}>
               <Typography variant={'h5'} style={{ textAlign: 'center', marginLeft: 20 }}>
                 {ct.ctaNameAccount}
               </Typography>
             </Grid>
-            <Grid lg={12} md={12} sm={12} xs={12}>
+            <Grid lg={12} md={12} sm={12} xs={12} item={true}>
               <Typography variant={'h5'} style={{ textAlign: 'center', marginLeft: 20 }}>
                 {ct.ctaNumberAccount}
               </Typography>
             </Grid>
-            <Grid lg={12} md={12} sm={12} xs={12}>
+            <Grid lg={12} md={12} sm={12} xs={12} item={true}>
               <Typography variant={'h5'} style={{ textAlign: 'center', marginLeft: 20 }}>
                 {ct.ctaCi}
               </Typography>
@@ -136,10 +138,17 @@ const Deposit = (props) => {
           </Grid>
         </Grid>
       ))}
-      <Grid xs={12} sx={{ marginTop: 2 }}>
-        <Button variant="outlined" startIcon={<IconFile />} onClick={() => setOpen(true)} style={{ height: 50 }}>
-          Adjuntar Comprobante
-        </Button>
+      <Grid container xs={12} sx={{ marginTop: 2, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} item={true}>
+        <Box>
+          <span style={{ fontSize: 15, color: '#3a3b3c' }}>
+            Total a depositar: <b>{total} $</b>
+          </span>
+        </Box>
+        <Box sx={{ marginTop: 1 }}>
+          <Button variant="outlined" startIcon={<IconFile />} onClick={() => setOpen(true)} sx={{ height: 50 }}>
+            Adjuntar Comprobante
+          </Button>
+        </Box>
       </Grid>
 
       <Modal open={open} onClose={handleClose} aria-labelledby="parent-modal-title" aria-describedby="parent-modal-description">
