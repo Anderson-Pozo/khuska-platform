@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Box, Button, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { getUserSubscription, getUserSubscriptionEndDate } from 'config/firebaseEvents';
-import { genConst } from 'store/constant';
+import { genConst, gridSpacing } from 'store/constant';
 import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 import SubCard from '../Main/SubCard';
 import SubCards from '../Main/SubCards';
+import { useNavigate } from 'react-router';
+import SubscreptionState from 'components/message/SubscriptionState';
+import { msgSubState } from 'store/message';
 
 const ProfileSubscription = () => {
   const [endDate, setEndDate] = useState('');
   const [state, setState] = useState('');
   const [days, setDays] = useState(0);
   const stateSub = useGetSubscriptionState();
+  const navigate = useNavigate();
 
   useEffect(() => {
     onAuthStateChanged(authentication, (user) => {
@@ -56,7 +60,13 @@ const ProfileSubscription = () => {
   return (
     <div>
       {state === genConst.CONST_SUB_S_I ? (
-        <></>
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12}>
+            <Grid item lg={12} md={12} sm={12} xs={12}>
+              <SubscreptionState message={'¡Suscríbete ahora y desbloquea todos los beneficios exclusivos!'} submessage={''} />
+            </Grid>
+          </Grid>
+        </Grid>
       ) : (
         <Grid container spacing={1}>
           <Grid item xs={12}>
