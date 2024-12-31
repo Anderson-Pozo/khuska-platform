@@ -1,14 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
   Grid,
   Box,
   CircularProgress,
@@ -20,7 +13,13 @@ import {
   Typography,
   Tooltip,
   ButtonGroup,
-  Button
+  Button,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Tabs,
+  Tab
 } from '@mui/material';
 import { uiStyles } from './Benefits.styles';
 //Notifications
@@ -39,7 +38,7 @@ import {
 import SubscriptionState from 'components/message/SubscriptionState';
 //types array
 import MessageDark from 'components/message/MessageDark';
-import { genConst } from 'store/constant';
+import { ACCOUNT_TYPES, genConst } from 'store/constant';
 import EarningBlueCard from 'components/cards/EarningBlueCard';
 import EarningYellowCard from 'components/cards/EaringYellowCard';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -47,27 +46,35 @@ import { authentication } from 'config/firebase';
 import { msgSubState } from 'store/message';
 import { useGetSubscriptionState } from 'hooks/useGetSubscriptionState';
 import { IconCheck, IconCircleX, IconFileDollar, IconPlus, IconSearch } from '@tabler/icons';
-import { searchingBenefit } from 'utils/search';
 import { generateId } from 'utils/idGenerator';
 import { fullDate } from 'utils/validations';
 import { collOrders } from 'store/collections';
+import { FINANCIAL_INSTITUTIONS } from 'store/institutions';
+import { CustomTabPanel } from 'components/shared/CustomTabPanel';
+import { OrdersTable } from './OrdersTable';
+import { UserBenefitsTable } from './UserBenefitsTable';
 
 export default function Benefits() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [totalP, setTotalP] = useState(0);
-  const [totalPN, setTotalPN] = useState(0);
+  // const [totalPaid, setTotalPaid] = useState(0);
+  const [totalPending, setTotalPending] = useState(0);
   const [dataList, setDataList] = useState([]);
   const [open, setOpen] = useState(false);
   const [openOrder, setOpenOrder] = useState(false);
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const [amount, setAmount] = useState(0);
-  const [userId, setUserId] = useState('');
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [hasOrders, setHasOrders] = useState(false);
   const stateSub = useGetSubscriptionState();
+
+  const [user, setUser] = useState(null);
+  const [currentTab, setCurrentTab] = useState(0);
+  const [orders, setOrders] = useState([]);
+  const [formData, setFormData] = useState({
+    amount: '',
+    accountNumber: '',
+    accountType: '',
+    beneficiaryName: '',
+    beneficiaryDni: '',
+    bankName: ''
+  });
 
   useEffect(() => {
     getData();
@@ -77,32 +84,47 @@ export default function Benefits() {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         setOpen(true);
-        setUserId(user.uid);
-        setUserName(user.displayName);
-        setUserEmail(user.email);
+        setUser(user);
         getUserBenefits(user.uid).then((res) => {
           setDataList(res);
         });
         getTotalPendinBenefitByUserId(user.uid).then((res) => {
-          setTotalPN(Number.parseFloat(res).toFixed(2));
+          setTotalPending(Number.parseFloat(res).toFixed(2));
         });
-        getTotalPaidBenefitByUserId(user.uid).then((res) => {
-          setTotalP(Number.parseFloat(res).toFixed(2));
-        });
+        // getTotalPaidBenefitByUserId(user.uid).then((res) => {
+        //   setTotalPaid(Number.parseFloat(res).toFixed(2));
+        // });
         getOrdersByUserId(user.uid).then((res) => {
-          if (res.length > 0) {
-            console.log('Tiene ordenes pendientes');
-            setHasOrders(true);
-          } else {
-            console.log('No tiene ordenes pendientes');
-            setHasOrders(false);
-          }
+          setOrders(res);
         });
       }
       setTimeout(() => {
         setOpen(false);
       }, 1000);
     });
+  };
+
+  const pendingOrders = useMemo(() => orders?.filter((item) => item.state === 1), [orders]);
+
+  const totalOrders = useMemo(
+    () =>
+      orders?.reduce((acc, item) => {
+        if (item.state === genConst.CONST_ORDER_PENDING || item.state === genConst.CONST_ORDER_APPROVED) {
+          acc += Number(item.amount);
+        }
+        return acc;
+      }, 0),
+    [orders]
+  );
+
+  const totalAmount = useMemo(() => Number(totalPending) - totalOrders, [totalPending, totalOrders]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
   const handleOpenOrder = () => {
@@ -113,43 +135,45 @@ export default function Benefits() {
     setOpenOrder(false);
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
   };
 
   const handleGenerateOrder = () => {
-    if (!amount) {
-      toast.info('Ingrese el monto a retirar!', { position: toast.POSITION.TOP_RIGHT });
-    } else if (Number(amount) > Number(totalPN)) {
-      toast.info('Saldo no disponible!', { position: toast.POSITION.TOP_RIGHT });
-    } else if (amount < 30) {
-      toast.info('El monto mínimo debe ser $30!', { position: toast.POSITION.TOP_RIGHT });
+    const { amount, accountNumber, accountType, bankName, beneficiaryDni, beneficiaryName } = formData;
+    if (!amount || !accountNumber || !accountType || !bankName || !beneficiaryDni || !beneficiaryName) {
+      toast.info('Todos los campos son obligatorios!');
+      return;
+    } else if (Number(amount) > Number(totalAmount)) {
+      toast.info('Saldo no disponible!');
+    } else if (Number(amount) < 30) {
+      toast.info('El monto mínimo debe ser $30!');
     } else {
       setOpen(true);
       const idOrder = generateId(10);
       const object = {
         id: idOrder,
         amount: Number.parseFloat(amount),
-        ctaAmount: Number.parseFloat(totalPN),
+        ctaAmount: Number.parseFloat(totalAmount),
         createAt: fullDate(),
-        userId: userId,
-        userName: userName,
-        userEmail: userEmail,
-        state: 1
+        userId: user.uid,
+        userName: user.displayName,
+        userEmail: user.email,
+        state: genConst.CONST_ORDER_PENDING,
+        accountNumber,
+        accountType,
+        bankName,
+        beneficiaryDni,
+        beneficiaryName
       };
       createDocument(collOrders, idOrder, object);
       //console.log(collOrders, idOrder, object);
       setTimeout(function () {
         setOpen(false);
         setOpenOrder(false);
-        toast.success('Orden generada correctamente!', { position: toast.POSITION.TOP_RIGHT });
+        toast.success('Orden generada correctamente!');
         getData();
-      }, 2000);
+      }, 1000);
     }
   };
 
@@ -194,6 +218,7 @@ export default function Benefits() {
                 type="text"
                 name={inputLabels.search}
                 onChange={(ev) => setSearch(ev.target.value)}
+                value={search}
                 placeholder={inputLabels.placeHolderSearch}
                 style={{ width: '100%', marginTop: 10 }}
               />
@@ -208,69 +233,26 @@ export default function Benefits() {
               <Grid item xs={12}>
                 <Grid container spacing={2}>
                   <Grid item lg={6} md={6} sm={6} xs={6}>
-                    <EarningBlueCard total={totalP} detail="Saldo Actual" />
+                    <EarningBlueCard total={totalAmount} detail="Saldo Disponible" />
                   </Grid>
                   <Grid item lg={6} md={6} sm={6} xs={6}>
-                    <EarningYellowCard total={totalPN} detail="Pendiente" />
+                    <EarningYellowCard total={totalPending} detail="Total beneficios" />
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
-            <Box sx={{ width: '100%', mt: 2 }}>
-              <TableContainer sx={{ maxHeight: 400 }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell key="id-from" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'De'}
-                      </TableCell>
-                      <TableCell key="id-to" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Para'}
-                      </TableCell>
-                      <TableCell key="id-level" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Level'}
-                      </TableCell>
-                      <TableCell key="id-createAt" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Fecha'}
-                      </TableCell>
-                      <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold', display: 'none' }}>
-                        {'Estado'}
-                      </TableCell>
-                      <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
-                        {'Total'}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {dataList
-                      .filter(searchingBenefit(search))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((r) => (
-                        <TableRow hover key={r.id}>
-                          <TableCell align="left">{r.nameUser}</TableCell>
-                          <TableCell align="left">{r.nameRefer}</TableCell>
-                          <TableCell align="left">{r.level}</TableCell>
-                          <TableCell align="left">{r.createAt}</TableCell>
-                          <TableCell align="left" style={{ display: 'none' }}>
-                            {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
-                          </TableCell>
-                          <TableCell align="left">{Number.parseFloat(r.total).toFixed(2)}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
-                labelRowsPerPage={titles.rowsPerPage}
-                component="div"
-                count={dataList.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={currentTab} onChange={handleTabChange}>
+                <Tab label="Beneficios" />
+                <Tab label="Ordenes" />
+              </Tabs>
             </Box>
+            <CustomTabPanel value={currentTab} index={0}>
+              <UserBenefitsTable dataList={dataList} search={search} />
+            </CustomTabPanel>
+            <CustomTabPanel value={currentTab} index={1}>
+              <OrdersTable dataList={orders} />
+            </CustomTabPanel>
           </Paper>
         ) : (
           <Grid container style={{ marginTop: 20 }}>
@@ -308,12 +290,12 @@ export default function Benefits() {
             Recuerde que para generar una orden de pago el monto mínimo debe ser $30
           </Typography>
           <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
-            Saldo Actual: <strong>$ {totalPN}</strong>
+            Saldo Disponible: <strong>$ {totalAmount}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
               <Grid container spacing={1}>
-                {hasOrders ? (
+                {pendingOrders?.length > 0 ? (
                   <>
                     <Grid item lg={12} md={12} sm={12} xs={12}>
                       <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
@@ -338,7 +320,94 @@ export default function Benefits() {
                   </>
                 ) : (
                   <>
-                    <Grid item lg={12} md={12} sm={12} xs={12}>
+                    <Grid container spacing={2} style={{ marginTop: 10 }}>
+                      {/* Monto */}
+                      <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <OutlinedInput
+                          id="amount"
+                          type="text"
+                          name="amount"
+                          value={formData.amount}
+                          onChange={handleChange}
+                          placeholder="Ingrese el monto"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <OutlinedInput
+                          id="accountNumber"
+                          type="text"
+                          name="accountNumber"
+                          value={formData.accountNumber}
+                          onChange={handleChange}
+                          placeholder="Número de cuenta"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <FormControl fullWidth>
+                          <InputLabel id="account-type-label">Tipo de cuenta</InputLabel>
+                          <Select
+                            labelId="account-type-label"
+                            id="accountType"
+                            name="accountType"
+                            value={formData.accountType}
+                            onChange={handleChange}
+                            label="Tipo de cuenta"
+                          >
+                            {ACCOUNT_TYPES.map((type) => (
+                              <MenuItem key={type.value} value={type.value}>
+                                {type.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <OutlinedInput
+                          id="beneficiaryName"
+                          type="text"
+                          name="beneficiaryName"
+                          value={formData.beneficiaryName}
+                          onChange={handleChange}
+                          placeholder="Nombre completo del beneficiario"
+                          fullWidth
+                        />
+                      </Grid>
+
+                      <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <OutlinedInput
+                          id="beneficiaryDni"
+                          type="text"
+                          name="beneficiaryDni"
+                          value={formData.beneficiaryDni}
+                          onChange={handleChange}
+                          placeholder="N° de identificación"
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <FormControl fullWidth>
+                          <InputLabel id="bankName-label">Institución bancaria</InputLabel>
+                          <Select
+                            labelId="bankName-label"
+                            id="bankName"
+                            name="bankName"
+                            value={formData.bankName}
+                            onChange={handleChange}
+                            label="Institución bancaria"
+                          >
+                            {FINANCIAL_INSTITUTIONS.map((type) => (
+                              <MenuItem key={type.value} value={type.value}>
+                                {type.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+                    {/* <Grid item lg={12} md={12} sm={12} xs={12}>
                       <OutlinedInput
                         id={inputLabels.orderValue}
                         type="text"
@@ -347,8 +416,8 @@ export default function Benefits() {
                         placeholder={inputLabels.placeHolderAmount}
                         style={{ width: '100%', marginTop: 10 }}
                       />
-                    </Grid>
-                    <Grid item lg={12} md={12} sm={12} xs={12}>
+                    </Grid> */}
+                    <Grid item lg={12} md={12} sm={12} xs={12} style={{ marginTop: 10 }}>
                       <center>
                         <ButtonGroup>
                           <Button
