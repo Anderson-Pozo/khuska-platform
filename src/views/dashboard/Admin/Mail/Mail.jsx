@@ -151,7 +151,7 @@ const Mail = () => {
           <IconButton
             color="inherit"
             onClick={() => {
-              sendSubscriptionEmail('gaturno15@gmail.com', 'Paul Alvarez', 1, fullDate(), endDateMonth());
+              sendSubscriptionEmail('gaturno15@gmail.com', 'Paul Alvarez', 1, fullDate(), endDateMonth(), '', 0);
             }}
           >
             <IconMail color="#FFF" size={40} />
