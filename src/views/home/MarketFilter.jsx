@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Typography, Grid, Card, CardMedia, CardContent, Box, OutlinedInput, Modal } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Grid, Box, OutlinedInput, Modal } from '@mui/material';
 import { getProductsByCategory } from 'config/firebaseEvents';
 import { searchingProducts } from 'utils/search';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './styles';
 import MessageDark from 'components/message/MessageDark';
-import { genConst } from 'store/constant';
+import { ProductCard } from 'components/product/ProductCard';
 
 const MarketFilter = () => {
   const [searchParams] = useSearchParams();
   const category = searchParams.get('category');
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
-  let navigate = useNavigate();
   const [openLoader, setOpenLoader] = useState(false);
 
   useEffect(() => {
@@ -48,43 +47,8 @@ const MarketFilter = () => {
             <Grid container spacing={0.5}>
               {products.filter(searchingProducts(search)).map((item) => {
                 return (
-                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={3}>
-                    <div
-                      aria-hidden="true"
-                      onClick={() => {
-                        navigate({
-                          pathname: '/market/item/',
-                          search: `?id=${item.id}`
-                        });
-                      }}
-                    >
-                      <Card sx={{ maxWidth: '100%', height: 265, borderRadius: 3, backgroundColor: '#FFF', cursor: 'pointer' }}>
-                        <CardMedia
-                          sx={{ borderRadius: 3, padding: 0.5 }}
-                          component="img"
-                          height={170}
-                          image={item.picture1}
-                          alt="Portada img"
-                        />
-                        <CardContent sx={{ backgroundColor: '#FFF', marginTop: -2, paddingLeft: 1, paddingRight: 1 }}>
-                          <Typography variant="h3" color={genConst.CONST_APPBAR} align="center">
-                            ${Number.parseFloat(item.price).toFixed(2)}
-                          </Typography>
-                          <p
-                            style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              color: '#000',
-                              fontSize: 13,
-                              textOverflow: 'ellipsis',
-                              maxWidth: '100%'
-                            }}
-                          >
-                            {item.name}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
+                  <Grid key={item.id} item xs={6} sm={6} md={3} lg={3} gap={3}>
+                    <ProductCard item={item} />
                   </Grid>
                 );
               })}
