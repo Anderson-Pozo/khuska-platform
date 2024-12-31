@@ -34,7 +34,8 @@ import {
   IconMessage,
   IconBox,
   IconReload,
-  IconSearch
+  IconSearch,
+  IconAlertCircle
 } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
@@ -43,11 +44,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Msg from 'store/message';
 import { titles, inputLabels } from './Products.texts';
 //Utils
-import { deleteDocument, getProductsByBusiness } from 'config/firebaseEvents';
+import { deleteDocument, getBusinessById, getProductsByBusiness } from 'config/firebaseEvents';
 //types array
 import MessageDark from 'components/message/MessageDark';
 import { genConst } from 'store/constant';
 import { collProducts } from 'store/collections';
+import { BlockBussinessMessage } from './components/BlockBussinessMessage';
 
 function searchingData(search) {
   return function (x) {
@@ -69,6 +71,7 @@ export default function Products() {
   const [openLoader, setOpenLoader] = useState(false);
   const [dataList, setDataList] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
+  const [currentBusiness, setCurrentBusiness] = useState(null);
 
   const getData = () => {
     getProductsByBusiness(idBusiness).then((data) => {
@@ -78,6 +81,9 @@ export default function Products() {
 
   useEffect(() => {
     getData();
+    getBusinessById(idBusiness).then((data) => {
+      setCurrentBusiness(data);
+    });
   }, []);
 
   const handleOpenDelete = () => {
@@ -106,6 +112,10 @@ export default function Products() {
       toast.success(Msg.prodelsucc, { position: toast.POSITION.TOP_RIGHT });
     }, 2000);
   };
+
+  if (!currentBusiness?.isActive) {
+    return <BlockBussinessMessage />;
+  }
 
   return (
     <div>
