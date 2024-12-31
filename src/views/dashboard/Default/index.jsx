@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 // material-ui
-import { Grid, Modal, Box, Typography } from '@mui/material';
+import { Grid, Modal, Box, Typography, Alert, AlertTitle } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 // project imports
 import EarningCard from './Main/EarningCard';
-import { Messages, genConst, gridSpacing } from 'store/constant';
+import { Messages, VOUCHER_STATUS, genConst, gridSpacing } from 'store/constant';
 import SubscriptionState from 'components/message/SubscriptionState';
 //Firebase
 import {
   countBusinessByUserId,
   countTotalIncomes,
+  getLastVoucherByUserId,
   getUserSubscription,
   getUserSubscriptionEndDate,
   updateDocument
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [endDate, setEndDate] = useState('');
   const [state, setState] = useState('');
   const [days, setDays] = useState(0);
+  const [voucher, setVoucher] = useState(null);
   const stateSub = useGetSubscriptionState();
 
   useEffect(() => {
@@ -38,6 +40,9 @@ const Dashboard = () => {
       if (user) {
         getUserSubscription(user.uid).then((st) => {
           setState(st);
+        });
+        getLastVoucherByUserId(user.uid).then((voucher) => {
+          setVoucher(voucher);
         });
         getUserSubscriptionEndDate(user.uid).then((date) => {
           const subObject = {
@@ -130,9 +135,28 @@ const Dashboard = () => {
       {state === genConst.CONST_SUB_S_I ? (
         <Grid container spacing={gridSpacing}>
           <Grid item xs={12}>
-            <Grid item lg={12} md={12} sm={12} xs={12}>
-              <SubscriptionState message={msgSubState} submessage={''} />
-            </Grid>
+            {voucher ? (
+              voucher.status === VOUCHER_STATUS.PENDIENTE ? (
+                <Alert severity="info">
+                  <AlertTitle>Comprobante Pendiente</AlertTitle>
+                  ¡Tu comprobante está pendiente de aprobación!
+                </Alert>
+              ) : voucher.status === VOUCHER_STATUS.RECHAZADO ? (
+                <Alert severity="error">
+                  <AlertTitle>Comprobante Rechazado</AlertTitle>
+                  ¡Tu comprobante ha sido rechazado! Ponte en contacto con un administrador.
+                  {voucher.observation && (
+                    <Typography variant="body2" sx={{ marginTop: 1 }}>
+                      Observación: <span>{voucher.observation}</span>
+                    </Typography>
+                  )}
+                </Alert>
+              ) : null
+            ) : (
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <SubscriptionState message={msgSubState} submessage={''} />
+              </Grid>
+            )}
           </Grid>
         </Grid>
       ) : state === genConst.CONST_SUB_S_U ? (
@@ -153,6 +177,7 @@ const Dashboard = () => {
     </>
   );
 };
+
 const style = {
   position: 'absolute',
   top: '50%',
