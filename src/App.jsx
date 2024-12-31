@@ -120,6 +120,7 @@ const ProductMessagesChatDefault = Loadable(lazy(() => import('views/dashboard/D
 const WalletDefault = Loadable(lazy(() => import('views/dashboard/Default/Profile/UserWallet')));
 const SuccessDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Success')));
 const FailedDefault = Loadable(lazy(() => import('views/dashboard/Default/Subscription/Failed')));
+const PaymentResponse = Loadable(lazy(() => import('views/dashboard/Default/payment/PaymentResponse')));
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
@@ -233,6 +234,7 @@ const App = () => {
               <Route element={<WalletDefault />} path="wallet" exact />
               <Route element={<SuccessDefault />} path="success" exact />
               <Route element={<FailedDefault />} path="failed" exact />
+              <Route element={<PaymentResponse />} path="payment-response" exact />
               <Route element={<NotFoundDefault />} path="404" exact />
               <Route path="*" element={<Navigate to="404" />} />
             </Route>
