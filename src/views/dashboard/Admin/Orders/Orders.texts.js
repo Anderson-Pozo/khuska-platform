@@ -32,6 +32,7 @@ export const titles = {
   buttonCancel: 'Cancelar',
   buttonDownload: 'Descargar',
   buttonActive: 'Aprobar',
+  buttonReject: 'Rechazar',
   loading: 'Cargando...',
   level1: 'Nivel 1',
   level2: 'Nivel 2',

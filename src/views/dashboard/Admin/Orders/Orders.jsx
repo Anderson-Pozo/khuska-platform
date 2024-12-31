@@ -18,12 +18,20 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Tooltip
+  Tooltip,
+  Tabs,
+  Tab,
+  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CircularProgress from '@mui/material/CircularProgress';
-import { IconCash, IconCheck, IconCircleX, IconPlus, IconSearch, IconTrash } from '@tabler/icons';
+import { IconCash, IconCheck, IconCircleX, IconPlus, IconReload, IconSearch, IconTrash } from '@tabler/icons';
 import { uiStyles } from './Orders.styles';
 import { inputLabels, titles } from './Orders.texts';
 import { getOrders, getUserAmountFromWallet, savePaymentRecord, updateDocument } from 'config/firebaseEvents';
@@ -34,6 +42,7 @@ import { collOrders, collWallet } from 'store/collections';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
 import { fullDate } from 'utils/validations';
+import { CustomTabPanel } from 'components/shared/CustomTabPanel';
 
 const Orders = () => {
   const [page, setPage] = useState(0);
@@ -44,15 +53,20 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState('');
   const [title, setTitle] = useState(null);
-  const [id, setId] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [userName, setUserName] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
-  const [total, setTotal] = useState(0);
-  const [ctaAmount, setCtaAmount] = useState(0);
+  const [rejectOpen, setRejectOpen] = useState(false);
+
+  // const [id, setId] = useState(null);
+  // const [userId, setUserId] = useState(null);
+  // const [userName, setUserName] = useState(null);
+  // const [userEmail, setUserEmail] = useState(null);
+  // const [total, setTotal] = useState(0);
+  // const [ctaAmount, setCtaAmount] = useState(0);
+  // const [createAt, setCreateAt] = useState(null);
+
   const [walletAmount, setWalletAmount] = useState(0);
-  const [createAt, setCreateAt] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [currentTab, setCurrentTab] = useState(0);
+  const [currentOrder, setCurrentOrder] = useState(null);
 
   useEffect(() => {
     getData();
@@ -69,6 +83,10 @@ const Orders = () => {
         });
       }
     });
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -96,19 +114,52 @@ const Orders = () => {
     setOpenLoader(true);
   };
 
-  const handleAprobeAmount = () => {
-    //Generar acreditación
-    let COMISION = 1.25;
-    let TOTAL = Number.parseFloat(total) - Number.parseFloat(COMISION);
-    let IVA = Number.parseFloat(TOTAL).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
-    let SUB = Number.parseFloat(TOTAL).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
-    savePaymentRecord(userId, userName, userEmail, TOTAL, IVA, SUB, 'D');
-    //Generar comisión por transacción
-    //Actualizar saldos Usuario
-    let NEWAMOUNT = Number.parseFloat(walletAmount) + TOTAL;
-    updateDocument(collWallet, userId, { amount: NEWAMOUNT, updateAt: fullDate() });
-    //Actualizar estado de orden
-    updateDocument(collOrders, id, { state: 2 });
+  const handleAprobeAmount = async () => {
+    try {
+      const { id, amount, userId, userEmail, userName } = currentOrder;
+      setOpenLoader(true);
+      //Generar acreditación
+      let COMISION = 1.25;
+      let TOTAL = Number.parseFloat(amount) - Number.parseFloat(COMISION);
+      let IVA = Number.parseFloat(TOTAL).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
+      let SUB = Number.parseFloat(TOTAL).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
+      savePaymentRecord(userId, userName, userEmail, TOTAL, IVA, SUB, genConst.CONST_STA_DEB, null, null, null);
+      //Generar comisión por transacción
+      //Actualizar saldos Usuario
+      let NEWAMOUNT = Number.parseFloat(walletAmount) + TOTAL;
+      // updateDocument(collWallet, userId, { amount: NEWAMOUNT, updateAt: fullDate() });
+
+      //Actualizar estado de orden
+      updateDocument(collOrders, id, { state: genConst.CONST_ORDER_APPROVED });
+      toast.success('Orden aprobada con éxito');
+
+      // await saveUserBenefit(userId, userName, userEmail, 0, null, null, null, NEWAMOUNT);
+      handleCloseActivation();
+      setCurrentOrder(null);
+    } catch (error) {
+      toast.error('Error al procesar la orden');
+    } finally {
+      setOpenLoader(false);
+      getData();
+    }
+  };
+
+  const handleRejectOrder = async () => {
+    try {
+      const { id } = currentOrder;
+      setOpenLoader(true);
+      //Actualizar estado de orden
+      updateDocument(collOrders, id, { state: genConst.CONST_ORDER_REJECTED });
+      toast.success('Orden rechazada');
+      setRejectOpen(false);
+      handleCloseActivation();
+      setCurrentOrder(null);
+    } catch (error) {
+      toast.error('Error al procesar la orden');
+    } finally {
+      setOpenLoader(false);
+      getData();
+    }
   };
 
   return (
@@ -119,7 +170,17 @@ const Orders = () => {
           <IconButton color="inherit">
             <IconCash color="#FFF" />
           </IconButton>
-          <Tooltip title="Agregar Voucher">
+          <Tooltip title="Recargar ordenes">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                getData();
+              }}
+            >
+              <IconReload />
+            </IconButton>
+          </Tooltip>
+          {/* <Tooltip title="Agregar Voucher">
             <IconButton
               color="inherit"
               onClick={() => {
@@ -128,7 +189,7 @@ const Orders = () => {
             >
               <IconPlus />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
           <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
             Ordenes de Pago
           </Typography>
@@ -190,44 +251,47 @@ const Orders = () => {
                 {orders
                   .filter(searchingVoucher(search))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((r) => (
-                    <TableRow hover key={r.id}>
-                      <TableCell align="left">{r.id}</TableCell>
-                      <TableCell align="left">{r.userName}</TableCell>
-                      <TableCell align="left">$ {Number.parseFloat(r.amount).toFixed(2)}</TableCell>
-                      <TableCell align="left">{r.createAt}</TableCell>
-                      <TableCell align="left">{r.state == 1 ? 'Pendiente' : 'Aprobado'}</TableCell>
+                  .map((orderRecord) => (
+                    <TableRow hover key={orderRecord.id}>
+                      <TableCell align="left">{orderRecord.id}</TableCell>
+                      <TableCell align="left">{orderRecord.userName}</TableCell>
+                      <TableCell align="left">$ {Number.parseFloat(orderRecord.amount).toFixed(2)}</TableCell>
+                      <TableCell align="left">{orderRecord.createAt}</TableCell>
+                      <TableCell align="left">
+                        {orderRecord.state === genConst.CONST_ORDER_PENDING ? (
+                          <Badge color="info" sx={{ '& .MuiBadge-badge': { color: '#fff' } }} badgeContent={'PENDIENTE'} />
+                        ) : orderRecord.state === genConst.CONST_ORDER_APPROVED ? (
+                          <Badge color="success" sx={{ '& .MuiBadge-badge': { color: '#fff' } }} badgeContent={'APROBADO'} />
+                        ) : (
+                          <Badge color="error" sx={{ '& .MuiBadge-badge': { color: '#fff' } }} badgeContent={'RECHAZADO'} />
+                        )}
+                      </TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
                           <Tooltip title="Aprobar">
                             <Button
                               style={{ backgroundColor: genConst.CONST_UPDATE_COLOR }}
                               onClick={() => {
-                                setId(r.id);
-                                setUserId(r.userId);
-                                setUserName(r.userName);
-                                setUserEmail(r.userEmail);
-                                setTotal(r.amount);
-                                setCtaAmount(r.ctaAmount);
-                                setCreateAt(r.createAt);
+                                setCurrentOrder(orderRecord);
                                 setOpenActivation(true);
                               }}
                             >
                               <IconCheck />
                             </Button>
                           </Tooltip>
-                          <Tooltip title="Eliminar">
+                          {/* <Tooltip title="Eliminar">
                             <Button
                               style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
                               onClick={() => {
                                 setTitle(titles.titleDelete);
-                                setId(r.id);
+                                // setId(orderRecord.id);
+                                setCurrentOrder(orderRecord);
                                 handleOpenDelete();
                               }}
                             >
                               <IconTrash />
                             </Button>
-                          </Tooltip>
+                          </Tooltip> */}
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>
@@ -262,7 +326,7 @@ const Orders = () => {
             {title}
           </Typography>
           <Typography id="modal-modal-title" variant="p" component="p" style={{ marginTop: 20, fontSize: 16 }}>
-            {titles.titleDeleteModal} <strong>{id}</strong>
+            {titles.titleDeleteModal} <strong>{currentOrder?.id}</strong>
           </Typography>
           <Grid container style={{ marginTop: 10 }}>
             <Grid item xs={12}>
@@ -294,6 +358,47 @@ const Orders = () => {
           </Grid>
         </Box>
       </Modal>
+      <Dialog
+        open={rejectOpen}
+        onClose={() => setRejectOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            textAlign: 'center'
+          }}
+        >
+          {'Confirmar acción'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            style={{
+              fontWeight: 'normal',
+              fontSize: 15,
+              textAlign: 'center'
+            }}
+          >
+            ¿Está seguro de rechazar la orden de pago?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRejectOpen(false)} color="secondary">
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_DELETE_COLOR }}
+            onClick={handleRejectOrder}
+          >
+            Rechazar
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Modal
         open={openActivation}
         onClose={handleCloseActivation}
@@ -308,12 +413,27 @@ const Orders = () => {
             <Typography id="modal-modal-title" variant="p" component="p">
               {titles.titleActivationModal}
             </Typography>
-            <p style={{ fontSize: 13 }}>Usuario: {userId}</p>
-            <p style={{ fontSize: 13 }}>Usuario: {userName}</p>
-            <p style={{ fontSize: 13 }}>Email: {userEmail}</p>
-            <p style={{ fontSize: 13 }}>Fecha: {createAt}</p>
-            <p style={{ fontSize: 13 }}>Saldo Usuario: ${Number.parseFloat(ctaAmount).toFixed(2)}</p>
-            <p style={{ fontSize: 13 }}>Total: ${Number.parseFloat(total).toFixed(2)}</p>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={currentTab} onChange={handleTabChange}>
+                <Tab label="Usuario" />
+                <Tab label="Cuenta bancaria" />
+              </Tabs>
+            </Box>
+            <CustomTabPanel value={currentTab} index={0}>
+              <p style={{ fontSize: 13 }}>Usuario: {currentOrder?.userId}</p>
+              <p style={{ fontSize: 13 }}>Usuario: {currentOrder?.userName}</p>
+              <p style={{ fontSize: 13 }}>Email: {currentOrder?.userEmail}</p>
+              <p style={{ fontSize: 13 }}>Fecha: {currentOrder?.createAt}</p>
+              <p style={{ fontSize: 13 }}>Saldo Usuario: ${Number.parseFloat(currentOrder?.ctaAmount).toFixed(2)}</p>
+              <p style={{ fontSize: 13 }}>Total: ${Number.parseFloat(currentOrder?.amount).toFixed(2)}</p>
+            </CustomTabPanel>
+            <CustomTabPanel value={currentTab} index={1}>
+              <p style={{ fontSize: 13 }}>N° cuenta: {currentOrder?.accountNumber}</p>
+              <p style={{ fontSize: 13 }}>Tipo: {currentOrder?.accountType}</p>
+              <p style={{ fontSize: 13 }}>N° cédula: {currentOrder?.beneficiaryDni}</p>
+              <p style={{ fontSize: 13 }}>Beneficiario: {currentOrder?.beneficiaryName}</p>
+              <p style={{ fontSize: 13 }}>Institución: {currentOrder?.bankName}</p>
+            </CustomTabPanel>
             <Grid container style={{ marginTop: 10 }}>
               <Grid item xs={12}>
                 <Grid container spacing={1}>
@@ -328,6 +448,15 @@ const Orders = () => {
                           onClick={handleAprobeAmount}
                         >
                           {titles.buttonActive}
+                        </Button>
+                        <Button
+                          variant="contained"
+                          startIcon={<IconCircleX />}
+                          size="large"
+                          style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
+                          onClick={() => setRejectOpen(true)}
+                        >
+                          {titles.buttonReject}
                         </Button>
                         <Button
                           variant="contained"
