@@ -11,6 +11,7 @@ import { authentication } from 'config/firebase';
 import LoginSection from './LoginSection';
 import AddProductSection from './AddProductSection';
 import FavoritesSection from './FavoritesSection';
+import CartSection from './CartSection';
 
 const Header = ({ handleLeftDrawerToggle }) => {
   const theme = useTheme();
@@ -66,11 +67,15 @@ const Header = ({ handleLeftDrawerToggle }) => {
         <>
           <AddProductSection />
           <FavoritesSection />
+          {/* <CartSection /> */}
           <NotificationSection />
           <ProfileSection />
         </>
       ) : (
-        <LoginSection />
+        <>
+          {/* <CartSection /> */}
+          <LoginSection />
+        </>
       )}
     </>
   );

@@ -1,14 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Chip, Tooltip } from '@mui/material';
 import { IconCurrencyDollar } from '@tabler/icons';
+import { onAuthStateChanged } from 'firebase/auth';
+import { authentication } from 'config/firebase';
+import { getUserAmountFromWallet } from 'config/firebaseEvents';
 
 const AmountSection = () => {
   const theme = useTheme();
+  const [amount, setAmount] = useState(0);
   let navigate = useNavigate();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    onAuthStateChanged(authentication, (user) => {
+      if (user) {
+        getUserAmountFromWallet(user.uid).then((result) => {
+          setAmount(Number.parseFloat(result || 0).toFixed(2));
+        });
+      }
+    });
+  }, []);
 
   const handleToggle = () => {
     navigate('/app/wallet');
@@ -39,7 +51,7 @@ const AmountSection = () => {
               color: '#FFF'
             }
           }}
-          label={<span style={{ color: '#000', fontSize: 18, fontWeight: 'bold' }}>0</span>}
+          label={<span style={{ color: '#000', fontSize: 18, fontWeight: 'bold' }}>{amount}</span>}
           icon={<IconCurrencyDollar />}
           variant="outlined"
           onClick={handleToggle}

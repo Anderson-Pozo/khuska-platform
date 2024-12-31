@@ -204,14 +204,14 @@ const ProfileSection = () => {
                             <ListItemText primary={<Typography variant="body2">Facturación</Typography>} />
                           </ListItemButton>
                         </Link>
-                        <Link to="user-payment-methods" style={{ textDecoration: 'none' }}>
+                        {/* <Link to="user-payment-methods" style={{ textDecoration: 'none' }}>
                           <ListItemButton sx={{ borderRadius: `${customization.borderRadius}px` }}>
                             <ListItemIcon>
                               <IconCreditCard stroke={1.5} size="1.3rem" />
                             </ListItemIcon>
                             <ListItemText primary={<Typography variant="body2">Métodos de Pago</Typography>} />
                           </ListItemButton>
-                        </Link>
+                        </Link> */}
                         <Link to="user-subscription" style={{ textDecoration: 'none' }}>
                           <ListItemButton sx={{ borderRadius: `${customization.borderRadius}px` }}>
                             <ListItemIcon>
