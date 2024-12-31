@@ -37,6 +37,7 @@ import {
   getAllPayments,
   getAllUserBenefits,
   getBenefits,
+  getTotalApprovedOrders,
   getTotalBenefit,
   getTotalBenefitPay,
   getTotalBenefitPending,
@@ -109,7 +110,10 @@ export default function Benefits() {
     getTotalBenefitPending().then((res) => {
       setTotalPending(Number.parseFloat(res).toFixed(2));
     });
-    getTotalBenefitPay().then((res) => {
+    // getTotalBenefitPay().then((res) => {
+    //   setTotalPay(Number.parseFloat(res).toFixed(2));
+    // });
+    getTotalApprovedOrders().then((res) => {
       setTotalPay(Number.parseFloat(res).toFixed(2));
     });
   };
@@ -432,9 +436,9 @@ export default function Benefits() {
                 <TableCell key="id-createAt" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                   {'Fecha'}
                 </TableCell>
-                <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                {/* <TableCell key="id-state" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                   {'Estado'}
-                </TableCell>
+                </TableCell> */}
                 <TableCell key="id-total" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                   {'Total'}
                 </TableCell>
@@ -450,9 +454,9 @@ export default function Benefits() {
                   <TableCell align="left">{r.nameRefer}</TableCell>
                   <TableCell align="left">{r.level}</TableCell>
                   <TableCell align="left">{r.createAt}</TableCell>
-                  <TableCell align="left">
+                  {/* <TableCell align="left">
                     {r.state == genConst.CONST_BEN_CAN ? 'Cancelado' : r.state == genConst.CONST_BEN_PAI ? 'Pagado' : 'Pendiente'}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell align="left">$ {Number.parseFloat(r.total).toFixed(2)}</TableCell>
                   <TableCell align="center"></TableCell>
                 </TableRow>
@@ -492,7 +496,7 @@ export default function Benefits() {
                   <EarningBlueCard total={totalPay} detail="Pagado" />
                 </Grid>
                 <Grid item lg={3} md={6} sm={6} xs={6}>
-                  <EarningRedCard total={totalPending} detail="Pendiente" />
+                  <EarningRedCard total={(totalPending - totalPay).toFixed(2)} detail="Pendiente" />
                 </Grid>
               </Grid>
             </Grid>
