@@ -42,3 +42,4 @@ export const collWallet = 'Wallet';
 export const collKhuskaBenefit = 'KhuskaBenefit';
 export const collPayment = 'Payments';
 export const collUserBenefit = 'UserBenefit';
+export const collProductComment = 'ProductComment';

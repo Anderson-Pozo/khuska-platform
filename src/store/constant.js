@@ -26,6 +26,7 @@ export const process = {
   LOG_CREATE_BUSINESS: 'CREACIÓN DE NEGOCIO',
   LOG_EDIT_BUSINESS: 'ACTUALIZACIÓN DE NEGOCIO',
   LOG_DELETE_BUSINESS: 'ELIMINACIÓN DE NEGOCIO',
+  LOG_INACTIVATE_BUSINESS: 'INACTIVACIÓN DE NEGOCIO',
   LOG_CREATE_PROD: 'CREACIÓN DE PRODUCTO',
   LOG_EDIT_PROD: 'ACTUALIZACIÓN DE PRODUCTO',
   LOG_DELETE_PROD: 'ELIMINACIÓN DE PRODUCTO'
@@ -118,9 +119,56 @@ export const genConst = {
   CONST_BEN_PEN: 1,
   CONST_MAX_BUSINESS: 3,
   CONST_DEL_TRAN_1: 'Eliminación de Transacción - Pagos',
-  CONST_DEL_TRAN_2: 'Eliminación de Transacción - Beneficio Khuska'
+  CONST_DEL_TRAN_2: 'Eliminación de Transacción - Beneficio Khuska',
+  NEW_PRODUCT_DAYS: 7,
+  IMAGES_FOR_PRODUCT: 6,
+  CONST_ORDER_PENDING: 1,
+  CONST_ORDER_APPROVED: 2,
+  CONST_ORDER_REJECTED: 3
 };
+
+export const SUBSCRIPTION_TYPES = {
+  MONTHLY: {
+    id: 1,
+    days: genConst.CONST_MONTH_DAYS,
+    value: genConst.CONST_MONTH_VALUE
+    // periodDays: 31
+  },
+  YEARLY: {
+    id: 2,
+    days: genConst.CONST_YEAR_DAYS,
+    value: genConst.CONST_YEAR_VALUE
+    // periodDays: 365
+  }
+};
+
+export const VOUCHER_STATUS = {
+  PENDIENTE: 'PENDIENTE',
+  APROBADO: 'APROBADO',
+  RECHAZADO: 'RECHAZADO'
+};
+
+export const ACCOUNT_TYPES = [
+  { value: 'Ahorro', label: 'Ahorro' },
+  { value: 'Corriente', label: 'Corriente' }
+];
 
 export const Messages = {
   lastDay: 'Es tu último día de membresía, renueva tu subscripción!'
+};
+
+export const PAYPHONE_CONFIG = {
+  SERVER_URL: 'https://pay.payphonetodoesposible.com/api/button/V2/Confirm',
+  TOKEN: import.meta.env.VITE_PAYPHONE_TOKEN,
+  STORE_ID: import.meta.env.VITE_STORE_ID
+};
+
+export const FIREBASE_CONFIG = {
+  apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTHDOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECTID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDERID,
+  appId: import.meta.env.VITE_FIREBASE_APPID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID
 };
