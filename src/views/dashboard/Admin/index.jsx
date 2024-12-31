@@ -11,7 +11,8 @@ import {
   countProducts,
   countUser,
   getTotalDebits,
-  getTotalPayments
+  getTotalPayments,
+  getTotalPendingOrders
 } from 'config/firebaseEvents';
 //Components
 import EarningCard from 'components/cards/EarningCard';
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [totalPayments, setTotalPayments] = useState(0);
   const [totalDebits, setTotalDebits] = useState(0);
   const [totalBenefit, setTotalBenefit] = useState(0);
+  const [totalPending, setTotalPending] = useState(0);
 
   useEffect(() => {
     countUser().then((count) => {
@@ -54,6 +56,9 @@ const Dashboard = () => {
         setTotalDebits(Number.parseFloat(result).toFixed(2));
         setTotalBenefit(Number.parseFloat(res).toFixed(2) - Number.parseFloat(result).toFixed(2));
       });
+    });
+    getTotalPendingOrders().then((res) => {
+      setTotalPending(Number.parseFloat(res).toFixed(2));
     });
     /*getTotalBenefit().then((res) => {
       setTotalBenefit(Number.parseFloat(res).toFixed(2));
@@ -86,7 +91,7 @@ const Dashboard = () => {
             <EarningBlueCard total={totalDebits} detail="Pagado" />
           </Grid>
           <Grid item lg={3} md={6} sm={6} xs={6}>
-            <EarningRedCard total={0} detail="Pendiente" />
+            <EarningRedCard total={totalPending} detail="Ordenes Pendientes" />
           </Grid>
           <Grid item sm={6} xs={6} md={6} lg={3}>
             <TotalBlackCard total={totalSubs} detail="Subscripciones" />
