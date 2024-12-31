@@ -2,7 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
-import { Box, Chip, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, Typography, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Chip,
+  Drawer,
+  keyframes,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  Typography,
+  useMediaQuery
+} from '@mui/material';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { BrowserView, MobileView } from 'react-device-detect';
 import LogoSection from '../LogoSection';
@@ -26,6 +38,33 @@ import {
 } from '@tabler/icons';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authentication } from 'config/firebase';
+
+const glow = keyframes`
+  0% {
+    text-shadow: 0 0 5px #9a67ea, 0 0 10px #9a67ea;
+  }
+  50% {
+    text-shadow: 0 0 15px #caa8fa, 0 0 20px #caa8fa;
+  }
+  100% {
+    text-shadow: 0 0 5px #9a67ea, 0 0 10px #9a67ea;
+  }
+`;
+
+const iconGlow = keyframes`
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px #9a67ea);
+  }
+  50% {
+    transform: scale(1.1); /* Ligero escalado */
+    filter: drop-shadow(0 0 15px #caa8fa);
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px #9a67ea);
+  }
+`;
 
 const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const theme = useTheme();
@@ -52,12 +91,23 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
             navigate('/auth/signin');
           }}
         >
-          <ListItemIcon>
+          <ListItemIcon
+            sx={{
+              animation: `${iconGlow} 1.5s infinite`
+            }}
+          >
             <IconNetwork size={22} style={{ marginRight: 5 }} />
           </ListItemIcon>
           <ListItemText
             primary={
-              <Typography variant={'h5'} color="inherit">
+              <Typography
+                variant={'h5'}
+                color="inherit"
+                sx={{
+                  animation: `${glow} 1.5s infinite`,
+                  fontWeight: 'bold'
+                }}
+              >
                 {'Red de Mercadeo'}
               </Typography>
             }
