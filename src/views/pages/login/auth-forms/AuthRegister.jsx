@@ -121,7 +121,7 @@ const AuthRegister = () => {
   const handleCreateAccount = (name, lastname, phone, mail, pass, ref) => {
     try {
       setOpenLoader(true);
-      console.log(authentication, mail, pass);
+      // console.log(authentication, mail, pass);
       createUserWithEmailAndPassword(authentication, mail, pass)
         .then((userCredentials) => {
           const userObject = {
