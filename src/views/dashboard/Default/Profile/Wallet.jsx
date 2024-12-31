@@ -13,7 +13,7 @@ const Wallet = () => {
     onAuthStateChanged(authentication, (user) => {
       if (user) {
         getUserAmountFromWallet(user.uid).then((result) => {
-          setAmount(Number.parseFloat(result).toFixed(2));
+          setAmount(Number.parseFloat(result || 0).toFixed(2));
         });
       }
     });
