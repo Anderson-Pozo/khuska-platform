@@ -46,26 +46,23 @@ import {
   IconUserCircle,
   IconCheck,
   IconCalendar,
-  IconSearch
+  IconSearch,
+  IconReload
 } from '@tabler/icons';
 //Firebase Events
 import {
   createDocument,
   createLogRecord,
   deleteDocument,
-  getDad,
   getUserDataSubscription,
   getUserReferalDad,
   getUsersList,
-  saveKhuskaBenefit,
-  savePaymentRecord,
-  saveUserBenefit,
   updateDocument
 } from 'config/firebaseEvents';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { genConst, process } from 'store/constant';
+import { genConst, process, SUBSCRIPTION_TYPES, VOUCHER_STATUS } from 'store/constant';
 import { collLog, collSubscription, collUsers, collVoucher } from 'store/collections';
 import { inputLabels, titles } from './Users.texts';
 import { uiStyles } from './Users.styles';
@@ -77,6 +74,8 @@ import defaultImage from 'assets/images/addImgB.png';
 import { storage } from 'config/firebase';
 import { getDownloadURL, uploadBytes, ref } from 'firebase/storage';
 import { sendSubscriptionEmail } from 'utils/sendEmail';
+import { calculatePricing } from 'utils/calculateTotals';
+import { getRangeSubscriptionDates, subscribeUser } from 'services/userSubscriptionService';
 
 let globalTotal = 0;
 
@@ -284,89 +283,60 @@ export default function Users() {
   };
 
   const handleActiveSubscription = async () => {
-    setOpenLoader(true);
-    getUserReferalDad(id).then((code) => {
-      //console.log('getUserReferalDad', code);
-      subscribeUser(id, name + ' ' + lastName, email, code, type);
-    });
-  };
+    if (picture.preview === '') {
+      toast.error('Debe subir el comprobante de pago');
+      return;
+    }
 
-  const subscribeUser = (id, userName, userEmail, code, type) => {
-    const subObject = {
-      idUser: id,
-      nameUser: userName,
-      emailUser: userEmail,
-      refCode: code ? code : null,
-      state: genConst.CONST_STATE_AC,
-      startDate: shortDateFormat(),
-      endDate: type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS),
-      endDateFormat: type == 1 ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS) : endDateFormatWithParam(genConst.CONST_YEAR_DAYS),
-      date: fullDate(),
-      dateFormat: fullDateFormat(),
-      price: type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE,
-      description: type == 1 ? 'Estandar (30 días)' : 'Plus (365 días)',
-      totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : genConst.CONST_YEAR_DAYS
-    };
-    const usrObject = {
-      subState: genConst.CONST_STATE_AC,
-      state: genConst.CONST_STATE_AC
-    };
-    //console.log('createDocument', collSubscription, id, subObject);
-    createDocument(collSubscription, id, subObject);
-    //console.log('updateDocument', collUsers, id, usrObject);
-    updateDocument(collUsers, id, usrObject);
-    paymentDistribution(id, userName, userEmail, code);
-    sendSubscriptionEmail(
-      userEmail,
-      userName,
-      type,
-      shortDateFormat(),
-      type == 1 ? endDateWithParam(genConst.CONST_MONTH_DAYS) : endDateWithParam(genConst.CONST_YEAR_DAYS)
-    );
-  };
+    try {
+      setOpenLoader(true);
+      const { startDate, endDate, endDateFormat } = await getRangeSubscriptionDates({ userId: id, typeSubscription: type });
 
-  const paymentDistribution = async (id, name, email, code) => {
-    globalTotal = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
-    let total = type == 1 ? genConst.CONST_MONTH_VALUE : genConst.CONST_YEAR_VALUE;
-    let IVA = Number.parseFloat(total).toFixed(2) * Number.parseFloat(genConst.CONST_IVA_VAL).toFixed(2);
-    let SUB = Number.parseFloat(total).toFixed(2) - Number.parseFloat(IVA).toFixed(2);
-    let referCode;
-    //console.log('referCode', code);
-    if (code === null) {
-      //console.log('savePaymentRecord', id, name, email, total, IVA, SUB);
-      savePaymentRecord(id, name, email, total, IVA, SUB, 'C');
-      //console.log('saveKhuskaBenefit', id, name, email, total);
-      saveKhuskaBenefit(id, name, email, total);
-    } else {
-      referCode = code;
-      for (let i = 0; i < 4; i++) {
-        //PAGAR BENEFICIOS
-        await getDad(referCode).then((res) => {
-          referCode = res.refer;
-          generatePaymentDistribution(id, name, email, i, res.id, res.fullName, res.email, total);
-          if (res.refer === null) {
-            i = 4;
-          }
-        });
-      }
-      savePaymentRecord(id, name, email, total, IVA, SUB, 'C');
-      //console.log('savePaymentRecord', id, name, email, total, IVA, SUB, 'C');
-      saveKhuskaBenefit(id, name, email, globalTotal);
-      //console.log('saveKhuskaBenefit', id, name, email, globalTotal);
+      const subscriptionType = type === SUBSCRIPTION_TYPES.MONTHLY.id ? SUBSCRIPTION_TYPES.MONTHLY : SUBSCRIPTION_TYPES.YEARLY;
+      const { subtotal, ivaValue, total: totalValue } = calculatePricing(subscriptionType.value);
+
+      const userName = name + ' ' + lastName;
+      const subscriptionObject = {
+        user: {
+          userId: id,
+          userName,
+          userEmail: email
+        },
+        code: null,
+        startDate,
+        endDate,
+        endDateFormat,
+        type,
+        totals: {
+          subtotal,
+          iva: ivaValue,
+          total: totalValue
+        },
+        transaction: {
+          clientTransactionId: null,
+          transactionId: null,
+          status: 3
+        }
+      };
+      // console.log({ subscriptionObject, picture });
+
+      await subscribeUser(subscriptionObject);
       if (picture.preview) {
         const idComp = generateId(10);
         const object = {
           id: idComp,
           userId: id,
-          userName: name,
+          userName,
           userEmail: email,
-          total: total,
+          total: totalValue,
           type: type,
           createAt: fullDate(),
-          picture: null
+          picture: null,
+          status: VOUCHER_STATUS.APROBADO,
+          observation: null
         };
+        console.log({ object });
         createDocument(collVoucher, idComp, object);
-        //console.log('createDocument', collVoucher, idComp, object);
         if (picture.raw !== null) {
           const imageName = idComp + 'voucher.jpg';
           const imageRef = ref(storage, `vouchers/${imageName}`);
@@ -381,44 +351,21 @@ export default function Users() {
           });
         }
       }
-    }
-    setTimeout(function () {
+      closeLoader();
+    } catch (error) {
+      toast.error('Error al activar la suscripción');
+    } finally {
       setOpenLoader(false);
-      setOpenSub(false);
-      setOpenCreate(false);
-      toast.success('Suscripción ha sido activada!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
-      reloadData();
-      cleanData();
-    }, 4000);
+    }
   };
 
-  const generatePaymentDistribution = (id, name, email, i, resid, resfullname, resemail, total) => {
-    var t = 0;
-    if (i === 0) {
-      //LEVEL 1
-      t = total * genConst.CONST_LVL1;
-      globalTotal = globalTotal - t;
-      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-    } else if (i === 1) {
-      //LEVEL 2
-      t = total * genConst.CONST_LVL2;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
-    } else if (i === 2) {
-      //LEVEL 3
-      t = total * genConst.CONST_LVL3;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
-    } else if (i === 3) {
-      //LEVEL 4
-      t = total * genConst.CONST_LVL4;
-      globalTotal = globalTotal - t;
-      saveUserBenefit(id, name, email, i, resid, resfullname, resemail, t);
-      //console.log('saveUserBenefit', id, name, email, i, resid, resfullname, resemail, t);
-    }
+  const closeLoader = () => {
+    setOpenLoader(false);
+    setOpenSub(false);
+    setOpenCreate(false);
+    cleanData();
+    reloadData();
+    toast.success('Suscripción ha sido activada!', { position: toast.POSITION.TOP_RIGHT, autoClose: 2000 });
   };
 
   const cleanData = () => {
@@ -452,42 +399,69 @@ export default function Users() {
   };
 
   const handleActiveFreeAccount = () => {
-    setOpenLoader(true);
-    getUserReferalDad(id).then((code) => {
-      const subObject = {
-        idUser: id,
-        nameUser: name + ' ' + lastName,
-        emailUser: email,
-        refCode: code ? code : null,
-        state: genConst.CONST_STATE_AC,
-        startDate: shortDateFormat(),
-        endDate:
-          type == 1
-            ? endDateWithParam(genConst.CONST_MONTH_DAYS)
-            : type == 2
-            ? endDateWithParam(genConst.CONST_YEAR_DAYS)
-            : endDateWithParam(genConst.CONST_3_MONTH_DAYS),
-        endDateFormat:
-          type == 1
-            ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS)
-            : type == 2
-            ? endDateFormatWithParam(genConst.CONST_YEAR_DAYS)
-            : endDateFormatWithParam(genConst.CONST_3_MONTH_DAYS),
-        date: fullDate(),
-        dateFormat: fullDateFormat(),
-        price: type == 1 ? genConst.CONST_1_MONTH_VALUE : type == 2 ? genConst.CONST_1_YEAR_VALUE : genConst.CONST_3_MONTH_VALUE,
-        description: type == 1 ? 'Gratuita (30 días)' : type == 2 ? 'Gratuita (365 días)' : 'Gratuita (90 días)',
-        totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : type == 2 ? genConst.CONST_YEAR_DAYS : genConst.CONST_3_MONTH_DAYS
-      };
-      const usrObject = {
-        subState: genConst.CONST_STATE_AC,
-        state: genConst.CONST_STATE_AC
-      };
-      //console.log('createDocument', collSubscription, id, subObject);
-      createDocument(collSubscription, id, subObject);
-      //console.log('updateDocument', collUsers, id, usrObject);
-      updateDocument(collUsers, id, usrObject);
-    });
+    console.log({ type });
+    // return;
+    try {
+      setOpenLoader(true);
+      getUserReferalDad(id).then((code) => {
+        const subObject = {
+          idUser: id,
+          nameUser: name + ' ' + lastName,
+          emailUser: email,
+          refCode: code ? code : null,
+          state: genConst.CONST_STATE_AC,
+          startDate: shortDateFormat(),
+          endDate:
+            type == 1
+              ? endDateWithParam(genConst.CONST_MONTH_DAYS)
+              : type == 2
+              ? endDateWithParam(genConst.CONST_YEAR_DAYS)
+              : endDateWithParam(genConst.CONST_3_MONTH_DAYS),
+          endDateFormat:
+            type == 1
+              ? endDateFormatWithParam(genConst.CONST_MONTH_DAYS)
+              : type == 2
+              ? endDateFormatWithParam(genConst.CONST_YEAR_DAYS)
+              : endDateFormatWithParam(genConst.CONST_3_MONTH_DAYS),
+          date: fullDate(),
+          dateFormat: fullDateFormat(),
+          price: type == 1 ? genConst.CONST_1_MONTH_VALUE : type == 2 ? genConst.CONST_1_YEAR_VALUE : genConst.CONST_3_MONTH_VALUE,
+          description: type == 1 ? 'Gratuita (30 días)' : type == 2 ? 'Gratuita (365 días)' : 'Gratuita (90 días)',
+          totalDays: type == 1 ? genConst.CONST_MONTH_DAYS : type == 2 ? genConst.CONST_YEAR_DAYS : genConst.CONST_3_MONTH_DAYS
+        };
+        const usrObject = {
+          subState: genConst.CONST_STATE_AC,
+          state: genConst.CONST_STATE_AC
+        };
+        createDocument(collSubscription, id, subObject);
+        updateDocument(collUsers, id, usrObject);
+        sendSubscriptionEmail(
+          email,
+          subObject.nameUser,
+          type,
+          subObject.startDate,
+          subObject.endDate,
+          subObject.description,
+          subObject.price
+        );
+      });
+      closeLoader();
+    } catch (error) {
+      toast.error('Error al activar la suscripción gratuita');
+    } finally {
+      setOpenLoader(false);
+    }
+  };
+
+  const handleSetValues = (type) => {
+    const subscriptionType = type === SUBSCRIPTION_TYPES.MONTHLY.id ? SUBSCRIPTION_TYPES.MONTHLY : SUBSCRIPTION_TYPES.YEARLY;
+    const { subtotal, ivaValue, total } = calculatePricing(subscriptionType.value);
+    setType(type);
+    setIva(ivaValue);
+    setSubtotal(subtotal);
+    setTotal(total);
+    setEndDate(endDateWithParam(subscriptionType.days));
+    handleOpenSub();
   };
 
   return (
@@ -509,6 +483,16 @@ export default function Users() {
               }}
             >
               <IconPlus />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Recargar usuarios">
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                reloadData();
+              }}
+            >
+              <IconReload />
             </IconButton>
           </Tooltip>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1, color: '#FFF' }} align="center">
@@ -826,7 +810,7 @@ export default function Users() {
                   </Accordion>
                   <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
                     <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
-                      <Typography>Suscripción</Typography>
+                      <Typography>Suscripción Pagada</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       <Grid container style={{ marginTop: 10 }}>
@@ -897,15 +881,7 @@ export default function Users() {
                                   <Button
                                     startIcon={<IconCalendar />}
                                     onClick={() => {
-                                      setType(1);
-                                      let subtotal = Math.round((genConst.CONST_MONTH_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
-                                      let ivaValue = genConst.CONST_MONTH_VALUE - subtotal;
-                                      let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
-                                      setIva(ivaRound);
-                                      setSubtotal(subtotal);
-                                      setTotal(genConst.CONST_MONTH_VALUE);
-                                      setEndDate(endDateWithParam(genConst.CONST_MONTH_DAYS));
-                                      handleOpenSub();
+                                      handleSetValues(SUBSCRIPTION_TYPES.MONTHLY.id);
                                     }}
                                     variant="contained"
                                   >
@@ -914,15 +890,7 @@ export default function Users() {
                                   <Button
                                     endIcon={<IconCalendar />}
                                     onClick={() => {
-                                      setType(2);
-                                      let subtotal = Math.round((genConst.CONST_YEAR_VALUE / genConst.CONST_IVA) * 10 ** 2) / 10 ** 2;
-                                      let ivaValue = genConst.CONST_YEAR_VALUE - subtotal;
-                                      let ivaRound = Math.round(ivaValue * 10 ** 2) / 10 ** 2;
-                                      setIva(ivaRound);
-                                      setSubtotal(subtotal);
-                                      setTotal(genConst.CONST_YEAR_VALUE);
-                                      setEndDate(endDateWithParam(genConst.CONST_YEAR_DAYS));
-                                      handleOpenSub();
+                                      handleSetValues(SUBSCRIPTION_TYPES.YEARLY.id);
                                     }}
                                     variant="outlined"
                                   >
