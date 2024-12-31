@@ -69,7 +69,7 @@ export default function Contacts() {
     <div style={uiStyles.rootContact} id="contacts">
       <ToastContainer />
       <Grid container spacing={0}>
-        <Grid xs={12} sm={12} md={6} lg={6} sx={{ marginTop: 10, p: 1 }}>
+        <Grid xs={12} sm={12} md={6} lg={6} sx={{ marginTop: 10, p: 1 }} item={true}>
           <Box
             sx={{ p: 3 }}
             style={{
@@ -101,7 +101,7 @@ export default function Contacts() {
             </center>
           </Box>
         </Grid>
-        <Grid xs={12} sm={12} md={6} lg={6} sx={{ marginTop: 5, p: 1 }}>
+        <Grid xs={12} sm={12} md={6} lg={6} sx={{ marginTop: 5, p: 1 }} item={true}>
           <Box
             sx={{ p: 5 }}
             style={{

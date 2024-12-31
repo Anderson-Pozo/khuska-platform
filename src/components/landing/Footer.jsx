@@ -8,7 +8,7 @@ const Footer = () => (
     style={{ background: '#000', bottom: 0, display: 'flex', padding: 20, paddingLeft: 30 }}
   >
     <Typography variant="subtitle1" underline="hover" style={{ color: 'white', fontSize: 12 }}>
-      Alcorp Tech 2024
+      Khuska 2024
     </Typography>
     <Typography
       variant="subtitle1"
