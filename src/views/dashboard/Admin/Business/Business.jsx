@@ -20,11 +20,17 @@ import {
   OutlinedInput,
   ButtonGroup,
   IconButton,
-  Tooltip
+  Tooltip,
+  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { uiStyles } from './Business.styles';
-import { IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive, IconSearch } from '@tabler/icons';
+import { IconPlus, IconTrash, IconEdit, IconCircleX, IconBuilding, IconEye, IconArchive, IconSearch, IconBan } from '@tabler/icons';
 //Notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,11 +38,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as Msg from 'store/message';
 import { titles, inputLabels } from './Business.texts';
 //Utils
-import { createLogRecord, deleteDocument, getBusinessList } from 'config/firebaseEvents';
+import { createLogRecord, deleteDocument, getBusinessList, updateDocument } from 'config/firebaseEvents';
 //types array
 import MessageDark from 'components/message/MessageDark';
 import { genConst, process } from 'store/constant';
-import { collLog } from 'store/collections';
+import { collBusiness, collLog } from 'store/collections';
 import { fullDate } from 'utils/validations';
 
 function searchingData(search) {
@@ -50,6 +56,7 @@ export default function Business() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openActive, setOpenActive] = useState(false);
   const [id, setId] = useState(null);
   const [name, setName] = useState(null);
   const [search, setSearch] = useState('');
@@ -90,14 +97,30 @@ export default function Business() {
       name: name,
       deleteAt: fullDate()
     };
-    deleteDocument(collCourses, id);
+    deleteDocument(collBusiness, id);
     createLogRecord(collLog, process.LOG_DELETE_BUSINESS, object);
     setTimeout(() => {
       setOpenLoader(false);
       setOpenDelete(false);
-      reloadCoursesData();
+      // reloadCoursesData();
       getData();
       toast.success(Msg.coudelsucc, { position: toast.POSITION.TOP_RIGHT });
+    }, 2000);
+  };
+
+  const handleChangeState = () => {
+    setOpenLoader(true);
+    const object = {
+      id: id,
+      isActive: false
+    };
+    updateDocument(collBusiness, id, object);
+    createLogRecord(collLog, process.LOG_INACTIVATE_BUSINESS, object);
+    setTimeout(() => {
+      setOpenLoader(false);
+      setOpenActive(false);
+      getData();
+      toast.success(Msg.coudelsucc);
     }, 2000);
   };
 
@@ -168,8 +191,11 @@ export default function Business() {
                   <TableCell key="id-city" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {inputLabels.city}
                   </TableCell>
-                  <TableCell key="id-address" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
+                  {/* <TableCell key="id-address" align="left" style={{ minWidth: 170, fontWeight: 'bold' }}>
                     {inputLabels.address}
+                  </TableCell> */}
+                  <TableCell key="id-isActive" align="left" style={{ minWidth: 100, fontWeight: 'bold' }}>
+                    {inputLabels.isActive}
                   </TableCell>
                   <TableCell key="id-actions" align="center" style={{ minWidth: 100, fontWeight: 'bold' }}>
                     {titles.actions}
@@ -186,7 +212,14 @@ export default function Business() {
                       <TableCell align="left">{r.owner}</TableCell>
                       <TableCell align="left">{r.phone}</TableCell>
                       <TableCell align="left">{r.city}</TableCell>
-                      <TableCell align="left">{r.address}</TableCell>
+                      {/* <TableCell align="left">{r.address}</TableCell> */}
+                      <TableCell align="center">
+                        {r.isActive ? (
+                          <Badge color="success" sx={{ '& .MuiBadge-badge': { color: '#fff' } }} badgeContent="ACTIVO" />
+                        ) : (
+                          <Badge color="error" sx={{ '& .MuiBadge-badge': { color: '#fff' } }} badgeContent="INACTIVO" />
+                        )}
+                      </TableCell>
                       <TableCell align="center">
                         <ButtonGroup variant="contained">
                           <Button
@@ -227,11 +260,21 @@ export default function Business() {
                             onClick={() => {
                               setId(r.id);
                               setName(r.name);
+                              setOpenActive(true);
+                            }}
+                          >
+                            <IconBan />
+                          </Button>
+                          {/* <Button
+                            style={{ backgroundColor: genConst.CONST_DELETE_COLOR }}
+                            onClick={() => {
+                              setId(r.id);
+                              setName(r.name);
                               handleOpenDelete();
                             }}
                           >
                             <IconTrash />
-                          </Button>
+                          </Button> */}
                         </ButtonGroup>
                       </TableCell>
                     </TableRow>
@@ -299,6 +342,48 @@ export default function Business() {
           </Grid>
         </Box>
       </Modal>
+      <Dialog
+        open={openActive}
+        onClose={() => setOpenActive(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            textAlign: 'center'
+          }}
+        >
+          {'Confirmar acción'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="alert-dialog-description"
+            style={{
+              fontWeight: 'normal',
+              fontSize: 15,
+              textAlign: 'center'
+            }}
+          >
+            ¿Estás seguro de que deseas desactivar el negocio {name}? Al hacerlo, sus productos perderán visibilidad y no estarán
+            disponibles para los clientes
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenActive(false)} color="secondary">
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            style={{ margin: 5, borderRadius: 10, backgroundColor: genConst.CONST_DELETE_COLOR }}
+            onClick={handleChangeState}
+          >
+            Desactivar
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Modal open={openLoader} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <center>
           <Box sx={uiStyles.styleLoader}>

@@ -68,6 +68,7 @@ export const inputLabels = {
   province: 'Provincia',
   city: 'Ciudad',
   address: 'Dirección',
+  isActive: 'Activo',
   logo: 'Logotipo del negocio',
   image: 'Imagen ',
   facebook: 'Link de Facebook',

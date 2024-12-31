@@ -99,7 +99,8 @@ export default function BusinessCreate() {
         createAt: fullDate(),
         updateAt: null,
         deleteAt: null,
-        state: 1
+        state: 1,
+        isActive: true
       };
       createDocument(collBusiness, ide, object);
       createLogRecord(collLog, process.LOG_CREATE_BUSINESS, object);
