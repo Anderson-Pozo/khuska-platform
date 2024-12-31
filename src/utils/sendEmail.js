@@ -1,6 +1,7 @@
 import emailjs from '@emailjs/browser';
 import { fullDate } from './validations';
-import { genConst } from 'store/constant';
+import { genConst, SUBSCRIPTION_TYPES } from 'store/constant';
+import { calculatePricing } from './calculateTotals';
 const SERVICE_ID = 'service_wzkb9kh';
 const TEMPLATE_WELCOME_ID = 'template_2jruacg';
 const PUBLIC_ID = 'zObPv7PPx0SSdJhg4';
@@ -52,7 +53,10 @@ export function sendPaymentEmail(mail, userName) {
     });
 }
 
-export function sendSubscriptionEmail(mail, userName, type, startDate, endDate) {
+export function sendSubscriptionEmail(mail, userName, type, startDate, endDate, description, total) {
+  // const subscriptionType = type === SUBSCRIPTION_TYPES.MONTHLY.id ? SUBSCRIPTION_TYPES.MONTHLY : SUBSCRIPTION_TYPES.YEARLY;
+  // const { total } = calculatePricing(subscriptionType.value);
+
   emailjs
     .send(SERVICE_ID, TEMPLATE_WELCOME_ID, {
       title: 'Tu suscripción KHUSKA ',
@@ -62,8 +66,8 @@ export function sendSubscriptionEmail(mail, userName, type, startDate, endDate) 
       subMessage: 'Prepárate para disfrutar de todos los beneficios.',
       title2: 'Detalles de la suscripción',
       message2: 'Tu suscripción se generó a través de: khuska.es',
-      type: type == 1 ? 'Estandar (30 días)' : 'Plus (1 año)',
-      total: type == 1 ? 'Total $ ' + genConst.CONST_MONTH_VALUE : 'Total $ ' + genConst.CONST_YEAR_VALUE,
+      type: description,
+      total: `Total $ ${total}`,
       startDate: startDate,
       endDate: endDate,
       subject: 'Recibo de su pago a KHUSKA',
